@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1029760203338",
+    "project_id": "cloppri-pandilla",
+    "storage_bucket": "cloppri-pandilla.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1029760203338:android:d4d922d0109324290444b3",
+        "android_client_info": {
+          "package_name": "com.cloppri.pandilla.pandilla"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCarjOrtTa8S_Z0DwwfWQJEA4L-G7zOMSU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
