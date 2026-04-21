@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pandilla/core/app_colors.dart';
-import 'package:pandilla/core/group_provider.dart';
+import 'package:pandilla/core/providers/group_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../core/firebase_service.dart';
@@ -12,7 +12,7 @@ class GroupSelector extends StatefulWidget {
   final String groupUID;
   final String code;
   final String avatar;
-  GroupSelector({super.key, required this.groupUID, required this.groupName, required this.code, required this.avatar});
+  const GroupSelector({super.key, required this.groupUID, required this.groupName, required this.code, required this.avatar});
 
   @override
   State<GroupSelector> createState() => _GroupSelectorState();

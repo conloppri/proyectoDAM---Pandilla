@@ -7,10 +7,11 @@ import 'package:pandilla/core/firebase_service.dart';
 
 import '../../core/app_colors.dart';
 import '../../core/app_styles.dart';
+import '../../l10n/app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String userProfileUID;
-  ProfileScreen({super.key, required this.userProfileUID});
+  const ProfileScreen({super.key, required this.userProfileUID});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -21,14 +22,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isOwner = false;
   loadProfile() async {
     _userInfo = await getUser(widget.userProfileUID);
-    String? _ownerUID = FirebaseAuth.instance.currentUser?.uid;
-    _ownerUID==widget.userProfileUID?isOwner = true:isOwner=false;
+    String? ownerUID = FirebaseAuth.instance.currentUser?.uid;
+    ownerUID==widget.userProfileUID?isOwner = true:isOwner=false;
     setState(() {});
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadProfile();
   }
@@ -37,15 +37,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Perfil", style: AppStyles.title),
+        title: Text(AppLocalizations.of(context)!.profile, style: AppStyles.title),
         foregroundColor: Colors.white,
         backgroundColor: AppColors.primary,
         actions: [
-          if(isOwner) IconButton(onPressed: ()=>Navigator.pushReplacementNamed(context, '/profileEditor'), icon: Icon(Icons.edit))
+          if(isOwner) IconButton(onPressed: ()=>Navigator.pushReplacementNamed(context, '/profileEditor'), icon: const Icon(Icons.edit))
         ],
       ),
-      drawer: LeftDrawer(),
-      body: _userInfo.isEmpty?CircularProgressIndicator()
+      drawer: const LeftDrawer(),
+      body: _userInfo.isEmpty?const CircularProgressIndicator()
           :SafeArea(
             child: SingleChildScrollView(
               child: Padding(
@@ -73,8 +73,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: AppColors.primary,
                             child: Center(
                               child: ListTile(
-                                leading: Icon(Icons.person, color: Colors.white),
-                                title: Text("Nombre"),
+                                leading: const Icon(Icons.person, color: Colors.white),
+                                title: Text(AppLocalizations.of(context)!.username),
                                 subtitle: Text(_userInfo["name"], style: AppStyles.profileSub,),
                               ),
                             ),
@@ -87,8 +87,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: AppColors.calendar_secondary,
                             child: Center(
                               child: ListTile(
-                                leading: Icon(Icons.work, color: Colors.white),
-                                title: Text("Ocupación"),
+                                leading: const Icon(Icons.work, color: Colors.white),
+                                title: Text(AppLocalizations.of(context)!.job),
                                 subtitle: Text(_userInfo["job"]),
                               ),
                             ),
@@ -101,9 +101,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: AppColors.lists_secondary,
                             child: Center(
                               child: ListTile(
-                                leading: Icon(Icons.cake, color: Colors.white),
-                                title: Text("Fecha de nacimiento"),
-                                subtitle: Text("${birthdateToString()} (${getAge()} años)"),
+                                leading: const Icon(Icons.cake, color: Colors.white),
+                                title: Text(AppLocalizations.of(context)!.birthdate),
+                                subtitle: Text("${birthdateToString()} (${getAge()} ${AppLocalizations.of(context)!.years})"),
                               ),
                             ),
                           ),
@@ -115,8 +115,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: AppColors.notes_primary,
                             child: Center(
                               child: ListTile(
-                                leading: Icon(Icons.palette, color: Colors.white),
-                                title: Text("Colores favoritos"),
+                                leading: const Icon(Icons.palette, color: Colors.white),
+                                title: Text(AppLocalizations.of(context)!.fav_colors),
                                 subtitle: Text(_userInfo["fav_colors"], style: AppStyles.profileSub),
                               ),
                             ),
@@ -129,8 +129,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: AppColors.secondary,
                             child: Center(
                               child: ListTile(
-                                leading: Icon(Icons.pets, color: Colors.white),
-                                title: Text("Animales favoritos"),
+                                leading: const Icon(Icons.pets, color: Colors.white),
+                                title: Text(AppLocalizations.of(context)!.fav_animal),
                                 subtitle: Text(_userInfo["fav_animal"], style: AppStyles.profileSub),
                               ),
                             ),
@@ -143,8 +143,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: AppColors.calendar_primary,
                             child: Center(
                               child: ListTile(
-                                leading: Icon(Icons.sports_basketball, color: Colors.white),
-                                title: Text("Pasatiempos"),
+                                leading: const Icon(Icons.sports_basketball, color: Colors.white),
+                                title: Text(AppLocalizations.of(context)!.hobbies),
                                 subtitle: Text(_userInfo["hobbies"], style: AppStyles.profileSub),
                               ),
                             ),
@@ -157,8 +157,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: AppColors.notes_secondary,
                             child: Center(
                               child: ListTile(
-                                leading: Icon(Icons.star, color: Colors.white,),
-                                title: Text("Más cosas sobre mí"),
+                                leading: const Icon(Icons.star, color: Colors.white,),
+                                title: Text(AppLocalizations.of(context)!.more_info),
                                 subtitle: Text(_userInfo["description"], style: AppStyles.profileSub),
                               ),
                             ),

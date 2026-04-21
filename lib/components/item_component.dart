@@ -3,7 +3,7 @@ import 'package:pandilla/core/app_colors.dart';
 import 'package:pandilla/core/firebase_service.dart';
 import 'package:provider/provider.dart';
 
-import '../core/group_provider.dart';
+import '../core/providers/group_provider.dart';
 
 class ItemComponent extends StatefulWidget {
   final String item;

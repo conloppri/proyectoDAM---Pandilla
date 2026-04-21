@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pandilla/components/date_picker_widget.dart';
 import 'package:pandilla/core/firebase_service.dart';
-import 'package:pandilla/core/group_provider.dart';
+import 'package:pandilla/core/providers/group_provider.dart';
+import 'package:pandilla/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/app_colors.dart';
@@ -19,20 +20,21 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
   String _description = "";
   String _location = "";
   final List _recurrence = ["unique", "weekly", "monthly", "yearly"];
-  final List _recurrenceButton = [
-    "Una vez",
-    "Semanalmente",
-    "Mensualmente",
-    "Anualmente",
-  ];
+
   int _recSelected = 0;
   @override
   Widget build(BuildContext context) {
-    String? _groupUID = context.watch<GroupProvider>().groupUID;
-    String? _groupName = context.watch<GroupProvider>().groupName;
+    final List recurrenceButton = [
+      AppLocalizations.of(context)!.one_time,
+      AppLocalizations.of(context)!.weekly,
+      AppLocalizations.of(context)!.monthly,
+      AppLocalizations.of(context)!.yearly,
+    ];
+    String? groupUID = context.watch<GroupProvider>().groupUID;
+    String? groupName = context.watch<GroupProvider>().groupName;
     return Scaffold(
       appBar: AppBar(
-        title: Text(_groupName!),
+        title: Text(groupName!),
         backgroundColor: AppColors.calendar_primary,
       ),
       body: Padding(
@@ -40,22 +42,22 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Text("AÑADIR EVENTO"),
+            Text(AppLocalizations.of(context)!.new_event),
             TextField(
               decoration: InputDecoration(
-                border: UnderlineInputBorder(),
+                border: const UnderlineInputBorder(),
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: AppColors.calendar_primary),
                 ),
-                labelText: "Título del evento",
+                labelText: AppLocalizations.of(context)!.title,
               ),
               onChanged: (value) => _title = value,
             ),
             TextField(
               maxLines: 3,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Descripción del evento",
+                border: const OutlineInputBorder(),
+                labelText: AppLocalizations.of(context)!.description,
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: AppColors.calendar_primary),
                 ),
@@ -63,15 +65,15 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
               onChanged: (value) => _description = value,
             ),
             DatePickerWidget(
-              label: 'Fecha del evento: ',
+              label: AppLocalizations.of(context)!.event_date,
               firstDate: DateTime(1900),
               lastDate: DateTime(DateTime.now().year + 50),
               onDateSelected: (date) => _date = date,
             ),
             TextField(
               decoration: InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: "Location (opcional)",
+                border: const UnderlineInputBorder(),
+                labelText: AppLocalizations.of(context)!.location,
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: AppColors.calendar_primary),
                 ),
@@ -80,21 +82,21 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
             ),
             Row(
               children: [
-                Text("Repetir: "),
+                Text(AppLocalizations.of(context)!.recurrence),
                 ElevatedButton(
                   onPressed: () {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: Text("¿Cuándo repetir el evento?"),
+                        title: Text(AppLocalizations.of(context)!.recurrence_dialog_title),
                         content: Container(
                           width: double.maxFinite,
-                          constraints: BoxConstraints(maxHeight: 300),
+                          constraints: const BoxConstraints(maxHeight: 300),
                           child: ListView(
                             shrinkWrap: true,
                             children: [
                               ListTile(
-                                title: Text(_recurrenceButton[0]),
+                                title: Text(recurrenceButton[0]),
                                 onTap: () {
                                   setState(() {
                                     _recSelected = 0;
@@ -103,7 +105,7 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                                 },
                               ),
                               ListTile(
-                                title: Text(_recurrenceButton[1]),
+                                title: Text(recurrenceButton[1]),
                                 onTap: () {
                                   setState(() {
                                     _recSelected = 1;
@@ -112,7 +114,7 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                                 },
                               ),
                               ListTile(
-                                title: Text(_recurrenceButton[2]),
+                                title: Text(recurrenceButton[2]),
                                 onTap: () {
                                   setState(() {
                                     _recSelected = 2;
@@ -121,7 +123,7 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                                 },
                               ),
                               ListTile(
-                                title: Text(_recurrenceButton[3]),
+                                title: Text(recurrenceButton[3]),
                                 onTap: () {
                                   setState(() {
                                     _recSelected = 3;
@@ -135,25 +137,25 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                       ),
                     );
                   },
-                  child: Text(_recurrenceButton[_recSelected]),
+                  child: Text(recurrenceButton[_recSelected]),
                 ),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                TextButton(
+                ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   child: Text(
-                    "<< Descartar",
+                    AppLocalizations.of(context)!.discard,
                     style: TextStyle(color: AppColors.primary, fontSize: 20),
                   ),
                 ),
-                TextButton(
+                ElevatedButton(
                   onPressed: () {
                     setState(() {
                       saveEvent(
-                        _groupUID!,
+                        groupUID!,
                         _title,
                         _description,
                         _date,
@@ -164,7 +166,7 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                     Navigator.pop(context);
                   },
                   child: Text(
-                    "Guardar >>",
+                    AppLocalizations.of(context)!.save,
                     style: TextStyle(color: AppColors.primary, fontSize: 20),
                   ),
                 ),

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:pandilla/core/firebase_service.dart';
-import 'package:pandilla/core/group_provider.dart';
+import 'package:pandilla/core/providers/group_provider.dart';
+import 'package:pandilla/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/app_colors.dart';
@@ -12,7 +13,7 @@ import '../profile/profile_screen.dart';
 
 class InfoSubscreen extends StatefulWidget {
   final String groupUID;
-  InfoSubscreen({super.key, required this.groupUID});
+  const InfoSubscreen({super.key, required this.groupUID});
 
   @override
   State<InfoSubscreen> createState() => _InfoSubscreenState();
@@ -49,7 +50,7 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                   if (snapshot.hasError)
                     return Center(child: Text("Error: ${snapshot.error}"));
                   if (!snapshot.hasData || snapshot.data!.isEmpty)
-                    return Text("Aún no hay información.");
+                    return Text(AppLocalizations.of(context)!.no_info);
                   Map<String, dynamic> info = snapshot.data!;
                   DateTime createAt = info["createAt"].toDate();
                   String _code = info["code"];
@@ -71,7 +72,7 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                         child: Text(info["description"], style: TextStyle(color: Colors.white, fontSize: 18)),
                       ),
                       Text(
-                        "Creado en ${DateFormat("dd/MM/yyyy", "es_ES").format(createAt)}",
+                        "${AppLocalizations.of(context)!.created_at} ${DateFormat("dd/MM/yyyy", "es_ES").format(createAt)}",
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -83,7 +84,7 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                               );
 
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Código copiado')),
+                                SnackBar(content: Text(AppLocalizations.of(context)!.code_copied)),
                               );
                             },
                             label: Text(_code),
@@ -101,13 +102,13 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                                     return AlertDialog(
                                       title: Text("Error"),
                                       content: Text(
-                                        "Eres el único administrador, no puedes abandonar el grupo. Nombra a otro miembro administrador o elimina el grupo completo.",
+                                          AppLocalizations.of(context)!.warning_no_more_admins
                                       ),
                                       actions: [
                                         TextButton(
                                           onPressed: () =>
                                               Navigator.pop(context),
-                                          child: Text("Aceptar"),
+                                          child: Text(AppLocalizations.of(context)!.accept),
                                         ),
                                       ],
                                     );
@@ -118,9 +119,9 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
-                                      title: Text("Abandonar grupo"),
+                                      title: Text(AppLocalizations.of(context)!.leave_group),
                                       content: Text(
-                                        "¿Estás seguro que quieres abandonar el grupo?",
+                                        AppLocalizations.of(context)!.warning_leave_group,
                                       ),
                                       actions: [
                                         TextButton(
@@ -134,12 +135,12 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                                               userUID!,
                                             );
                                           },
-                                          child: Text("Confirmar"),
+                                          child: Text(AppLocalizations.of(context)!.confirm),
                                         ),
                                         TextButton(
                                           onPressed: () =>
                                               Navigator.pop(context),
-                                          child: Text("Cancelar"),
+                                          child: Text(AppLocalizations.of(context)!.cancel),
                                         ),
                                       ],
                                     );
@@ -147,7 +148,7 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                                 );
                               }
                             },
-                            label: Text("Abandonar grupo"),
+                            label: Text(AppLocalizations.of(context)!.leave_group),
                             icon: Icon(Icons.logout),
                           ),
                         ],
@@ -158,7 +159,7 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
               ),
             ),
           ),
-          Text("Miembros del grupo", style: AppStyles.title),
+          Text(AppLocalizations.of(context)!.group_members, style: AppStyles.title),
           Expanded(
             child: FutureBuilder(
               future: _futureData,
@@ -168,7 +169,7 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                 if (snapshot.hasError)
                   return Center(child: Text("Error: ${snapshot.error}"));
                 if (!snapshot.hasData || snapshot.data!.isEmpty)
-                  return Text("Aún no hay miembros");
+                  return Text(AppLocalizations.of(context)!.no_member);
                 List<Map<String, dynamic>> data = snapshot.data!;
                 return Column(
                   children: [
@@ -216,16 +217,16 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                                             builder: (context) {
                                               return AlertDialog(
                                                 title: Text(
-                                                  "Nombrar administrador",
+                                                  AppLocalizations.of(context)!.make_admin,
                                                 ),
                                                 content: Text(
-                                                  "¿Quieres ascender a este miembro a administrador?",
+                                                  AppLocalizations.of(context)!.make_admin_dialog,
                                                 ),
                                                 actions: [
                                                   TextButton(
                                                     onPressed: () =>
                                                         Navigator.pop(context),
-                                                    child: Text("Cancelar"),
+                                                    child: Text(AppLocalizations.of(context)!.cancel),
                                                   ),
                                                   TextButton(
                                                     onPressed: () async {
@@ -238,7 +239,7 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                                                       });
                                                       Navigator.pop(context);
                                                     },
-                                                    child: Text("Ascender"),
+                                                    child: Text(AppLocalizations.of(context)!.promote),
                                                   ),
                                                 ],
                                               );
@@ -260,16 +261,16 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                                             builder: (context) {
                                               return AlertDialog(
                                                 title: Text(
-                                                  "Expulsar miembro del grupo",
+                                                  AppLocalizations.of(context)!.remove_member,
                                                 ),
                                                 content: Text(
-                                                  "¿Quieres expulsar a este miembro del grupo? No podrá volver a acceder a la información del grupo.",
+                                                  AppLocalizations.of(context)!.warning_remove_member,
                                                 ),
                                                 actions: [
                                                   TextButton(
                                                     onPressed: () =>
                                                         Navigator.pop(context),
-                                                    child: Text("Cancelar"),
+                                                    child: Text(AppLocalizations.of(context)!.cancel),
                                                   ),
                                                   TextButton(
                                                     onPressed: () async {
@@ -285,7 +286,7 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                                                       });
                                                       Navigator.pop(context);
                                                     },
-                                                    child: Text("Expulsar"),
+                                                    child: Text(AppLocalizations.of(context)!.remove),
                                                   ),
                                                 ],
                                               );

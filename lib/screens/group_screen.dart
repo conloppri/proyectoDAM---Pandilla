@@ -5,7 +5,7 @@ import 'package:pandilla/components/left_drawer.dart';
 import 'package:pandilla/core/app_colors.dart';
 import 'package:pandilla/core/app_styles.dart';
 import 'package:pandilla/core/firebase_service.dart';
-import 'package:pandilla/core/group_provider.dart';
+import 'package:pandilla/core/providers/group_provider.dart';
 import 'package:pandilla/screens/calendar/event_editor_screen.dart';
 import 'package:pandilla/screens/group_info/info_editor.dart';
 import 'package:pandilla/screens/notes/note_creator_screen.dart';
@@ -15,10 +15,12 @@ import 'package:pandilla/screens/group_info/info_subscreen.dart';
 import 'package:pandilla/screens/notes/notes_subscreen.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
+
 class GroupScreen extends StatefulWidget {
   final String groupName;
   final String groupUID;
-  GroupScreen({super.key, required this.groupUID, required this.groupName});
+  const GroupScreen({super.key, required this.groupUID, required this.groupName});
 
   @override
   State<GroupScreen> createState() => _GroupScreenState();
@@ -43,11 +45,11 @@ class _GroupScreenState extends State<GroupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool? _isAdmin = context.watch<GroupProvider>().isAdmin;
+    bool? isAdmin = context.watch<GroupProvider>().isAdmin;
     List selectedSubscreen = [
-      CalendarSubscreen(),
-      NotesSubscreen(),
-      ListsSubscreen(),
+      const CalendarSubscreen(),
+      const NotesSubscreen(),
+      const ListsSubscreen(),
       InfoSubscreen(groupUID: widget.groupUID,),
     ];
     return Scaffold(
@@ -57,18 +59,18 @@ class _GroupScreenState extends State<GroupScreen> {
         foregroundColor: Colors.white,
         actions: [
           PopupMenuButton<String>(itemBuilder: (BuildContext context)=>[
-            if(_isAdmin!)PopupMenuItem(child: Text("Editar información"), value: "edit"),
-            if(_isAdmin)PopupMenuItem(child: Text("Eliminar grupo", style: TextStyle(color: Colors.red),), value: "delete",),
-            PopupMenuItem(child: Text("Acerca de la app"), value: "info")
+            if(isAdmin!) PopupMenuItem(value: "edit", child: Text(AppLocalizations.of(context)!.edit_group_info)),
+            if(isAdmin) PopupMenuItem(value: "delete",child: Text(AppLocalizations.of(context)!.delete_group, style: const TextStyle(color: Colors.red),),),
+             PopupMenuItem(value: "info", child: Text(AppLocalizations.of(context)!.about))
           ],
           onSelected: (value){
             if(value=="info"){
               showDialog(context: context, builder: (context){
                 return AlertDialog(
-                  title: Text("Acerca de..."),
+                  title: Text(AppLocalizations.of(context)!.about),
                   content: Text("App desarrollada por Consuelo López Prieto para Proyecto Intermodular de DAM 2025/2026."),
                   actions: [
-                    TextButton(onPressed: ()=> Navigator.pop(context), child: Text("Cerrar"))
+                    TextButton(onPressed: ()=> Navigator.pop(context), child: Text(AppLocalizations.of(context)!.close))
                   ],
                 );
               });
@@ -76,15 +78,15 @@ class _GroupScreenState extends State<GroupScreen> {
             if(value == "delete"){
               showDialog(context: context, builder: (context){
                 return AlertDialog(
-                  title: Text("Eliminar grupo"),
-                  content: Text("¿Estás seguro que queires eliminar el grupo? Está acción no se puede deshacer"),
+                  title: Text(AppLocalizations.of(context)!.delete_group),
+                  content: Text(AppLocalizations.of(context)!.warning_group_removal),
                   actions: [
-                    TextButton(onPressed: ()=> Navigator.pop(context), child: Text("Cancelar")),
+                    TextButton(onPressed: ()=> Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel)),
                     TextButton(onPressed: (){
                       deleteGroup(widget.groupUID);
                       Navigator.pushReplacementNamed(context, "/home");
                       Navigator.pushReplacementNamed(context, "/home");
-                    }, child: Text("Eliminar", style: TextStyle(color: Colors.redAccent),)),
+                    }, child: Text(AppLocalizations.of(context)!.remove, style: TextStyle(color: Colors.redAccent),)),
                   ],
                 );
               });
@@ -95,28 +97,28 @@ class _GroupScreenState extends State<GroupScreen> {
           },)
         ],
       ),
-      drawer: LeftDrawer(),
+      drawer: const LeftDrawer(),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndexBottom,
         selectedItemColor: primaryColors[_selectedIndexBottom],
         unselectedItemColor: secondaryColors[_selectedIndexBottom],
-        items: const [
+        items:  [
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_month_outlined, size: 40),
-            label: "Calendario",
+            label: AppLocalizations.of(context)!.calendar,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.note, size: 40),
-            label: "Notas",
+            label: AppLocalizations.of(context)!.notes,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.list, size: 40),
-            label: "Listas",
+            label: AppLocalizations.of(context)!.lists,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.group, size: 40),
-            label: "Info",
+            label: AppLocalizations.of(context)!.group_info,
           ),
         ],
         onTap: (index) {
@@ -137,7 +139,7 @@ class _GroupScreenState extends State<GroupScreen> {
         children: [
           SpeedDialChild(
             child: const Icon(Icons.event),
-            label: 'Añadir Evento',
+            label: AppLocalizations.of(context)!.add_event,
             backgroundColor: AppColors.calendar_primary,
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (context)=> EventEditorScreen()));
@@ -146,7 +148,7 @@ class _GroupScreenState extends State<GroupScreen> {
           ),
           SpeedDialChild(
             child: const Icon(Icons.note_add),
-            label: 'Añadir nota',
+            label: AppLocalizations.of(context)!.add_note,
             backgroundColor: AppColors.notes_primary,
             onTap: () {
               Navigator.push(
@@ -162,14 +164,14 @@ class _GroupScreenState extends State<GroupScreen> {
           ),
           SpeedDialChild(
             child: const Icon(Icons.list_alt),
-            label: 'Añadir lista',
+            label:AppLocalizations.of(context)!.add_list,
             backgroundColor: AppColors.lists_primary,
             onTap: () {
               showDialog(
                 context: context,
                 builder: (context) {
                   return AlertDialog(
-                    title: Text("Nueva lista"),
+                    title: Text(AppLocalizations.of(context)!.new_list),
                     content: TextField(
                       decoration: InputDecoration(
                         focusedBorder: UnderlineInputBorder(
@@ -177,28 +179,28 @@ class _GroupScreenState extends State<GroupScreen> {
                             color: AppColors.lists_primary,
                           ),
                         ),
-                        border: UnderlineInputBorder(),
-                        labelText: "Título de la lista",
+                        border: const UnderlineInputBorder(),
+                        labelText: AppLocalizations.of(context)!.title,
                       ),
                       onChanged: (value) => _listTitle = value,
                     ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: Text("Descartar"),
+                        child: Text(AppLocalizations.of(context)!.discard),
                       ),
                       TextButton(
                         onPressed: (){
                           if (_listTitle == "")
                             {ScaffoldMessenger.of(
                             context,
-                            ).showSnackBar(SnackBar(content: Text("Todos los campos son obligatorios.")));}
+                            ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.all_fields_required)));}
                           else {
                             newList(widget.groupUID, _listTitle);
                             Navigator.pop(context);
                           }
                         },
-                        child: Text("Guardar"),
+                        child: Text(AppLocalizations.of(context)!.save),
                       ),
                     ],
                   );

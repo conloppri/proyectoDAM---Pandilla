@@ -5,7 +5,8 @@ import 'package:pandilla/core/firebase_service.dart';
 import 'package:pandilla/screens/lists/listview_screen.dart';
 import 'package:provider/provider.dart';
 
-import '../core/group_provider.dart';
+import '../core/providers/group_provider.dart';
+import '../l10n/app_localizations.dart';
 
 class ListComponent extends StatefulWidget {
   final String groupUID;
@@ -58,13 +59,13 @@ class _ListComponentState extends State<ListComponent> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text("Creada por ${widget.author}"),
+            Text("${AppLocalizations.of(context)!.created_by} ${widget.author}"),
             Padding(
               padding: EdgeInsets.all(10),
               child: ListTile(
                 title: Text(widget.title),
                 subtitle: Text(
-                  "${numItems} elementos",
+                  "${numItems} ${AppLocalizations.of(context)!.items}",
                 ),
                 onTap: () async {
                   await Navigator.push(
@@ -83,9 +84,9 @@ class _ListComponentState extends State<ListComponent> {
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          title: Text("Eliminar nota"),
+                          title: Text(AppLocalizations.of(context)!.delete_list),
                           content: Text(
-                            "¿Estás seguro que quieres eliminar esta lista? Una vez eliminada no podrá recuperarse.",
+                            AppLocalizations.of(context)!.warning_delete_list,
                           ),
                           actions: [
                             TextButton(
@@ -93,11 +94,11 @@ class _ListComponentState extends State<ListComponent> {
                                 removeList(widget.groupUID, widget.listID);
                                 Navigator.pop(context);
                               },
-                              child: Text("Eliminar"),
+                              child: Text(AppLocalizations.of(context)!.remove),
                             ),
                             TextButton(
                               onPressed: () => Navigator.pop(context),
-                              child: Text("Cancelar"),
+                              child: Text(AppLocalizations.of(context)!.cancel),
                             ),
                           ],
                         );
@@ -108,7 +109,7 @@ class _ListComponentState extends State<ListComponent> {
               ),
             ),
             Text(
-              "Última actualización: ${widget.lastUpdate.hour}:${widget.lastUpdate.minute} ${widget.lastUpdate.day}/${widget.lastUpdate.month}/${widget.lastUpdate.year}",
+              "${AppLocalizations.of(context)!.last_update} ${widget.lastUpdate.hour}:${widget.lastUpdate.minute} ${widget.lastUpdate.day}/${widget.lastUpdate.month}/${widget.lastUpdate.year}",
             ),
           ],
         ),

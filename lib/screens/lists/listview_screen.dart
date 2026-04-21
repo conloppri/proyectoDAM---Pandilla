@@ -3,21 +3,22 @@ import 'package:pandilla/components/item_component.dart';
 import 'package:pandilla/core/app_colors.dart';
 import 'package:pandilla/core/app_styles.dart';
 import 'package:pandilla/core/firebase_service.dart';
+import 'package:pandilla/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/group_provider.dart';
+import '../../core/providers/group_provider.dart';
 
 class ListviewScreen extends StatefulWidget {
   final String title;
   final String uid;
-  ListviewScreen({super.key, required this.title, required this.uid});
+  const ListviewScreen({super.key, required this.title, required this.uid});
 
   @override
   State<ListviewScreen> createState() => _ListviewScreenState();
 }
 
 class _ListviewScreenState extends State<ListviewScreen> {
-  TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
   String _newItem = "";
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,7 @@ class _ListviewScreenState extends State<ListviewScreen> {
                     if (snapshot.hasError)
                       return Center(child: Text("Error: ${snapshot.error}"));
                     if (!snapshot.hasData || snapshot.data!.isEmpty)
-                      return Text("Aún no hay notas para mostrar");
+                      return Text(AppLocalizations.of(context)!.no_lists);
                     List<ItemComponent> items = snapshot.data!;
                     return ListView.separated(
                       itemCount: items.length,
@@ -73,7 +74,7 @@ class _ListviewScreenState extends State<ListviewScreen> {
                           borderSide: BorderSide(color: AppColors.lists_primary),
                         ),
                         border: OutlineInputBorder(),
-                        labelText: "Nuevo elemento",
+                        labelText: AppLocalizations.of(context)!.new_item,
                       ),
                       onChanged: (value) => _newItem = value,
                     ),
@@ -90,7 +91,7 @@ class _ListviewScreenState extends State<ListviewScreen> {
                         if (_newItem == "") {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text("No puedes añadir un elemento vacío."),
+                              content: Text(AppLocalizations.of(context)!.warning_empty_item),
                             ),
                           );
                         } else {

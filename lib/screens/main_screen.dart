@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pandilla/components/avatar_picker.dart';
 import 'package:pandilla/components/left_drawer.dart';
-import 'package:pandilla/core/user_provider.dart';
+import 'package:pandilla/core/providers/user_provider.dart';
+import 'package:pandilla/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../core/app_colors.dart';
 import '../core/app_styles.dart';
 import '../core/firebase_service.dart';
+
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -21,7 +23,7 @@ class _MainScreenState extends State<MainScreen> {
   String _groupName = "";
   String _groupDescription = "";
   String _code = "";
-  List<String> _avatarList = [
+  final List<String> _avatarList = [
     "reading",
     "cooking",
     "videogames",
@@ -37,19 +39,18 @@ class _MainScreenState extends State<MainScreen> {
 
 
   Future<void> loadUser() async {
-    String? _userUID = FirebaseAuth.instance.currentUser?.uid;
-    Map _userInfo = await getUser(_userUID!);
+    String? userUID = FirebaseAuth.instance.currentUser?.uid;
+    Map userInfo = await getUser(userUID!);
     context.read<UserProvider>().setUser(
-      _userUID,
-      _userInfo["name"],
-      _userInfo["avatar"],
-      _userInfo["email"],
+      userUID,
+      userInfo["name"],
+      userInfo["avatar"],
+      userInfo["email"],
     );
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadUser();
 
@@ -63,14 +64,14 @@ class _MainScreenState extends State<MainScreen> {
         foregroundColor: Colors.white,
         backgroundColor: AppColors.primary,
       ),
-      drawer: LeftDrawer(),
+      drawer: const LeftDrawer(),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(30),
           child: Column(
             children: [
-              Text("Próximos eventos:", style: TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),),
-              Container(
+              Text(AppLocalizations.of(context)!.next_events, style: const TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),),
+              SizedBox(
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height * 0.2,
                 child: Row(
@@ -78,7 +79,7 @@ class _MainScreenState extends State<MainScreen> {
                     Image.asset("assets/images/main.png", height: MediaQuery.of(context).size.height * 0.15 ),
                     Container(
                       width: MediaQuery.of(context).size.width * 0.55,
-                      margin: EdgeInsetsGeometry.symmetric(
+                      margin: const EdgeInsetsGeometry.symmetric(
                         vertical: 20,
                         horizontal: 10,
                       ),
@@ -91,12 +92,15 @@ class _MainScreenState extends State<MainScreen> {
                         child: FutureBuilder(
                           future: getNextEvents(),
                           builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting)
-                              return Center(child: CircularProgressIndicator());
-                            if (snapshot.hasError)
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const Center(child: CircularProgressIndicator());
+                            }
+                            if (snapshot.hasError) {
                               return Center(child: Text("Error: ${snapshot.error}"));
-                            if (!snapshot.hasData || snapshot.data!.isEmpty)
-                              return Text("No tienes eventos próximos");
+                            }
+                            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                              return Text(AppLocalizations.of(context)!.no_next_events);
+                            }
                             List<Map<String, dynamic>> events = snapshot.data!;
                             return ListView.builder(
                               itemCount: events.length,
@@ -113,21 +117,24 @@ class _MainScreenState extends State<MainScreen> {
                   ],
                 ),
               ),
-              Divider(height: 40),
+              const Divider(height: 40),
               Text(
-                "Mis grupos",
+                AppLocalizations.of(context)!.my_groups,
                 style: TextStyle(color: AppColors.primary, fontSize: 20),
               ),
               Expanded(
                 child: StreamBuilder(
                   stream: getGroups(),
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting)
-                      return Center(child: CircularProgressIndicator());
-                    if (snapshot.hasError)
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
                       return Center(child: Text("Error: ${snapshot.error}"));
-                    if (!snapshot.hasData || snapshot.data!.isEmpty)
-                      return Text("Aún no perteneces a ningún grupo");
+                    }
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Text(AppLocalizations.of(context)!.no_groups);
+                    }
                     return GridView.count(
                       crossAxisCount: 2,
                       crossAxisSpacing: 10,
@@ -152,7 +159,7 @@ class _MainScreenState extends State<MainScreen> {
                             return StatefulBuilder(
                               builder: (context, setStateDialog) {
                                 return AlertDialog(
-                                  title: Text("Crear nuevo grupo"),
+                                  title: Text(AppLocalizations.of(context)!.new_group),
                                   content: Column(
                                     children: [
                                       AvatarPicker(
@@ -167,7 +174,7 @@ class _MainScreenState extends State<MainScreen> {
                                         onChanged: (value) =>
                                             _groupName = value,
                                         decoration: InputDecoration(
-                                          labelText: "Nombre del grupo",
+                                          labelText: AppLocalizations.of(context)!.group_name,
                                         ),
                                       ),
                                       TextField(
@@ -177,7 +184,7 @@ class _MainScreenState extends State<MainScreen> {
                                             _groupDescription = value,
                                         decoration: InputDecoration(
                                           border: OutlineInputBorder(),
-                                          labelText: "Descripción",
+                                          labelText: AppLocalizations.of(context)!.description,
                                         ),
                                       ),
                                     ],
@@ -192,11 +199,11 @@ class _MainScreenState extends State<MainScreen> {
                                         );
                                         Navigator.pop(context);
                                       },
-                                      child: Text("Guardar"),
+                                      child: Text(AppLocalizations.of(context)!.create),
                                     ),
                                     TextButton(
                                       onPressed: () => Navigator.pop(context),
-                                      child: Text("Cancelar"),
+                                      child: Text(AppLocalizations.of(context)!.cancel),
                                     ),
                                   ],
                                 );
@@ -217,8 +224,8 @@ class _MainScreenState extends State<MainScreen> {
                           children: [
                             Icon(Icons.add, size: 25, color: Colors.white),
                             Text(
-                              " Crear",
-                              style: TextStyle(
+                              AppLocalizations.of(context)!.create,
+                              style: const TextStyle(
                                 fontSize: 25,
                                 color: Colors.white,
                               ),
@@ -233,10 +240,10 @@ class _MainScreenState extends State<MainScreen> {
                           context: context,
                           builder: (context) {
                             return AlertDialog(
-                              title: Text("Unirse a grupo"),
+                              title: Text(AppLocalizations.of(context)!.join_group),
                               content: TextField(
                                 decoration: InputDecoration(
-                                  labelText: "Código",
+                                  labelText: AppLocalizations.of(context)!.code,
                                 ),
                                 onChanged: (value) => _code = value,
                               ),
@@ -254,11 +261,11 @@ class _MainScreenState extends State<MainScreen> {
                                       print("NO EXISTE");
                                     }
                                   },
-                                  child: Text("Unirse"),
+                                  child: Text(AppLocalizations.of(context)!.join),
                                 ),
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
-                                  child: Text("Cancelar"),
+                                  child: Text(AppLocalizations.of(context)!.cancel),
                                 ),
                               ],
                             );
@@ -275,10 +282,10 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.link, size: 25, color: Colors.white),
+                            const Icon(Icons.link, size: 25, color: Colors.white),
                             Text(
-                              " Unirse",
-                              style: TextStyle(
+                              AppLocalizations.of(context)!.join,
+                              style: const TextStyle(
                                 fontSize: 25,
                                 color: Colors.white,
                               ),
@@ -290,7 +297,6 @@ class _MainScreenState extends State<MainScreen> {
                   ],
                 ),
               ),
-              //ElevatedButton(onPressed: ()=>getGroups(), child: Text("Prueba"))
             ],
           ),
         ),

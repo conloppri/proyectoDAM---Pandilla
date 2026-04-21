@@ -2,11 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pandilla/core/firebase_service.dart';
-import 'package:pandilla/core/group_provider.dart';
+import 'package:pandilla/core/providers/group_provider.dart';
 import 'package:pandilla/screens/notes/note_view_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../core/app_colors.dart';
+import '../l10n/app_localizations.dart';
 
 class NoteComponent extends StatefulWidget {
   final String title;
@@ -16,7 +17,7 @@ class NoteComponent extends StatefulWidget {
   final DateTime lastUpdate;
   final String noteID;
   final String authorID;
-  NoteComponent({
+  const NoteComponent({
     super.key,
     required this.title,
     required this.body,
@@ -51,15 +52,15 @@ class _NoteComponentState extends State<NoteComponent> {
         children: [
           Padding(
             padding: const EdgeInsets.all(10),
-            child: Text("Creada por ${widget.author}"),
+            child: Text("${AppLocalizations.of(context)!.created_by} ${widget.author}", style: TextStyle(color: Colors.black),),
           ),
           ListTile(
-            title: Text(widget.title, style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold)),
+            title: Text(widget.title, style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold, color: Colors.black)),
             subtitle: Text(
               widget.body,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 15),
+              style: TextStyle(fontSize: 15, color: Colors.black),
             ),
             onTap: () =>Navigator.push(context, MaterialPageRoute(builder: (context)=>NoteViewScreen(noteID: widget.noteID))),
             onLongPress: () {
@@ -67,14 +68,14 @@ class _NoteComponentState extends State<NoteComponent> {
               if(isAdmin! || userUID == widget.authorID){
                 showDialog(context: context, builder: (context){
                   return AlertDialog(
-                    title: Text("Eliminar nota"),
-                    content: Text("¿Estás seguro que quieres eliminar esta nota? Una vez eliminada no podrá recuperarse."),
+                    title: Text(AppLocalizations.of(context)!.delete_note),
+                    content: Text(AppLocalizations.of(context)!.warning_delete_note),
                     actions: [
                       TextButton(onPressed: (){
                         removeNote(groupUID!, widget.noteID);
                         Navigator.pop(context);
-                      }, child: Text("Eliminar")),
-                      TextButton(onPressed: ()=>Navigator.pop(context), child: Text("Cancelar"))
+                      }, child: Text(AppLocalizations.of(context)!.remove)),
+                      TextButton(onPressed: ()=>Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel))
                     ],
                   );
                 });

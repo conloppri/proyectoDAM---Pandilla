@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pandilla/components/date_picker_widget.dart';
+import 'package:pandilla/l10n/app_localizations.dart';
 import 'package:pandilla/screens/main_screen.dart';
 
 import 'package:pandilla/screens/profile/profile_editor_screen.dart';
@@ -35,16 +36,16 @@ class _LogScreenState extends State<LogScreen> {
             _activeAction == "login"
                 ? LogIn()
                 : SignIn(), //Para cambiar entre registro e inicio de sesión
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             _activeAction == "login"
                 ? Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("¿Aún no tienes cuenta? "),
+                      Text(AppLocalizations.of(context)!.no_account_yet),
                       GestureDetector(
                         child: Text(
-                          "Regístrate",
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.signup,
+                          style: const TextStyle(
                             decoration: TextDecoration.underline,
                             color: Colors.blueAccent,
                           ),
@@ -60,11 +61,11 @@ class _LogScreenState extends State<LogScreen> {
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("¿Ta estás registrado? "),
+                      Text(AppLocalizations.of(context)!.with_account),
                       GestureDetector(
                         child: Text(
-                          "Iniciar sesión",
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.login,
+                          style: const TextStyle(
                             decoration: TextDecoration.underline,
                             color: Colors.blueAccent,
                           ),
@@ -100,14 +101,14 @@ class _LogInState extends State<LogIn> {
       children: [
         //INICIO SESION
         Text(
-          "Iniciar sesión:",
-          style: TextStyle(fontSize: 30, color: Colors.white),
+          AppLocalizations.of(context)!.login,
+          style: const TextStyle(fontSize: 30, color: Colors.white),
         ),
-        SizedBox(height: 15),
+        const SizedBox(height: 15),
         TextField(
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            labelText: "Correo electrónico",
+            labelText: AppLocalizations.of(context)!.email,
             filled: true,
             fillColor: Colors.white,
           ),
@@ -117,11 +118,11 @@ class _LogInState extends State<LogIn> {
             });
           },
         ),
-        SizedBox(height: 15),
+        const SizedBox(height: 15),
         TextField(
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            labelText: "Contraseña",
+            labelText: AppLocalizations.of(context)!.password,
             filled: true,
             fillColor: Colors.white,
           ),
@@ -132,7 +133,7 @@ class _LogInState extends State<LogIn> {
             });
           },
         ),
-        SizedBox(height: 15),
+        const SizedBox(height: 15),
         ElevatedButton(
           onPressed: () {
             setState(() async {
@@ -148,7 +149,7 @@ class _LogInState extends State<LogIn> {
               }
             });
           },
-          child: Text("Enviar", style: TextStyle(fontSize: 20)),
+          child: Text(AppLocalizations.of(context)!.submit, style: TextStyle(fontSize: 20)),
         ),
       ],
     );
@@ -160,25 +161,19 @@ class _LogInState extends State<LogIn> {
         email: logEmail,
         password: logPsw,
       );
-      print("AUTENTICADO");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Autenticado")));
       return true;
     } on FirebaseAuthException catch (e) {
       print("ERROR CODE:  ${e.code}");
       print("ERROR MESSAGE: ${e.message}");
       if (e.code == 'invalid-credential') {
         //mismo code para psw y email
-        print("No se ha encontrado ningún usuario registrado con ese email.");
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text("Usuario no registrado.")));
+        ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.error_user_not_found)));
       } else if (e.code == 'wrong-password') {
-        print("Contraseña incorrecta");
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text("Contraseña incorrecta.")));
+        ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.error_incorrect_psw)));
       }
       return false;
     }
@@ -203,14 +198,14 @@ class _SignInState extends State<SignIn> {
     return Column(
       children: [
         Text(
-          "Regístrate:",
-          style: TextStyle(fontSize: 30, color: Colors.white),
+          AppLocalizations.of(context)!.signup,
+          style: const TextStyle(fontSize: 30, color: Colors.white),
         ),
-        SizedBox(height: 15),
+        const SizedBox(height: 15),
         TextField(
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            labelText: "Nombre",
+            labelText: AppLocalizations.of(context)!.username,
             filled: true,
             fillColor: Colors.white,
           ),
@@ -220,11 +215,11 @@ class _SignInState extends State<SignIn> {
             });
           },
         ),
-        DatePickerWidget(label: 'Fecha de nacimiento: ', firstDate: DateTime(1900), lastDate: DateTime.now(), onDateSelected: (date)=>_birthDate = date,),
+        DatePickerWidget(label: '${AppLocalizations.of(context)!.birthdate}: ', firstDate: DateTime(1900), lastDate: DateTime.now(), onDateSelected: (date)=>_birthDate = date,),
         TextField(
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            labelText: "Correo electrónico",
+            labelText: AppLocalizations.of(context)!.email,
             filled: true,
             fillColor: Colors.white,
           ),
@@ -234,11 +229,11 @@ class _SignInState extends State<SignIn> {
             });
           },
         ),
-        SizedBox(height: 15),
+        const SizedBox(height: 15),
         TextField(
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            labelText: "Contraseña",
+            labelText: AppLocalizations.of(context)!.password,
             filled: true,
             fillColor: Colors.white,
           ),
@@ -249,11 +244,11 @@ class _SignInState extends State<SignIn> {
             });
           },
         ),
-        SizedBox(height: 15),
+        const SizedBox(height: 15),
         TextField(
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            labelText: "Repite la contraseña",
+            labelText: AppLocalizations.of(context)!.repeat,
             filled: true,
             fillColor: Colors.white,
           ),
@@ -264,7 +259,7 @@ class _SignInState extends State<SignIn> {
             });
           },
         ),
-        SizedBox(height: 15),
+        const SizedBox(height: 15),
         ElevatedButton(
           onPressed: () async {
             if (await registerUser(_signEmail, _signPsw1, _signPsw2)) {
@@ -274,7 +269,7 @@ class _SignInState extends State<SignIn> {
               );
             }
           },
-          child: Text("Enviar", style: TextStyle(fontSize: 20)),
+          child: Text(AppLocalizations.of(context)!.submit, style: TextStyle(fontSize: 20)),
         ),
       ],
     );
@@ -292,8 +287,8 @@ class _SignInState extends State<SignIn> {
               email: signEmail,
               password: signPsw1,
             );
-        String? _userUID = FirebaseAuth.instance.currentUser?.uid;
-        if (_userUID != null) {
+        String? userUID = FirebaseAuth.instance.currentUser?.uid;
+        if (userUID != null) {
           newUser(_name, _birthDate, signEmail);
         }
 
@@ -305,21 +300,18 @@ class _SignInState extends State<SignIn> {
         print("ERROR MESSAGE: ${e.message}");
 
         if (e.code == 'invalid-email') {
-          print("El email no es válido");
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text("Email no válido.")));
+          ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.error_invalid_email)));
         } else if (e.code == 'weak-password') {
-          print("Contraseña inválida");
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text("Contraseña débil.")));
+          ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.error_week_psw)));
         } else if (e.code == "email-already-in-use") {
-          print("Email ya registrado");
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                "Ese email ya ha sido registrado. Intente iniciar sesión.",
+                AppLocalizations.of(context)!.error_email_registered,
               ),
             ),
           );
@@ -328,7 +320,7 @@ class _SignInState extends State<SignIn> {
     } else {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Las contraseñas no coinciden.")));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.error_psw_not_match)));
     }
     return false;
   }

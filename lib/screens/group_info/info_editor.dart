@@ -3,9 +3,11 @@ import 'package:pandilla/components/avatar_picker.dart';
 import 'package:pandilla/core/app_colors.dart';
 
 import 'package:pandilla/core/firebase_service.dart';
-import 'package:pandilla/core/group_provider.dart';
+import 'package:pandilla/core/providers/group_provider.dart';
 import 'package:pandilla/screens/group_screen.dart';
 import 'package:provider/provider.dart';
+
+import '../../l10n/app_localizations.dart';
 
 class InfoEditor extends StatefulWidget {
   final String groupUID;
@@ -21,10 +23,10 @@ class InfoEditor extends StatefulWidget {
 }
 
 class _InfoEditorState extends State<InfoEditor> {
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _descController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _descController = TextEditingController();
   String _code = "";
-  List<String> _avatarList = [
+  final List<String> _avatarList = [
     "reading",
     "cooking",
     "videogames",
@@ -49,7 +51,6 @@ class _InfoEditorState extends State<InfoEditor> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadInfo();
   }
@@ -58,7 +59,7 @@ class _InfoEditorState extends State<InfoEditor> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Editar grupo"),
+        title: Text(AppLocalizations.of(context)!.edit_group_info),
         backgroundColor: AppColors.members_primary,
       ),
       body: SafeArea(
@@ -84,8 +85,8 @@ class _InfoEditorState extends State<InfoEditor> {
                       spacing: 10,
                       children: [
                         Text(
-                          "Nombre del grupo",
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.group_name,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -102,8 +103,8 @@ class _InfoEditorState extends State<InfoEditor> {
                           ),
                         ),
                         Text(
-                          "Descripción",
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.description,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -135,14 +136,13 @@ class _InfoEditorState extends State<InfoEditor> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Código: $_code"),
+                        Text("${AppLocalizations.of(context)!.code}: $_code"),
                         TextButton(
                           onPressed: () async {
                             _code = await generateCode();
-                            print(_code);
                             setState(() {});
                           },
-                          child: Text("Regenerar código"),
+                          child: Text(AppLocalizations.of(context)!.regenerate_code),
                         ),
                       ],
                     ),
@@ -154,12 +154,12 @@ class _InfoEditorState extends State<InfoEditor> {
                 children: [
                   ElevatedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Text("Descartar", style: TextStyle(color: Colors.white, fontSize: 20),),
-                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.members_primary,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text(AppLocalizations.of(context)!.discard, style: TextStyle(color: Colors.white, fontSize: 20),),
                     ),
                   ),
                   ElevatedButton(
@@ -187,12 +187,12 @@ class _InfoEditorState extends State<InfoEditor> {
                         ),
                       );
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Text("Guardar", style: TextStyle(color: Colors.white, fontSize: 20)),
-                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.members_primary,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text(AppLocalizations.of(context)!.save, style: TextStyle(color: Colors.white, fontSize: 20)),
                     ),
                   ),
                 ],

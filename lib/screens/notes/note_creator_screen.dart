@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:pandilla/components/color_picker.dart';
 import 'package:pandilla/core/app_colors.dart';
 import 'package:pandilla/core/firebase_service.dart';
-import 'package:pandilla/core/group_provider.dart';
+import 'package:pandilla/core/providers/group_provider.dart';
 import 'package:provider/provider.dart';
+
+import '../../l10n/app_localizations.dart';
 
 class NoteCreatorScreen extends StatefulWidget {
   final String groupUID;
@@ -36,18 +38,18 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Text("AÑADIR NUEVA NOTA"),
+            Text(AppLocalizations.of(context)!.new_note),
             TextField(
               maxLength: 15,
               decoration: InputDecoration(
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: AppColors.notes_primary),
                 ),
-                label: Text("Título"),
+                label: Text(AppLocalizations.of(context)!.title),
               ),
               onChanged: (value) => _title = value,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextField(
               minLines: 10,
               maxLines: 20,
@@ -55,43 +57,43 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: AppColors.notes_primary),
                 ),
-                border: OutlineInputBorder(),
-                label: Text("Escribe tu nota..."),
+                border: const OutlineInputBorder(),
+                label: Text(AppLocalizations.of(context)!.body_note),
               ),
               onChanged: (value)=>_description = value,
             ),
-            Text("Elige el color para tu nota"),
+            Text(AppLocalizations.of(context)!.note_color),
             ColorPicker(onColorSelected: (color)=>_selectedColor = color, selectedColor: _selectedColor),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                TextButton(
+                ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   child: Text(
-                    "<< Descartar",
+                    AppLocalizations.of(context)!.discard,
                     style: TextStyle(
                       color: AppColors.notes_primary,
                       fontSize: 30,
                     ),
                   ),
                 ),
-                TextButton(
+                ElevatedButton(
                   onPressed: () {
                     if(_title == "" || _description == ""){
                       ScaffoldMessenger.of(
                         context,
-                      ).showSnackBar(SnackBar(content: Text("Todos los campos son obligatorios.")));
+                      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.all_fields_required)));
                     }else {
-                      String? _groupUID = context
+                      String? groupUID = context
                           .read<GroupProvider>()
                           .groupUID;
 
-                      createNote(_groupUID, _title, _description, _selectedColor);
+                      createNote(groupUID, _title, _description, _selectedColor);
                       Navigator.pop(context);
                     }
                   },
                   child: Text(
-                    "Guardar >>",
+                    AppLocalizations.of(context)!.save,
                     style: TextStyle(
                       color: AppColors.notes_primary,
                       fontSize: 30,

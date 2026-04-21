@@ -4,6 +4,7 @@ class AppColors{
 
   static final Color lightmode_BG = Color(0xffd8eeff);
   static final Color darkmode_BG = Color(0xff273957);
+  static final Color lightmode_secondary = Color(0xff1b3761);
 
   static final Color primary = Color(0xFF1F6C9F);
   static final Color secondary = Color(0xff7ac6f8);

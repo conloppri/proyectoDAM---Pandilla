@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pandilla/core/user_provider.dart';
+import 'package:pandilla/core/providers/user_provider.dart';
+import 'package:pandilla/l10n/app_localizations.dart';
 import 'package:pandilla/screens/profile/profile_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -16,10 +17,10 @@ class LeftDrawer extends StatefulWidget {
 class _LeftDrawerState extends State<LeftDrawer> {
   @override
   Widget build(BuildContext context) {
-    String? _userUID = context.watch<UserProvider>().uid;
-    String? _userName = context.watch<UserProvider>().name;
-    String? _userAvatar = context.watch<UserProvider>().avatar;
-    String? _userEmail = context.watch<UserProvider>().email;
+    String? userUID = context.watch<UserProvider>().uid;
+    String? userName = context.watch<UserProvider>().name;
+    String? userAvatar = context.watch<UserProvider>().avatar;
+    String? userEmail = context.watch<UserProvider>().email;
     return NavigationDrawer(
       selectedIndex: null,
       onDestinationSelected: (int index) async {
@@ -27,7 +28,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
         if (index == 0) {
           Navigator.pushReplacementNamed(context, '/home');
         } else if (index == 1) {
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileScreen(userProfileUID: _userUID!)));
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileScreen(userProfileUID: userUID!)));
         } else if (index == 2) {
           Navigator.pushNamed(context, '/settings');
         } else {
@@ -45,28 +46,28 @@ class _LeftDrawerState extends State<LeftDrawer> {
             CircleAvatar(
               radius: 30,
               backgroundImage: AssetImage(
-                "assets/images/$_userAvatar",
+                "assets/images/$userAvatar",
               )
             ),
-            Text(_userName!),
-            Text(_userEmail!)
+            Text(userName!),
+            Text(userEmail!)
           ],
         )),
-        NavigationDrawerDestination(
+        const NavigationDrawerDestination(
           icon: Icon(Icons.home),
           label: Text("Home"),
         ),
         NavigationDrawerDestination(
-          icon: Icon(Icons.person),
-          label: Text("Perfil"),
+          icon: const Icon(Icons.person),
+          label: Text(AppLocalizations.of(context)!.profile),
         ),
         NavigationDrawerDestination(
-          icon: Icon(Icons.settings),
-          label: Text("Ajustes"),
+          icon: const Icon(Icons.settings),
+          label: Text(AppLocalizations.of(context)!.settings),
         ),
         NavigationDrawerDestination(
-          icon: Icon(Icons.logout),
-          label: Text("Cerrar sesión"),
+          icon: const Icon(Icons.logout),
+          label: Text(AppLocalizations.of(context)!.logout),
         ),
       ],
     );

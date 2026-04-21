@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../../core/app_colors.dart';
 import '../../core/firebase_service.dart';
-import '../../core/group_provider.dart';
+import '../../core/providers/group_provider.dart';
+import '../../l10n/app_localizations.dart';
 
 class ListsSubscreen extends StatefulWidget {
   const ListsSubscreen({super.key});
@@ -37,7 +38,7 @@ class _ListsSubscreenState extends State<ListsSubscreen> {
                 builder: (context, snapshot) {
                   if(snapshot.connectionState == ConnectionState.waiting)return Center(child: CircularProgressIndicator());
                   if(snapshot.hasError)return Center(child: Text("Error: ${snapshot.error}"));
-                  if(!snapshot.hasData||snapshot.data!.isEmpty)return Text("Aún no hay listas para mostrar");
+                  if(!snapshot.hasData||snapshot.data!.isEmpty)return Text(AppLocalizations.of(context)!.no_lists);
                   return ListView(children: snapshot.data!);
                 }
             ),

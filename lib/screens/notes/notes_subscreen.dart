@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pandilla/core/app_colors.dart';
 import 'package:pandilla/core/firebase_service.dart';
-import 'package:pandilla/core/group_provider.dart';
+import 'package:pandilla/core/providers/group_provider.dart';
+import 'package:pandilla/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 class NotesSubscreen extends StatefulWidget {
@@ -32,7 +33,7 @@ class _NotesSubscreenState extends State<NotesSubscreen> {
                 Row(
                   children: [
                     Text(
-                      "Vista",
+                      AppLocalizations.of(context)!.view,
                       style: TextStyle(color: AppColors.appbar_pink, fontSize: 20),
                     ),
                     IconButton(
@@ -55,7 +56,7 @@ class _NotesSubscreenState extends State<NotesSubscreen> {
                 builder: (context, snapshot) {
                   if(snapshot.connectionState == ConnectionState.waiting)return Center(child: CircularProgressIndicator());
                   if(snapshot.hasError)return Center(child: Text("Error: ${snapshot.error}"));
-                  if(!snapshot.hasData||snapshot.data!.isEmpty)return Text("Aún no hay notas para mostrar");
+                  if(!snapshot.hasData||snapshot.data!.isEmpty)return Text(AppLocalizations.of(context)!.no_notes);
                   return _view == 1
                       ? ListView(children: snapshot.data!)
                       : GridView.count(crossAxisCount: 2, children: snapshot.data!);

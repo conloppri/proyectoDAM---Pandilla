@@ -17,7 +17,6 @@ class _ColorPickerState extends State<ColorPicker> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _selectedColorIndex = widget.colors.indexOf(widget.selectedColor);
   }

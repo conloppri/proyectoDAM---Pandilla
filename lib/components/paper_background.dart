@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class PaperBackground extends StatelessWidget {
   final Color lineColor;
   final double lineSpacing;
-  PaperBackground({super.key, this.lineColor = Colors.black, required this.lineSpacing});
+  const PaperBackground({super.key, this.lineColor = Colors.black, required this.lineSpacing});
 
   @override
   Widget build(BuildContext context) {

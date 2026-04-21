@@ -4,7 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:pandilla/components/avatar_picker.dart';
 import 'package:pandilla/core/app_colors.dart';
 import 'package:pandilla/core/firebase_service.dart';
-import 'package:pandilla/core/user_provider.dart';
+import 'package:pandilla/core/providers/user_provider.dart';
+import 'package:pandilla/l10n/app_localizations.dart';
 import 'package:pandilla/screens/profile/profile_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -30,7 +31,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   final List<String> _avatarList = ["panda", "bear", "polar", "black_cat", "siames_cat", "dog", "poodle", "bunny", "duck", "elephant", "fox", "koala", "lion", "tiger", "monkey", "penguin", "pig", "raccoon",];
 
 
-  TextStyle titleStyle = TextStyle(
+  TextStyle titleStyle = const TextStyle(
     fontSize: 20,
     color: Colors.white,
     fontWeight: FontWeight.bold,
@@ -52,7 +53,6 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadProfile();
   }
@@ -61,10 +61,10 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Mi perfil"),
+        title: Text(AppLocalizations.of(context)!.my_profile),
         backgroundColor: AppColors.primary,
         actions: [
-          TextButton(onPressed: ()=>saveInfo(), child: Text("Guardar"))
+          TextButton(onPressed: ()=>saveInfo(), child: Text(AppLocalizations.of(context)!.save))
         ],
       ),
       body: SafeArea(
@@ -80,15 +80,15 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                       _selectedAvatar = avatar;
                     });
                   }),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Expanded(
                 child: ListView(
                   children: [
                     Card.filled(
                       color: AppColors.primary,
                       child: ListTile(
-                          leading: Icon(Icons.person),
-                          title: Text("Nombre"),
+                          leading: const Icon(Icons.person),
+                          title: Text(AppLocalizations.of(context)!.username),
                           subtitle: TextField(
                             controller: _nameController,
                           )),
@@ -96,8 +96,8 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                     Card.filled(
                       color: AppColors.calendar_secondary,
                       child: ListTile(
-                        leading: Icon(Icons.work),
-                        title: Text("Ocupación"),
+                        leading: const Icon(Icons.work),
+                        title: Text(AppLocalizations.of(context)!.job),
                         subtitle: TextField(
                           controller: _jobController,
                         ),
@@ -106,8 +106,8 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                     Card.filled(
                       color: AppColors.notes_primary,
                       child: ListTile(
-                        leading: Icon(Icons.palette),
-                        title: Text("Colores favoritos"),
+                        leading: const Icon(Icons.palette),
+                        title: Text(AppLocalizations.of(context)!.fav_colors),
                         subtitle: TextField(
                           controller: _colorsController,
                         ),
@@ -116,8 +116,8 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                     Card.filled(
                       color: AppColors.secondary,
                       child: ListTile(
-                        leading: Icon(Icons.pets),
-                        title: Text("Animales favoritos"),
+                        leading: const Icon(Icons.pets),
+                        title: Text(AppLocalizations.of(context)!.fav_animal),
                         subtitle: TextField(
                           controller: _animalsController,
                         ),
@@ -126,13 +126,13 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                     Card.filled(
                       color: AppColors.calendar_primary,
                       child: ListTile(
-                        leading: Icon(Icons.sports_basketball),
-                        title: Text("Pasatiempos"),
+                        leading: const Icon(Icons.sports_basketball),
+                        title: Text(AppLocalizations.of(context)!.hobbies),
                         subtitle: TextField(
                           controller: _hobbiesController,
                           minLines: 2,
                           maxLines: 10,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                               border: OutlineInputBorder()
                           ),
                         ),
@@ -141,13 +141,13 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                     Card.filled(
                       color: AppColors.notes_secondary,
                       child: ListTile(
-                        leading: Icon(Icons.star),
-                        title: Text("Más cosas sobre mí"),
+                        leading: const Icon(Icons.star),
+                        title: Text(AppLocalizations.of(context)!.more_info),
                         subtitle: TextField(
                           controller: _moreController,
                           minLines: 3,
                           maxLines: 10,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             border: OutlineInputBorder()
                           ),
                         ),

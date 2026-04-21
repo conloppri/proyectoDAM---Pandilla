@@ -3,7 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:pandilla/components/paper_background.dart';
 import 'package:pandilla/core/app_styles.dart';
 import 'package:pandilla/core/firebase_service.dart';
-import 'package:pandilla/core/group_provider.dart';
+import 'package:pandilla/core/providers/group_provider.dart';
+import 'package:pandilla/l10n/app_localizations.dart';
 import 'package:pandilla/screens/notes/note_editor_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -53,7 +54,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
             if (snapshot.hasError)
               return Center(child: Text("Error: ${snapshot.error}"));
             if (!snapshot.hasData || snapshot.data!.isEmpty)
-              return Text("Aún no hay notas para mostrar");
+              return Text(AppLocalizations.of(context)!.no_notes);
             Map<String, dynamic> noteInfo = snapshot.data!;
             DateTime _lastUpdate = noteInfo["createAt"].toDate();
             return Center(
@@ -83,14 +84,14 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                         children: [
                           Align(
                             alignment: Alignment.centerRight,
-                            child: Text("Creada por ${noteInfo["authorName"]}"),
+                            child: Text("${AppLocalizations.of(context)!.created_by} ${noteInfo["authorName"]}"),
                           ),
                           SizedBox(height: 10),
                           Text(noteInfo["title"], style: AppStyles.title),
                           Text(noteInfo["body"], style: textStyle,),
                           Spacer(),
                           Text(
-                            "última actualización: ${DateFormat("HH:mm dd/MM/yyyy", "es_ES").format(_lastUpdate)}",
+                            "${AppLocalizations.of(context)!.last_update}: ${DateFormat("HH:mm dd/MM/yyyy", "es_ES").format(_lastUpdate)}",
                           ),
                         ],
                       ),
