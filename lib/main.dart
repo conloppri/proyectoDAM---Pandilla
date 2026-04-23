@@ -1,11 +1,14 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pandilla/core/app_colors.dart';
 import 'package:pandilla/core/app_theme.dart';
+import 'package:pandilla/core/services/navigator_key.dart';
 import 'package:pandilla/core/providers/group_provider.dart';
 import 'package:pandilla/core/providers/locale_provider.dart';
 import 'package:pandilla/core/providers/user_provider.dart';
+import 'package:pandilla/core/services/notification_services.dart';
 import 'package:pandilla/l10n/app_localizations.dart';
 import 'package:pandilla/screens/log_screen.dart';
 import 'package:pandilla/screens/main_screen.dart';
@@ -14,7 +17,7 @@ import 'package:pandilla/screens/profile/profile_editor_screen.dart';
 import 'package:pandilla/screens/settings_screen.dart';
 import 'package:pandilla/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 import 'core/providers/theme_provider.dart';
 import 'firebase_options.dart';
@@ -22,6 +25,9 @@ import 'firebase_options.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  NotificationServices.setupTimezone();
+  await NotificationServices.init();
 
   runApp(
     MultiProvider(
@@ -46,6 +52,7 @@ class MyApp extends StatelessWidget {
     final ThemeProvider themeProvider = context.watch<ThemeProvider>();
     return MaterialApp(
       title: 'Flutter Demo',
+      navigatorKey: navigatorKey,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeProvider.themeMode,

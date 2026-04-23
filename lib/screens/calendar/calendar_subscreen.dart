@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pandilla/core/firebase_service.dart';
+import 'package:pandilla/core/services/firebase_service.dart';
 import 'package:pandilla/core/providers/group_provider.dart';
 import 'package:pandilla/l10n/app_localizations.dart';
+import 'package:pandilla/screens/calendar/event_editor_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -24,66 +25,93 @@ class _CalendarSubscreenState extends State<CalendarSubscreen> {
   @override
   Widget build(BuildContext context) {
     String? _groupUID = context.watch<GroupProvider>().groupUID;
+    String? _groupName = context.watch<GroupProvider>().groupName;
     return StreamBuilder(
-      stream: getEventsStream(_groupUID!),
+      stream: getEventsStream(_groupUID!, _groupName!),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
+          print(snapshot.error);
           return Center(child: Text("Error: ${snapshot.error}"));
         }
 
         final events = snapshot.data!;
         return Column(
           children: [
-            TableCalendar<Event>(
-              focusedDay: _focusedDay,
-              firstDay: DateTime(1950, 1, 1),
-              lastDay: DateTime(2050, 12, 31),
-              startingDayOfWeek: StartingDayOfWeek.monday,
-              availableCalendarFormats: {
-                CalendarFormat.month: AppLocalizations.of(context)!.month,
-                CalendarFormat.week: AppLocalizations.of(context)!.week,
-              },
-              onFormatChanged: (format) {
-                setState(() {
-                  _format = format;
-                });
-              },
-              calendarFormat: _format,
-              eventLoader: (day) => _getEventsForDay(day, events),
-              calendarStyle: CalendarStyle(
-                defaultTextStyle: TextStyle(fontSize: 20),
-                markersMaxCount: 3,
-                markerDecoration: BoxDecoration(
-                  color: AppColors.calendar_primary,
-                  shape: BoxShape.circle,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: AppColors.calendar_primary,
+                    width: 2
+                  ),
+                  borderRadius: BorderRadius.circular(10)
                 ),
-                weekendTextStyle: TextStyle(
-                  color: AppColors.calendar_primary,
-                  fontSize: 20,
-                ),
-                selectedDecoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.calendar_secondary,
-                ),
-                selectedTextStyle: TextStyle(fontSize: 20, color: Colors.white),
-                todayDecoration: BoxDecoration(color: Colors.white),
-                todayTextStyle: TextStyle(
-                  color: Colors.redAccent,
-                  fontSize: 20,
+                child: TableCalendar<Event>(
+                  focusedDay: _focusedDay,
+                  firstDay: DateTime(1950, 1, 1),
+                  lastDay: DateTime(2050, 12, 31),
+                  startingDayOfWeek: StartingDayOfWeek.monday,
+                  availableCalendarFormats: {
+                    CalendarFormat.month: AppLocalizations.of(context)!.month,
+                    CalendarFormat.week: AppLocalizations.of(context)!.week,
+                  },
+                  onFormatChanged: (format) {
+                    setState(() {
+                      _format = format;
+                    });
+                  },
+                  onPageChanged: (focusedDay) {
+                    setState(() {
+                      _focusedDay = focusedDay;
+                    });
+                  },
+                  calendarFormat: _format,
+                  locale: Localizations.localeOf(context).toString(),
+                  eventLoader: (day) => _getEventsForDay(day, events),
+                  daysOfWeekStyle: DaysOfWeekStyle(
+                    weekdayStyle: TextStyle(color: AppColors.calendar_secondary),
+                    weekendStyle: TextStyle(color: AppColors.calendar_primary)
+                  ),
+                  calendarStyle: CalendarStyle(
+                    defaultTextStyle: TextStyle(fontSize: 20),
+                    markersMaxCount: 3,
+                    markerDecoration: BoxDecoration(
+                      color: AppColors.secondary,
+                      shape: BoxShape.circle,
+                    ),
+                    weekendTextStyle: TextStyle(
+                      color: AppColors.calendar_primary,
+                      fontSize: 20,
+                    ),
+                    selectedDecoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.calendar_secondary,
+                    ),
+                    selectedTextStyle: const TextStyle(fontSize: 20, color: Colors.black),
+                    todayTextStyle: const TextStyle(
+                      color: Colors.yellow,
+                      fontSize: 20,
+                    ),
+                    todayDecoration: BoxDecoration(
+                      color: AppColors.calendar_primary,
+                      borderRadius: BorderRadius.circular(20)
+                    )
+                  ),
+                  onDaySelected: (selectedDay, focusedDay) {
+                    setState(() {
+                      _focusedDay = focusedDay;
+                      _selectedDay = selectedDay;
+                    });
+                  },
+                  selectedDayPredicate: (day) {
+                    return isSameDay(_selectedDay, day);
+                  },
                 ),
               ),
-              onDaySelected: (selectedDay, focusedDay) {
-                setState(() {
-                  _focusedDay = focusedDay;
-                  _selectedDay = selectedDay;
-                });
-              },
-              selectedDayPredicate: (day) {
-                return isSameDay(_selectedDay, day);
-              },
             ),
             Text(
               _format == CalendarFormat.month
@@ -110,56 +138,69 @@ class _CalendarSubscreenState extends State<CalendarSubscreen> {
     );
   }
 
-  List<Card> _getDayEventList(List<Event> events) {
+  List<Widget> _getDayEventList(List<Event> events) {
     String? groupUID = context.watch<GroupProvider>().groupUID;
     bool? isAdmin = context.read<GroupProvider>().isAdmin;
-    List<Card> eventList = [];
+    String? userUID = FirebaseAuth.instance.currentUser?.uid;
+    List<Widget> eventList = [];
     for (Event event in events) {
       eventList.add(
         Card.filled(
           color: AppColors.calendar_secondary,
-          child: GestureDetector(
-            onLongPress: () {
-              String? userUID = FirebaseAuth.instance.currentUser?.uid;
-              if(isAdmin! || userUID == event.authorID){
-                showDialog(context: context, builder: (context){
-                  return AlertDialog(
-                    title: Text(AppLocalizations.of(context)!.delete_event),
-                    content: Text(AppLocalizations.of(context)!.warning_delete_event),
-                    actions: [
-                      TextButton(onPressed: (){
-                        removeNote(groupUID!, event.id);
-                        Navigator.pop(context);
-                      }, child: Text(AppLocalizations.of(context)!.remove)),
-                      TextButton(onPressed: ()=>Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel))
-                    ],
-                  );
-                });
-              }
-            },
+          child: Padding(
+            padding: EdgeInsetsGeometry.only(top: 0, bottom: 12, left: 12, right: 12),
             child: Column(
+              spacing: 5,
               children: [
-                Text("${AppLocalizations.of(context)!.created_by} ${event.authorName}"),
+                Row(
+                  children: [
+                    Text("   ${AppLocalizations.of(context)!.created_by} ",style: TextStyle(color: Colors.black)),
+                    Text(event.authorName, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
+                    const Spacer(),
+                    if(isAdmin!||userUID == event.authorID)IconButton(onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>EventEditorScreen(groupUID: groupUID!, eventID: event.id))), icon: Icon(Icons.edit, color: AppColors.calendar_primary,)),
+                    if(isAdmin||userUID == event.authorID)IconButton(onPressed: (){
+                      showDialog(context: context, builder: (context){
+                        return AlertDialog(
+                          title: Text(AppLocalizations.of(context)!.delete_event),
+                          content: Text(AppLocalizations.of(context)!.warning_delete_event),
+                          actions: [
+                            TextButton(onPressed: (){
+                              removeNote(groupUID!, event.id);
+                              Navigator.pop(context);
+                            }, child: Text(AppLocalizations.of(context)!.remove)),
+                            TextButton(onPressed: ()=>Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel))
+                          ],
+                        );
+                      });
+                    }, icon: Icon(Icons.delete ,color: AppColors.calendar_primary))
+                  ],
+                ),
                 Text(
                   event.title,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  style: TextStyle(color: AppColors.calendar_primary, fontWeight: FontWeight.bold, fontSize: 20),
                 ),
                 event.description.isNotEmpty
-                    ? Text(event.description)
-                    : Text(AppLocalizations.of(context)!.no_description),
+                    ? Text(event.description,style: TextStyle(color: Colors.black),)
+                    : Text(AppLocalizations.of(context)!.no_description,style: TextStyle(color: Colors.black)),
                 event.location.isNotEmpty
-                    ? Row(children: [Icon(Icons.pin_drop), Text(event.location)])
-                    : Text(AppLocalizations.of(context)!.no_location),
+                    ? Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.pin_drop, color: Colors.red,), Text(event.location,style: TextStyle(color: Colors.black))])
+                    : Text(AppLocalizations.of(context)!.no_location,style: TextStyle(color: Colors.black)),
               ],
             ),
           ),
         ),
       );
     }
+    if(eventList.isEmpty){
+      eventList.add(Center(child: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Text("No hay ningún evento este día."),
+      )));
+    }
     return eventList;
   }
 
-  List<ListTile> _getEventsForWeek(DateTime day, List<Event> events) {
+  List<Widget> _getEventsForWeek(DateTime day, List<Event> events) {
     List<Event> weekEvents = events.where((event) {
       final eventDate = event.date;
       int weekday = day.weekday;
@@ -179,35 +220,59 @@ class _CalendarSubscreenState extends State<CalendarSubscreen> {
       }
       return false;
     }).toList();
-    List<ListTile> eventList = [];
+    List<Widget> eventList = [];
     String? groupUID = context.watch<GroupProvider>().groupUID;
     bool? isAdmin = context.read<GroupProvider>().isAdmin;
     for (Event event in weekEvents) {
       eventList.add(
-        ListTile(
-          onLongPress: () {
-            String? userUID = FirebaseAuth.instance.currentUser?.uid;
-            if(isAdmin! || userUID == event.authorID){
-              showDialog(context: context, builder: (context){
-                return AlertDialog(
-                  title: Text(AppLocalizations.of(context)!.delete_event),
-                  content: Text(AppLocalizations.of(context)!.warning_delete_event),
-                  actions: [
-                    TextButton(onPressed: (){
-                      removeEvent(groupUID!, event.id);
-                      Navigator.pop(context);
-                    }, child: Text(AppLocalizations.of(context)!.remove)),
-                    TextButton(onPressed: ()=>Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel))
-                  ],
-                );
-              });
-            }
-          },
-          tileColor: AppColors.calendar_secondary,
-          title: Text(
-            "${DateFormat('dd/MM').format(event.date)} - ${event.title}",
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListTile(
+            onLongPress: () {
+              String? userUID = FirebaseAuth.instance.currentUser?.uid;
+              if(isAdmin! || userUID == event.authorID){
+                showDialog(context: context, builder: (context){
+                  return AlertDialog(
+                    title: Text(AppLocalizations.of(context)!.delete_event,),
+                    content: Text(AppLocalizations.of(context)!.warning_delete_event),
+                    actions: [
+                      TextButton(onPressed: (){
+                        removeEvent(groupUID!, event.id);
+                        Navigator.pop(context);
+                      }, child: Text(AppLocalizations.of(context)!.remove)),
+                      TextButton(onPressed: ()=>Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel))
+                    ],
+                  );
+                });
+              }
+            },
+            tileColor: AppColors.calendar_secondary,
+            title: Text(
+              "${DateFormat('dd/MM').format(event.date)} - ${event.title}", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            ),
+            subtitle: Row(
+              children: [
+                Text("${AppLocalizations.of(context)!.created_by} ${event.authorName}", style: TextStyle(color: Colors.black)),
+                const Spacer(),
+                if(isAdmin!||userUID == event.authorID)IconButton(onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>EventEditorScreen(groupUID: groupUID!, eventID: event.id))), icon: Icon(Icons.edit, color: AppColors.calendar_primary,)),
+                if(isAdmin||userUID == event.authorID)IconButton(onPressed: (){
+                  showDialog(context: context, builder: (context){
+                    return AlertDialog(
+                      title: Text(AppLocalizations.of(context)!.delete_event),
+                      content: Text(AppLocalizations.of(context)!.warning_delete_event),
+                      actions: [
+                        TextButton(onPressed: (){
+                          removeNote(groupUID!, event.id);
+                          Navigator.pop(context);
+                        }, child: Text(AppLocalizations.of(context)!.remove)),
+                        TextButton(onPressed: ()=>Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel))
+                      ],
+                    );
+                  });
+                }, icon: Icon(Icons.delete ,color: AppColors.calendar_primary))
+              ],
+            ),
           ),
-          subtitle: Text("${AppLocalizations.of(context)!.created_by} ${event.authorName}"),
         ),
       );
     }

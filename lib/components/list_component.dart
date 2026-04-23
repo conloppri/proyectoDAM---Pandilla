@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pandilla/core/app_colors.dart';
-import 'package:pandilla/core/firebase_service.dart';
+import 'package:pandilla/core/services/firebase_service.dart';
 import 'package:pandilla/screens/lists/listview_screen.dart';
 import 'package:provider/provider.dart';
 

@@ -1,45 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:pandilla/components/date_picker_widget.dart';
+import 'package:pandilla/core/app_styles.dart';
+import 'package:pandilla/core/services/firebase_service.dart';
+import 'package:pandilla/core/providers/group_provider.dart';
+import 'package:pandilla/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
-import '../../components/date_picker_widget.dart';
 import '../../core/app_colors.dart';
-import '../../core/app_styles.dart';
-import '../../core/providers/group_provider.dart';
-import '../../core/services/firebase_service.dart';
-import '../../l10n/app_localizations.dart';
 
-class EventEditorScreen extends StatefulWidget {
-  final String groupUID;
-  final String eventID;
-  const EventEditorScreen({super.key, required this.groupUID, required this.eventID});
+class EventCreatorScreen extends StatefulWidget {
+  const EventCreatorScreen({super.key});
 
   @override
-  State<EventEditorScreen> createState() => _EventEditorScreenState();
+  State<EventCreatorScreen> createState() => _EventCreatorScreenState();
 }
 
-class _EventEditorScreenState extends State<EventEditorScreen> {
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descController = TextEditingController();
-  final TextEditingController _locController = TextEditingController();
+class _EventCreatorScreenState extends State<EventCreatorScreen> {
+  String _title = "";
   DateTime _date = DateTime.now();
+  String _description = "";
+  String _location = "";
   final List _recurrence = ["unique", "weekly", "monthly", "yearly"];
+
   int _recSelected = 0;
-
-  loadEventInfo() async {
-    final data =await getEventInfo(widget.groupUID, widget.eventID);
-    _titleController.text = data["title"];
-    _descController.text = data["description"];
-    _locController.text = data["location"];
-    _date = DateTime(data["year"], data["month"], data["day"]);
-    _recSelected = _recurrence.indexOf(data["recurrence"]);
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    loadEventInfo();
-    super.initState();
-  }
   @override
   Widget build(BuildContext context) {
     final List recurrenceButton = [
@@ -61,11 +44,11 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
           spacing: 20,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(AppLocalizations.of(context)!.edit_event, style: AppStyles.title,),
+            Text(AppLocalizations.of(context)!.new_event, style: AppStyles.title,),
             Container(
               decoration: BoxDecoration(
-                  color: AppColors.calendar_primary,
-                  borderRadius: BorderRadius.circular(10)
+                color: AppColors.calendar_primary,
+                borderRadius: BorderRadius.circular(10)
               ),
               child: Padding(
                 padding: const EdgeInsets.all(18),
@@ -73,20 +56,19 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                   spacing: 15,
                   children: [
                     TextField(
-                      controller: _titleController,
                       decoration: InputDecoration(
-                          filled: true,
-                          fillColor: AppColors.calendar_secondary,
-                          labelStyle: TextStyle(color: AppColors.calendar_primary),
-                          labelText: AppLocalizations.of(context)!.title,
-                          enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(15)
-                          )
+                        filled: true,
+                        fillColor: AppColors.calendar_secondary,
+                        labelStyle: TextStyle(color: AppColors.calendar_primary),
+                        labelText: AppLocalizations.of(context)!.title,
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(15)
+                        )
                       ),
+                      onChanged: (value) => _title = value,
                     ),
                     TextField(
-                      controller: _descController,
                       maxLines: 3,
                       decoration: InputDecoration(
                         filled: true,
@@ -98,6 +80,7 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                             borderRadius: BorderRadius.circular(15)
                         ),
                       ),
+                      onChanged: (value) => _description = value,
                     ),
                   ],
                 ),
@@ -106,7 +89,7 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: DatePickerWidget(
-                selectedDate: _date,
+                selectedDate: DateTime.now(),
                 labelStyle: TextStyle(fontSize: 20),
                 buttonColor: AppColors.calendar_primary,
                 label: AppLocalizations.of(context)!.event_date,
@@ -126,7 +109,6 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                   spacing: 15,
                   children: [
                     TextField(
-                      controller: _locController,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: AppColors.calendar_secondary,
@@ -137,6 +119,7 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                             borderRadius: BorderRadius.circular(15)
                         ),
                       ),
+                      onChanged: (value) => _location = value,
                     ),
                     Row(
                       spacing: 15,
@@ -221,7 +204,15 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      editEvent(groupUID!, groupName, widget.eventID, _titleController.text, _descController.text, _locController.text, recurrenceButton[_recSelected], _date);
+                      saveEvent(
+                        groupUID!,
+                        groupName,
+                        _title,
+                        _description,
+                        _date,
+                        _location,
+                        _recurrence[_recSelected],
+                      );
                     });
                     Navigator.pop(context);
                   },

@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:pandilla/core/firebase_service.dart';
+import 'package:pandilla/core/services/firebase_service.dart';
 import 'package:pandilla/core/providers/group_provider.dart';
 import 'package:pandilla/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -92,7 +92,7 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                           ),
                           ElevatedButton.icon(
                             onPressed: () async {
-                              int numAdmins = await getAdminsLenght(
+                              int numAdmins = await getAdminsLength(
                                 widget.groupUID,
                               );
                               if (_isAdmin! && numAdmins < 2) {

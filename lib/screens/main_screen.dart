@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../core/app_colors.dart';
 import '../core/app_styles.dart';
-import '../core/firebase_service.dart';
+import '../core/services/firebase_service.dart';
 
 
 class MainScreen extends StatefulWidget {
@@ -70,7 +70,7 @@ class _MainScreenState extends State<MainScreen> {
           padding: const EdgeInsets.all(30),
           child: Column(
             children: [
-              Text(AppLocalizations.of(context)!.next_events, style: const TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),),
+              Text(AppLocalizations.of(context)!.next_events, style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
               SizedBox(
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height * 0.2,
@@ -107,7 +107,13 @@ class _MainScreenState extends State<MainScreen> {
                               itemBuilder: (BuildContext context, int index) {
                                 DateFormat dateFormat = DateFormat("dd - MMM", "es_ES");
                                 DateTime dateEvent = events[index]["date"];
-                                return Text("${dateFormat.format(dateEvent)} : ${events[index]["title"]}");
+                                return Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text("${dateFormat.format(dateEvent)}: ", style: TextStyle(fontWeight: FontWeight.bold),),
+                                    Text(events[index]["title"])
+                                  ],
+                                );
                               },
                             );
                           },
@@ -160,34 +166,41 @@ class _MainScreenState extends State<MainScreen> {
                               builder: (context, setStateDialog) {
                                 return AlertDialog(
                                   title: Text(AppLocalizations.of(context)!.new_group),
-                                  content: Column(
-                                    children: [
-                                      AvatarPicker(
-                                        selectedAvatar: _selectedAvatar,
-                                        onSelectedAvatar: (avatar) {
-                                          _selectedAvatar = avatar;
-                                          setState(() {});
-                                        },
-                                        avatarList: _avatarList,
-                                      ),
-                                      TextField(
-                                        onChanged: (value) =>
-                                            _groupName = value,
-                                        decoration: InputDecoration(
-                                          labelText: AppLocalizations.of(context)!.group_name,
+                                  content: Container(
+                                    width: MediaQuery.of(context).size.width * 0.8,
+                                    height: MediaQuery.of(context).size.height * 0.5,
+                                    child: Column(
+                                      children: [
+                                        AvatarPicker(
+                                          selectedAvatar: _selectedAvatar,
+                                          onSelectedAvatar: (avatar) {
+                                            setStateDialog((){
+                                              _selectedAvatar = avatar;
+                                            });
+                                          },
+                                          avatarList: _avatarList,
                                         ),
-                                      ),
-                                      TextField(
-                                        minLines: 3,
-                                        maxLines: 10,
-                                        onChanged: (value) =>
-                                            _groupDescription = value,
-                                        decoration: InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          labelText: AppLocalizations.of(context)!.description,
+                                        TextField(
+                                          maxLength: 20,
+                                          onChanged: (value) =>
+                                              _groupName = value,
+                                          decoration: InputDecoration(
+                                            labelText: AppLocalizations.of(context)!.group_name,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                        TextField(
+                                          minLines: 3,
+                                          maxLines: 10,
+                                          maxLength: 200,
+                                          onChanged: (value) =>
+                                              _groupDescription = value,
+                                          decoration: InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            labelText: AppLocalizations.of(context)!.description,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                   actions: [
                                     TextButton(
@@ -216,10 +229,7 @@ class _MainScreenState extends State<MainScreen> {
                         backgroundColor: AppColors.primary,
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 0,
-                          vertical: 10,
-                        ),
+                        padding: const EdgeInsetsGeometry.all(10),
                         child: Row(
                           children: [
                             Icon(Icons.add, size: 25, color: Colors.white),
@@ -242,6 +252,7 @@ class _MainScreenState extends State<MainScreen> {
                             return AlertDialog(
                               title: Text(AppLocalizations.of(context)!.join_group),
                               content: TextField(
+                                maxLength: 6,
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context)!.code,
                                 ),

@@ -4,7 +4,7 @@ import 'package:pandilla/core/app_colors.dart';
 import 'package:pandilla/core/providers/group_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../core/firebase_service.dart';
+import '../core/services/firebase_service.dart';
 import '../screens/group_screen.dart';
 
 class GroupSelector extends StatefulWidget {

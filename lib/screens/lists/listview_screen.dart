@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pandilla/components/item_component.dart';
 import 'package:pandilla/core/app_colors.dart';
 import 'package:pandilla/core/app_styles.dart';
-import 'package:pandilla/core/firebase_service.dart';
+import 'package:pandilla/core/services/firebase_service.dart';
 import 'package:pandilla/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 

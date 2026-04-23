@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/intl.dart';
 import 'package:pandilla/components/left_drawer.dart';
-import 'package:pandilla/core/firebase_service.dart';
+import 'package:pandilla/core/services/firebase_service.dart';
 
 import '../../core/app_colors.dart';
 import '../../core/app_styles.dart';

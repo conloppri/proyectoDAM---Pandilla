@@ -13,11 +13,20 @@ class AppTheme {
       primary: Colors.black,
       secondary: AppColors.lightmode_secondary
     ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsetsGeometry.all(12)
+      ),
+    ),
+    textTheme: TextTheme(
 
-    inputDecorationTheme: const InputDecorationTheme(
+    ),
+    inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: Colors.white,
-      border: UnderlineInputBorder(
+      fillColor: AppColors.white_noalpha,
+      border: const UnderlineInputBorder(
         borderSide: BorderSide(color: Colors.black)
       ),
     )

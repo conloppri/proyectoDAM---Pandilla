@@ -5,6 +5,7 @@ class AppColors{
   static final Color lightmode_BG = Color(0xffd8eeff);
   static final Color darkmode_BG = Color(0xff273957);
   static final Color lightmode_secondary = Color(0xff1b3761);
+  static final Color white_noalpha = Color(0xbdffffff);
 
   static final Color primary = Color(0xFF1F6C9F);
   static final Color secondary = Color(0xff7ac6f8);
@@ -15,8 +16,8 @@ class AppColors{
   static final Color light_pink = Color(0xffffbdde);
   static final Color appbar_pink = Color(0xffd33197);
 
-  static final Color calendar_primary = Color(0xff8dcc35);
-  static final Color calendar_secondary = Color(0xffcbe6a1);
+  static final Color calendar_primary = Color(0xff77aa2c);
+  static final Color calendar_secondary = Color(0xffdeefbb);
 
   static final Color notes_primary = Color(0xffd33197);
   static final Color notes_secondary = Color(0xffffbdde);

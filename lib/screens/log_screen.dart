@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pandilla/components/date_picker_widget.dart';
@@ -7,9 +6,8 @@ import 'package:pandilla/screens/main_screen.dart';
 
 import 'package:pandilla/screens/profile/profile_editor_screen.dart';
 
-
 import '../core/app_colors.dart';
-import '../core/firebase_service.dart';
+import '../core/services/firebase_service.dart';
 
 class LogScreen extends StatefulWidget {
   const LogScreen({super.key});
@@ -107,6 +105,7 @@ class _LogInState extends State<LogIn> {
         const SizedBox(height: 15),
         TextField(
           decoration: InputDecoration(
+            labelStyle: TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             labelText: AppLocalizations.of(context)!.email,
             filled: true,
@@ -121,6 +120,7 @@ class _LogInState extends State<LogIn> {
         const SizedBox(height: 15),
         TextField(
           decoration: InputDecoration(
+            labelStyle: TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             labelText: AppLocalizations.of(context)!.password,
             filled: true,
@@ -139,17 +139,19 @@ class _LogInState extends State<LogIn> {
             setState(() async {
               if (await authUser(_logEmail, _logPsw)) {
                 String? uid = FirebaseAuth.instance.currentUser?.uid;
-                if(uid != null) {
+                if (uid != null) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) =>
-                       MainScreen()),
+                    MaterialPageRoute(builder: (context) => MainScreen()),
                   );
                 }
               }
             });
           },
-          child: Text(AppLocalizations.of(context)!.submit, style: TextStyle(fontSize: 20)),
+          child: Text(
+            AppLocalizations.of(context)!.submit,
+            style: TextStyle(fontSize: 20),
+          ),
         ),
       ],
     );
@@ -167,13 +169,17 @@ class _LogInState extends State<LogIn> {
       print("ERROR MESSAGE: ${e.message}");
       if (e.code == 'invalid-credential') {
         //mismo code para psw y email
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.error_user_not_found)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.error_user_not_found),
+          ),
+        );
       } else if (e.code == 'wrong-password') {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.error_incorrect_psw)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.error_incorrect_psw),
+          ),
+        );
       }
       return false;
     }
@@ -196,14 +202,15 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      spacing: 15,
       children: [
         Text(
           AppLocalizations.of(context)!.signup,
           style: const TextStyle(fontSize: 30, color: Colors.white),
         ),
-        const SizedBox(height: 15),
         TextField(
           decoration: InputDecoration(
+            labelStyle: TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             labelText: AppLocalizations.of(context)!.username,
             filled: true,
@@ -215,9 +222,18 @@ class _SignInState extends State<SignIn> {
             });
           },
         ),
-        DatePickerWidget(label: '${AppLocalizations.of(context)!.birthdate}: ', firstDate: DateTime(1900), lastDate: DateTime.now(), onDateSelected: (date)=>_birthDate = date,),
+        DatePickerWidget(
+          buttonColor: AppColors.primary,
+          labelStyle: TextStyle(fontSize: 16),
+          selectedDate: DateTime.now(),
+          label: '${AppLocalizations.of(context)!.birthdate}: ',
+          firstDate: DateTime(1900),
+          lastDate: DateTime.now(),
+          onDateSelected: (date) => _birthDate = date,
+        ),
         TextField(
           decoration: InputDecoration(
+            labelStyle: TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             labelText: AppLocalizations.of(context)!.email,
             filled: true,
@@ -229,9 +245,9 @@ class _SignInState extends State<SignIn> {
             });
           },
         ),
-        const SizedBox(height: 15),
         TextField(
           decoration: InputDecoration(
+            labelStyle: TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             labelText: AppLocalizations.of(context)!.password,
             filled: true,
@@ -244,9 +260,9 @@ class _SignInState extends State<SignIn> {
             });
           },
         ),
-        const SizedBox(height: 15),
         TextField(
           decoration: InputDecoration(
+            labelStyle: TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             labelText: AppLocalizations.of(context)!.repeat,
             filled: true,
@@ -259,7 +275,6 @@ class _SignInState extends State<SignIn> {
             });
           },
         ),
-        const SizedBox(height: 15),
         ElevatedButton(
           onPressed: () async {
             if (await registerUser(_signEmail, _signPsw1, _signPsw2)) {
@@ -269,7 +284,10 @@ class _SignInState extends State<SignIn> {
               );
             }
           },
-          child: Text(AppLocalizations.of(context)!.submit, style: TextStyle(fontSize: 20)),
+          child: Text(
+            AppLocalizations.of(context)!.submit,
+            style: TextStyle(fontSize: 20),
+          ),
         ),
       ],
     );
@@ -282,11 +300,10 @@ class _SignInState extends State<SignIn> {
   ) async {
     if (signPsw1 == signPsw2) {
       try {
-        await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
-              email: signEmail,
-              password: signPsw1,
-            );
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: signEmail,
+          password: signPsw1,
+        );
         String? userUID = FirebaseAuth.instance.currentUser?.uid;
         if (userUID != null) {
           newUser(_name, _birthDate, signEmail);
@@ -300,13 +317,17 @@ class _SignInState extends State<SignIn> {
         print("ERROR MESSAGE: ${e.message}");
 
         if (e.code == 'invalid-email') {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.error_invalid_email)));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.error_invalid_email),
+            ),
+          );
         } else if (e.code == 'weak-password') {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.error_week_psw)));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.error_week_psw),
+            ),
+          );
         } else if (e.code == "email-already-in-use") {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -318,9 +339,11 @@ class _SignInState extends State<SignIn> {
         }
       }
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.error_psw_not_match)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.error_psw_not_match),
+        ),
+      );
     }
     return false;
   }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pandilla/components/avatar_picker.dart';
 import 'package:pandilla/core/app_colors.dart';
-import 'package:pandilla/core/firebase_service.dart';
+import 'package:pandilla/core/services/firebase_service.dart';
 import 'package:pandilla/core/providers/user_provider.dart';
 import 'package:pandilla/l10n/app_localizations.dart';
 import 'package:pandilla/screens/profile/profile_screen.dart';

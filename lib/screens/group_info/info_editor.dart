@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pandilla/components/avatar_picker.dart';
 import 'package:pandilla/core/app_colors.dart';
 
-import 'package:pandilla/core/firebase_service.dart';
+import 'package:pandilla/core/services/firebase_service.dart';
 import 'package:pandilla/core/providers/group_provider.dart';
 import 'package:pandilla/screens/group_screen.dart';
 import 'package:provider/provider.dart';

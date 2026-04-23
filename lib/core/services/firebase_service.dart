@@ -9,10 +9,14 @@ import 'package:pandilla/components/group_selector.dart';
 import 'package:pandilla/components/item_component.dart';
 import 'package:pandilla/components/list_component.dart';
 import 'package:pandilla/components/note_component.dart';
+import 'package:pandilla/core/services/navigator_key.dart';
+import 'package:pandilla/core/services/notification_services.dart';
+import 'package:pandilla/l10n/app_localizations.dart';
 
-import 'event.dart';
+import '../event.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
+NotificationServices notifServices = NotificationServices();
 
 String? userUID = "";
 
@@ -89,10 +93,10 @@ Future<bool> isAdmin(String groupUID, String userUID) async {
   return _admins.contains(userUID);
 }
 
-Future<Timestamp> getBirthday() async {
+Future<DateTime> getBirthday() async {
   String? _userUID = FirebaseAuth.instance.currentUser?.uid;
   DocumentSnapshot doc = await db.collection("users").doc(_userUID).get();
-  return doc["bithdate"];
+  return doc["bithdate"].toDate();
 }
 
 //PANTALLA PRINCIPAL
@@ -101,7 +105,7 @@ Stream<List<GroupSelector>> getGroups() {
   String? _uid = FirebaseAuth.instance.currentUser?.uid;
   return db
       .collection("groups")
-      .where("verified_members", arrayContains: _uid)
+      .where("members", arrayContains: _uid)
       .snapshots()
       .map((snapshot) {
         List<GroupSelector> list = [];
@@ -132,39 +136,45 @@ createGroup(String name, String description, String avatar) async {
     "description": description,
     "createAt": DateTime.now(),
     "author": _uid,
-    "verified_members": [_uid],
+    "members": [_uid],
     "admins": [_uid],
   });
-  String _userName = await getUserName();
-  Timestamp _userBirthdate = await getBirthday();
+  String userName = await getUserName();
+  DateTime userBirthday = await getBirthday();
+  saveBirthday(docRef, userName, userBirthday, _uid!);
+}
+
+saveBirthday(DocumentReference docRef, String userName, DateTime birthday, String userUID){
   docRef.collection("events").doc().set({
-    "title": "Cumpleaños de ${_userName}",
-    "date": _userBirthdate,
+    "title": "${AppLocalizations.of(navigatorKey.currentContext!)!.birthday_event} $userName",
+    "year" : birthday.year,
+    "month" : birthday.month,
+    "day": birthday.day,
     "recurrence": "yearly",
-    "decription": "¡Felicidades ${_userName}!",
+    "description": "${AppLocalizations.of(navigatorKey.currentContext!)!.happy_birthday} $userName!",
     "location": "",
-    "authorID": _uid,
+    "authorID": userUID,
     "authorName": "sistema",
   });
 }
 
 Future<String> generateCode() async {
-  final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  String _newcode = "";
+  const String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  String newcode = "";
   bool exist = false;
   do {
-    _newcode = "";
+    newcode = "";
     for (int i = 0; i < 6; i++) {
-      _newcode += chars[Random().nextInt(chars.length)];
+      newcode += chars[Random().nextInt(chars.length)];
     }
     QuerySnapshot snapshot = await db
         .collection("groups")
-        .where("code", isEqualTo: _newcode)
+        .where("code", isEqualTo: newcode)
         .limit(1)
         .get();
     exist = snapshot.docs.isNotEmpty;
   } while (exist);
-  return _newcode;
+  return newcode;
 }
 
 Future<bool> joinGroup(String code) async {
@@ -177,19 +187,11 @@ Future<bool> joinGroup(String code) async {
   QueryDocumentSnapshot doc = snapshot.docs.first;
   if (doc.exists) {
     doc.reference.update({
-      "verified_members": FieldValue.arrayUnion([_uid]),
+      "members": FieldValue.arrayUnion([_uid]),
     });
-    String _userName = await getUserName();
-    Timestamp _userBirthdate = await getBirthday();
-    doc.reference.collection("events").doc().set({
-      "title": "Cumpleaños de ${_userName}",
-      "date": _userBirthdate,
-      "recurrence": "yearly",
-      "decription": "¡Felicidades ${_userName}",
-      "location": "",
-      "authorID": _uid,
-      "authorName": "sistema",
-    });
+    String userName = await getUserName();
+    DateTime userBirthday = await getBirthday();
+    saveBirthday(doc.reference, userName, userBirthday, _uid!);
     return true;
   }
   return false;
@@ -403,28 +405,24 @@ removeList(String groupUID, String listID) {
 
 //CALENDARIO
 
-saveEvent(
-  String groupUID,
-  String title,
-  String description,
-  DateTime date,
-  String location,
-  String recurrence,
-) async {
+saveEvent(String groupUID, String groupName, String title, String description, DateTime date, String location, String recurrence,) async {
   String? _userUID = FirebaseAuth.instance.currentUser?.uid;
   String _authorName = await getUserName();
-  db.collection("groups").doc(groupUID).collection("events").doc().set({
+  final DocumentReference docRef = await db.collection("groups").doc(groupUID).collection("events").add({
     "title": title,
-    "date": date,
+    "day" : date.day,
+    "month" : date.month,
+    "year" : date.year,
     "recurrence": recurrence,
-    "decription": description,
+    "description": description,
     "location": location,
     "authorID": _userUID,
     "authorName": _authorName,
   });
+  NotificationServices.scheduleEvents(docRef.id, title, groupName, date);
 }
 
-Stream<List<Event>> getEventsStream(String groupUID) {
+Stream<List<Event>> getEventsStream(String groupUID, String groupName) {
   return db
       .collection("groups")
       .doc(groupUID)
@@ -433,11 +431,13 @@ Stream<List<Event>> getEventsStream(String groupUID) {
       .map((snapshot) {
         return snapshot.docs.map((doc) {
           final data = doc.data();
+          DateTime date = DateTime(data["year"], data["month"], data["day"]);
+          NotificationServices.scheduleEvents(doc.id, data["title"], groupName, date);
           return Event(
             id: doc.id,
             title: data["title"],
-            date: data["date"].toDate(),
-            description: data["decription"],
+            date: date,
+            description: data["description"],
             location: data["location"],
             authorName: data["authorName"],
             authorID: data["authorID"],
@@ -445,6 +445,24 @@ Stream<List<Event>> getEventsStream(String groupUID) {
           );
         }).toList();
       });
+}
+
+Future<Map<String, dynamic>> getEventInfo(String groupUID, String eventID) async {
+  DocumentSnapshot doc = await db.collection("groups").doc(groupUID).collection("events").doc(eventID).get();
+  return doc.data() as Map<String, dynamic>;
+}
+
+editEvent(String groupUID, String groupName, String eventID, String title, String description, String location, String recurrence, DateTime date) async {
+   await db.collection("groups").doc(groupUID).collection("events").doc(eventID).update({
+    "title": title,
+    "day" : date.day,
+    "month" : date.month,
+    "year" : date.year,
+    "recurrence": recurrence,
+    "description": description,
+    "location": location,
+  });
+  NotificationServices.scheduleEvents(eventID, title, groupName, date);
 }
 
 removeEvent(String groupUID, String eventID) {
@@ -469,7 +487,7 @@ Future<List<Map<String, dynamic>>> getMembersList(String groupUID) async {
 
   await db.collection("groups").doc(groupUID).get().then((doc) {
     var data = doc.data();
-    verified_list = data!["verified_members"];
+    verified_list = data!["members"];
   });
 
   await db
@@ -490,7 +508,7 @@ Future<List<Map<String, dynamic>>> getMembersList(String groupUID) async {
   return result;
 }
 
-Future<int> getAdminsLenght(String groupUID) {
+Future<int> getAdminsLength(String groupUID) {
   return db.collection("groups").doc(groupUID).get().then((snapshot) {
     Map<String, dynamic> data = snapshot.data()!;
     List adminList = data["admins"];
@@ -499,21 +517,45 @@ Future<int> getAdminsLenght(String groupUID) {
 }
 
 kickMember(String groupUID, String memberID) async {
-  List verified_list = [];
+  List members_list = [];
   List admins_list = [];
+
+  //Eliminamos al miembro del grupo
   await db.collection("groups").doc(groupUID).get().then((doc) {
     var data = doc.data();
-    verified_list = data!["verified_members"];
+    members_list = data!["members"];
     admins_list = data["admins"];
   });
-  verified_list.remove(memberID);
+  members_list.remove(memberID);
   db.collection("groups").doc(groupUID).update({
-    "verified_members": verified_list,
+    "members": members_list,
   });
+
+  //Comprobamos si está en la lista de admins, y se elimina de esa lista si está
   if (admins_list.contains(memberID)) {
     admins_list.remove(memberID);
     db.collection("groups").doc(groupUID).update({"admins": admins_list});
   }
+  final snapshot  = await db.collection("groups").doc(groupUID).collection("events").where("authorID", isEqualTo: memberID).get();
+
+  //Eliminamos los eventos creados por ese miembro. Las notas y listas se quedarán guardadas, será decisión del admin borrarlas.
+  WriteBatch batch = db.batch();
+  int counter = 0;
+  for(var doc in snapshot.docs){
+    batch.delete(doc.reference);
+    counter++;
+  }
+
+  if(counter == 450){ //Solo puede hacer hasta 500 operaciones, por lo tanto hacemos commit y comenzamos a borrar. Solo en caso de seguridad, lo más probable es que un miembro no haya creado 500 eventos.
+    await batch.commit();
+    batch = db.batch();
+    counter = 0;
+  }
+
+  if(counter > 0){
+    await batch.commit();
+  }
+
 }
 
 addAdmin(String groupUID, String userUID) async {
@@ -580,7 +622,7 @@ Future<List<Map<String,dynamic>>> getNextEvents() async {
   DateTime limitDate = DateTime.now().add(Duration(days: 7));
   List<String> groupsID = await db
       .collection("groups")
-      .where("verified_members", arrayContains: _userUID)
+      .where("members", arrayContains: _userUID)
       .get()
       .then((snapshot) {
         List<String> list = [];
@@ -594,18 +636,17 @@ Future<List<Map<String,dynamic>>> getNextEvents() async {
         .collection("groups")
         .doc(group)
         .collection("events")
-        .where("date", isGreaterThan: Timestamp.now())
-        .where("date", isLessThan: limitDate)
         .get()
         .then((snapshot) {
           for (var doc in snapshot.docs) {
             Map<String, dynamic> event = doc.data();
-            DateTime date = event["date"].toDate();
-            eventsList.add({"date" : date, "title" : event["title"]});
+            DateTime date = DateTime(event["year"], event["month"], event["day"]);
+            if(date.isAfter(DateTime.now()) && date.isBefore(DateTime.now().add(Duration(days: 7)))) {
+              eventsList.add({"date": date, "title": event["title"]});
+            }
           }
         });
   }
-  print("## TIENES ${eventsList.length} EVENTOS PROXIMOS");
   eventsList.sort((a,b)=>a["date"].compareTo(b["date"]));
   return eventsList;
 }

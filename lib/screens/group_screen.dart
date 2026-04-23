@@ -1,12 +1,14 @@
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:pandilla/components/left_drawer.dart';
 import 'package:pandilla/core/app_colors.dart';
 import 'package:pandilla/core/app_styles.dart';
-import 'package:pandilla/core/firebase_service.dart';
+import 'package:pandilla/core/services/firebase_service.dart';
+import 'package:pandilla/core/services/navigator_key.dart';
 import 'package:pandilla/core/providers/group_provider.dart';
-import 'package:pandilla/screens/calendar/event_editor_screen.dart';
+import 'package:pandilla/screens/calendar/event_creator_screen.dart';
 import 'package:pandilla/screens/group_info/info_editor.dart';
 import 'package:pandilla/screens/notes/note_creator_screen.dart';
 import 'package:pandilla/screens/calendar/calendar_subscreen.dart';
@@ -15,6 +17,7 @@ import 'package:pandilla/screens/group_info/info_subscreen.dart';
 import 'package:pandilla/screens/notes/notes_subscreen.dart';
 import 'package:provider/provider.dart';
 
+import '../core/providers/group_provider.dart';
 import '../l10n/app_localizations.dart';
 
 class GroupScreen extends StatefulWidget {
@@ -41,6 +44,22 @@ class _GroupScreenState extends State<GroupScreen> {
     AppColors.lists_secondary,
     AppColors.members_secondary,
   ];
+  late final GroupProvider provider;
+
+  @override
+  void initState() {
+    super.initState();
+    final String? userUID = FirebaseAuth.instance.currentUser?.uid;
+    provider = context.read<GroupProvider>();
+    provider.startListening(userUID!);
+
+    provider.addListener(_handleKick);
+  }
+  @override
+  void dispose() {
+    provider.removeListener(_handleKick);
+    super.dispose();
+  }
 
 
   @override
@@ -134,6 +153,7 @@ class _GroupScreenState extends State<GroupScreen> {
         icon: Icons.add,
         activeIcon: Icons.close,
         backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
         spacing: 10,
         spaceBetweenChildren: 10,
         children: [
@@ -142,7 +162,7 @@ class _GroupScreenState extends State<GroupScreen> {
             label: AppLocalizations.of(context)!.add_event,
             backgroundColor: AppColors.calendar_primary,
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context)=> EventEditorScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> EventCreatorScreen()));
 
             },
           ),
@@ -211,5 +231,25 @@ class _GroupScreenState extends State<GroupScreen> {
         ],
       ),
     );
+  }
+
+  void _handleKick(){
+    final GroupProvider provider = context.read<GroupProvider>();
+    if(!provider.isMember){
+      navigatorKey.currentState?.pushNamedAndRemoveUntil("/home", (route)=>false);
+
+      Future.microtask((){
+        showDialog(context: navigatorKey.currentContext!,
+            builder: (_){
+          return AlertDialog(
+            title: Text(AppLocalizations.of(context)!.notif_group_removal_title),
+            content: Text(AppLocalizations.of(context)!.notif_group_removal_content),
+            actions: [
+              TextButton(onPressed: ()=>Navigator.pop(navigatorKey.currentContext!), child: Text(AppLocalizations.of(context)!.accept))
+            ],
+          );
+            });
+      });
+    }
   }
 }

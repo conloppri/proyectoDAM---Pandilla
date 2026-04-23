@@ -76,6 +76,7 @@
     "week_events" : "Eventos de la semana",
     "delete_event" : "Eliminar evento",
     "warning_delete_event" : "¿Estás seguro que quieres eliminar este evento? Una vez eliminado no podrá recuperarse.",
+    "edit_event" : "Editar evento",
 
     "add_note" : "Añadir nota",
     "new_note" : "Nueva nota",
@@ -113,7 +114,13 @@
     "all_fields_required" : "Todos los campos son obligatorios.",
 
     "pick_avatar" : "Selecciona un avatar",
-    "pick_another_avatar" : "Seleccionar otro avatar",
+    "pick_another_avatar" : "Cambiar avatar",
+
+    "notif_group_removal_title" : "Sin acceso al grupo",
+    "notif_group_removal_content" : "Ya no tienes acceso a este grupo. Has sido expulsado o el grupo ha sido eliminado.",
+
+    "birthday_event" : "Cumpleaños de",
+    "happy_birthday" : "¡Feliz cumpleaños",
 
     "title" : "Título",
     "description" : "Descripción",

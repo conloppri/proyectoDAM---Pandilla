@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import '../../components/paper_background.dart';
 import '../../core/app_colors.dart';
 import '../../core/app_styles.dart';
-import '../../core/firebase_service.dart';
+import '../../core/services/firebase_service.dart';
 import '../../core/providers/group_provider.dart';
 import '../../l10n/app_localizations.dart';
 

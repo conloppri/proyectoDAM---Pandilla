@@ -14,6 +14,7 @@ class AvatarPicker extends StatefulWidget {
 class _AvatarPickerState extends State<AvatarPicker> {
 
   @override
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
