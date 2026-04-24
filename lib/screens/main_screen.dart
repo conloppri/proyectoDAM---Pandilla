@@ -6,6 +6,8 @@ import 'package:pandilla/components/left_drawer.dart';
 import 'package:pandilla/core/providers/user_provider.dart';
 import 'package:pandilla/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 import '../core/app_colors.dart';
 import '../core/app_styles.dart';
@@ -36,7 +38,11 @@ class _MainScreenState extends State<MainScreen> {
   String _selectedAvatar = "reading.png";
 
 
-
+  //Global Keys para tutorial
+  GlobalKey nextEvents = GlobalKey();
+  GlobalKey createButton = GlobalKey();
+  GlobalKey joinButton = GlobalKey();
+  GlobalKey groupList = GlobalKey();
 
   Future<void> loadUser() async {
     String? userUID = FirebaseAuth.instance.currentUser?.uid;
@@ -53,7 +59,10 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     loadUser();
-
+    scheduleAllEvents();
+  WidgetsBinding.instance.addPostFrameCallback((_){
+    showTutorial();
+  });
   }
 
   @override
@@ -75,6 +84,7 @@ class _MainScreenState extends State<MainScreen> {
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height * 0.2,
                 child: Row(
+                  key: nextEvents,
                   children: [
                     Image.asset("assets/images/main.png", height: MediaQuery.of(context).size.height * 0.15 ),
                     Container(
@@ -111,7 +121,10 @@ class _MainScreenState extends State<MainScreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text("${dateFormat.format(dateEvent)}: ", style: TextStyle(fontWeight: FontWeight.bold),),
-                                    Text(events[index]["title"])
+                                    Expanded(
+                                      child: Text(events[index]["title"],
+                                        overflow: TextOverflow.ellipsis,),
+                                    )
                                   ],
                                 );
                               },
@@ -130,6 +143,7 @@ class _MainScreenState extends State<MainScreen> {
               ),
               Expanded(
                 child: StreamBuilder(
+                  key: groupList,
                   stream: getGroups(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -158,6 +172,7 @@ class _MainScreenState extends State<MainScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton(
+                      key:createButton ,
                       onPressed: () {
                         showDialog(
                           context: context,
@@ -205,10 +220,12 @@ class _MainScreenState extends State<MainScreen> {
                                   actions: [
                                     TextButton(
                                       onPressed: () {
+                                        String? userName = context.read<UserProvider>().name;
                                         createGroup(
                                           _groupName,
                                           _groupDescription,
                                           _selectedAvatar,
+                                          userName!
                                         );
                                         Navigator.pop(context);
                                       },
@@ -245,6 +262,7 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                     ),
                     ElevatedButton(
+                      key: joinButton,
                       onPressed: () {
                         showDialog(
                           context: context,
@@ -261,9 +279,7 @@ class _MainScreenState extends State<MainScreen> {
                               actions: [
                                 TextButton(
                                   onPressed: () async {
-                                    bool joined = await joinGroup(
-                                      _code.toUpperCase(),
-                                    );
+                                    bool joined = await joinGroup(_code.toUpperCase());
                                     if (joined) {
                                       setState(() {
                                         Navigator.pop(context);
@@ -313,5 +329,74 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ),
     );
+  }
+  Future<void> showTutorial() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool? completed = prefs.getBool("main_tutorial");
+  if(completed == null || !completed) {
+    TutorialCoachMark(targets: [
+      TargetFocus(
+          identify: "nextEvents",
+          keyTarget: nextEvents,
+          contents: [
+            TargetContent(
+                align: ContentAlign.custom,
+                customPosition: CustomTargetContentPosition(bottom: MediaQuery
+                    .of(context)
+                    .size
+                    .height * 0.35),
+                child: Text(
+                    AppLocalizations.of(context)!.tutorial_next_events,
+                    style: AppStyles.tutorialStyle)
+            )
+          ]
+      ),
+      TargetFocus(
+          identify: "createButton",
+          keyTarget: createButton,
+          contents: [
+            TargetContent(
+                align: ContentAlign.top,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(AppLocalizations.of(context)!.tutorial_create,
+                      style: AppStyles.tutorialStyle),
+                )
+            )
+          ]
+      ),
+      TargetFocus(
+          identify: "joinButton",
+          keyTarget: joinButton,
+          contents: [
+            TargetContent(
+                align: ContentAlign.top,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(AppLocalizations.of(context)!.tutorial_join,
+                      style: AppStyles.tutorialStyle),
+                )
+            )
+          ]
+      ),
+      TargetFocus(
+          identify: "groupList",
+          keyTarget: groupList,
+          contents: [
+            TargetContent(
+                align: ContentAlign.top,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                      AppLocalizations.of(context)!.tutorial_listGroups,
+                      style: AppStyles.tutorialStyle),
+                )
+            )
+          ]
+      ),
+    ]
+    ).show(context: context);
+    prefs.setBool("main_tutorial", true);
+  }
   }
 }

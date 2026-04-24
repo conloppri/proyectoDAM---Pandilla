@@ -95,7 +95,11 @@ class _EventCreatorScreenState extends State<EventCreatorScreen> {
                 label: AppLocalizations.of(context)!.event_date,
                 firstDate: DateTime(1900),
                 lastDate: DateTime(DateTime.now().year + 50),
-                onDateSelected: (date) => _date = date,
+                onDateSelected: (date) {
+                  setState(() {
+                    _date = date;
+                  });
+                },
               ),
             ),
             Container(

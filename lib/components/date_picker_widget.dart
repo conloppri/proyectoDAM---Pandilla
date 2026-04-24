@@ -34,7 +34,7 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
               widget.onDateSelected(_selectedDate);
         },
             style: ElevatedButton.styleFrom(backgroundColor: widget.buttonColor ),
-            child: Text(DateFormat("dd/MM/yyyy").format(widget.selectedDate), style: widget.labelStyle,))
+            child: Text(DateFormat("dd/MM/yyyy").format(_selectedDate), style: widget.labelStyle,))
       ],
     );
   }

@@ -57,22 +57,14 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          CircleAvatar(
-                            radius: 50,
-                            backgroundImage: AssetImage("assets/images/${info["avatar"]}"),
-                          ),
-                          Text(info["name"], style: TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold)),
-                        ],
+                      CircleAvatar(
+                        radius: 40,
+                        backgroundImage: AssetImage("assets/images/${info["avatar"]}"),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Text(info["description"], style: TextStyle(color: Colors.white, fontSize: 18)),
-                      ),
+                      Text(info["description"], style: TextStyle(color: Colors.white, fontSize: 18)),
                       Text(
-                        "${AppLocalizations.of(context)!.created_at} ${DateFormat("dd/MM/yyyy", "es_ES").format(createAt)}",
+                        "${AppLocalizations.of(context)!.created_at} ${DateFormat("dd MMM yyyy", "es_ES").format(createAt)} ${AppLocalizations.of(context)!.by} ${info["authorName"]}",
+                        style: TextStyle(color: Colors.white, fontSize: 15),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

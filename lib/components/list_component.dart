@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pandilla/core/app_colors.dart';
 import 'package:pandilla/core/services/firebase_service.dart';
 import 'package:pandilla/screens/lists/listview_screen.dart';
@@ -59,13 +60,45 @@ class _ListComponentState extends State<ListComponent> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text("${AppLocalizations.of(context)!.created_by} ${widget.author}"),
+            Row(
+              children: [
+                Text("${AppLocalizations.of(context)!.created_by} ",style: TextStyle(color: Colors.black)),
+                Text(widget.author, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
+                const Spacer(),
+                if (_isAdmin!||userUID == widget.authorID)IconButton(onPressed: (){
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text(AppLocalizations.of(context)!.delete_list),
+                        content: Text(
+                          AppLocalizations.of(context)!.warning_delete_list,
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              removeList(widget.groupUID, widget.listID);
+                              Navigator.pop(context);
+                            },
+                            child: Text(AppLocalizations.of(context)!.remove),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(AppLocalizations.of(context)!.cancel),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }, icon: Icon(Icons.delete, color: AppColors.lists_primary,))
+              ],
+            ),
             Padding(
               padding: EdgeInsets.all(10),
               child: ListTile(
-                title: Text(widget.title),
+                title: Text(widget.title, style: TextStyle(color: AppColors.lists_primary, fontWeight: FontWeight.bold, fontSize: 20),),
                 subtitle: Text(
-                  "${numItems} ${AppLocalizations.of(context)!.items}",
+                  "${numItems} ${AppLocalizations.of(context)!.items}", style: TextStyle(color: Colors.black, fontSize: 15)
                 ),
                 onTap: () async {
                   await Navigator.push(
@@ -77,39 +110,11 @@ class _ListComponentState extends State<ListComponent> {
                   );
                   loadNumItems();
                 },
-                onLongPress: () {
-                  String? userUID = FirebaseAuth.instance.currentUser?.uid;
-                  if (_isAdmin! || userUID == widget.authorID) {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: Text(AppLocalizations.of(context)!.delete_list),
-                          content: Text(
-                            AppLocalizations.of(context)!.warning_delete_list,
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                removeList(widget.groupUID, widget.listID);
-                                Navigator.pop(context);
-                              },
-                              child: Text(AppLocalizations.of(context)!.remove),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text(AppLocalizations.of(context)!.cancel),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  }
-                },
               ),
             ),
             Text(
-              "${AppLocalizations.of(context)!.last_update} ${widget.lastUpdate.hour}:${widget.lastUpdate.minute} ${widget.lastUpdate.day}/${widget.lastUpdate.month}/${widget.lastUpdate.year}",
+              "${AppLocalizations.of(context)!.last_update} ${DateFormat("HH:mm dd/MM/yyyy", "es_ES").format(widget.lastUpdate)}",
+              style: TextStyle(color: Colors.black),
             ),
           ],
         ),

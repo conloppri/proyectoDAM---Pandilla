@@ -124,7 +124,7 @@ Stream<List<GroupSelector>> getGroups() {
       });
 }
 
-createGroup(String name, String description, String avatar) async {
+createGroup(String name, String description, String avatar, String authorName) async {
   String? _uid = FirebaseAuth.instance.currentUser?.uid;
   String groupCode = await generateCode();
   DocumentReference docRef = db.collection("groups").doc();
@@ -138,6 +138,7 @@ createGroup(String name, String description, String avatar) async {
     "author": _uid,
     "members": [_uid],
     "admins": [_uid],
+    "authorName" : authorName
   });
   String userName = await getUserName();
   DateTime userBirthday = await getBirthday();
@@ -328,7 +329,7 @@ addItem(String groupUID, String listID, String item) {
       .doc(listID)
       .collection("items")
       .doc()
-      .set({"text": item, "isCompleted": false});
+      .set({"text": item, "isCompleted": false, "createAt":Timestamp.now()});
   newListUpdate(listID, groupUID);
 }
 
@@ -365,6 +366,7 @@ Stream<List<ItemComponent>> getItems(String groupUID, String listID) {
             itemId: doc.id,
             isCompleted: data["isCompleted"],
             listID: listID,
+            createAt: data["createAt"].toDate(),
           );
         }).toList();
       });
@@ -445,6 +447,28 @@ Stream<List<Event>> getEventsStream(String groupUID, String groupName) {
           );
         }).toList();
       });
+}
+
+scheduleAllEvents(){
+  NotificationServices.plugin.cancelAll();
+  List<Map<String,String>> groups = [];
+  String? userUID = FirebaseAuth.instance.currentUser?.uid;
+  db.collection("groups").where("members", arrayContains: userUID).get().then((snapshot){
+    for(var doc in snapshot.docs){
+      Map<String, dynamic> data = doc.data();
+      groups.add({"name":data["name"], "uid":doc.id});
+    }
+  });
+  if(groups.isNotEmpty){
+    for(var group in groups){
+      db.collection("groups").doc(group["uid"]).collection("events").get().then((snapshot){
+        for(var doc in snapshot.docs){
+          Map<String, dynamic> data = doc.data();
+          NotificationServices.scheduleEvents(doc.id, data["title"], group["name"]!, DateTime(data["year"], data["month"], data["day"]));
+        }
+      });
+    }
+  }
 }
 
 Future<Map<String, dynamic>> getEventInfo(String groupUID, String eventID) async {

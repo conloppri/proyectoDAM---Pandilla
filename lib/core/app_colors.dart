@@ -25,8 +25,8 @@ class AppColors{
   static final Color lists_primary = Color(0xffe4b204);
   static final Color lists_secondary = Color(0xffefdb7e);
 
-  static final Color members_primary = Color(0xffa047f6);
-  static final Color members_secondary = Color(0xffd09df8);
+  static final Color members_primary = Color(0xff5a123e);
+  static final Color members_secondary = Color(0xff8e426f);
 
   //COLORES DE LAS NOTAS
   static final Color pink_note = Color(0xffdfa3c9);

@@ -78,6 +78,7 @@
     "delete_event": "Delete event",
     "warning_delete_event": "Are you sure you want to delete this event? Once deleted, it cannot be recovered.",
     "edit_event" : "Edit event",
+    "no_event_this_day": "There are no events on this day.",
 
     "add_note": "Add note",
     "new_note": "New note",
@@ -122,6 +123,17 @@
     "birthday_event" : "Birthday of",
     "happy_birthday" : "Happy birthday",
 
+    "skip" : "SKIP",
+    "tutorial_next_events": "In this section you will see events in the next 7 days.",
+    "tutorial_create": "With this button you can create a new group. You can choose a custom avatar.",
+    "tutorial_join": "And with this other one you can join a group using a code.",
+    "tutorial_listGroups": "Here you will see the list of groups you have joined.",
+    "tutorial_calendar": "From this tab you can view the shared calendar and all events. You can switch between Month and Week view.",
+    "tutorial_notes": "From this tab you can see shared notes among all group members. You can change the note list view and order.",
+    "tutorial_lists": "In this screen you can view collaborative lists. You can even edit your friends’ lists! You can also change the order of the lists.",
+    "tutorial_info": "In this last tab you can see group information and the member list. You will also find the group code to invite more people. If you are an admin, you can manage members.",
+    "tutorial_last": "Tap the + button and start bringing your group to life. Don't forget to edit your profile so others can get to know you better.\n\nI hope you enjoy the app!",
+
     "title" : "Title",
     "description": "Description",
     "no_description": "No description",
@@ -137,5 +149,7 @@
     "remove" : "Remove",
     "discard" : "Discard",
     "view" : "View",
-    "items" : "items"
+    "items" : "items",
+    "sort_by" : "Sort by",
+    "by" : "por"
 }

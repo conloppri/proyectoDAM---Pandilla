@@ -10,7 +10,8 @@ class ItemComponent extends StatefulWidget {
   final String itemId;
   final String listID;
   final bool isCompleted;
-  ItemComponent({super.key, required this.item, required this.itemId, required this.isCompleted, required this.listID});
+  final DateTime createAt;
+  const ItemComponent({super.key, required this.item, required this.itemId, required this.isCompleted, required this.listID, required this.createAt});
 
   @override
   State<ItemComponent> createState() => _ItemComponentState();

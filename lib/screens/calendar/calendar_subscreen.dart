@@ -194,7 +194,7 @@ class _CalendarSubscreenState extends State<CalendarSubscreen> {
     if(eventList.isEmpty){
       eventList.add(Center(child: Padding(
         padding: EdgeInsets.all(8.0),
-        child: Text("No hay ningún evento este día."),
+        child: Text(AppLocalizations.of(context)!.no_event_this_day),
       )));
     }
     return eventList;
@@ -223,6 +223,7 @@ class _CalendarSubscreenState extends State<CalendarSubscreen> {
     List<Widget> eventList = [];
     String? groupUID = context.watch<GroupProvider>().groupUID;
     bool? isAdmin = context.read<GroupProvider>().isAdmin;
+    weekEvents.sort((a,b)=>a.date.compareTo(b.date));
     for (Event event in weekEvents) {
       eventList.add(
         Padding(

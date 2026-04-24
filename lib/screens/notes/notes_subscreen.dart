@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pandilla/components/note_component.dart';
 import 'package:pandilla/core/app_colors.dart';
 import 'package:pandilla/core/services/firebase_service.dart';
 import 'package:pandilla/core/providers/group_provider.dart';
@@ -13,7 +14,7 @@ class NotesSubscreen extends StatefulWidget {
 }
 
 class _NotesSubscreenState extends State<NotesSubscreen> {
-
+  String sortedBy = "ABC";
   int _view = 1; // 1 = lista ; -1 = grid
   @override
   Widget build(BuildContext context) {
@@ -23,13 +24,19 @@ class _NotesSubscreenState extends State<NotesSubscreen> {
         child: Column(
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.sort_outlined, size: 30),
-                  color: AppColors.appbar_pink,
+                Text(AppLocalizations.of(context)!.sort_by, style: TextStyle(color: AppColors.notes_primary, fontSize: 20),),
+                IconButton(onPressed: (){
+                  setState(() {
+                    sortedBy=="ABC"
+                        ?sortedBy="lastUpdate"
+                        :sortedBy="ABC";
+                  });
+                },
+                  icon: Icon(sortedBy == "ABC" ? Icons.sort_by_alpha : Icons.access_time, size: 30,),
+                  color: AppColors.notes_primary,
                 ),
+                const Spacer(),
                 Row(
                   children: [
                     Text(
@@ -42,7 +49,7 @@ class _NotesSubscreenState extends State<NotesSubscreen> {
                           _view = _view * (-1);
                         });
                       },
-                      icon: Icon(_view == 1 ? Icons.list : Icons.grid_view_sharp),
+                      icon: Icon(_view == 1 ? Icons.list : Icons.grid_view_sharp, size: 30,),
                       color: AppColors.appbar_pink,
                     ),
                   ],
@@ -56,10 +63,16 @@ class _NotesSubscreenState extends State<NotesSubscreen> {
                 builder: (context, snapshot) {
                   if(snapshot.connectionState == ConnectionState.waiting)return Center(child: CircularProgressIndicator());
                   if(snapshot.hasError)return Center(child: Text("Error: ${snapshot.error}"));
-                  if(!snapshot.hasData||snapshot.data!.isEmpty)return Text(AppLocalizations.of(context)!.no_notes);
+                  if(!snapshot.hasData||snapshot.data!.isEmpty)return Center(child: Text(AppLocalizations.of(context)!.no_notes));
+                  List<NoteComponent> data = snapshot.data!;
+                  if(sortedBy =="ABC"){
+                    data.sort((a,b)=>a.title.compareTo(b.title));
+                  }else{
+                    data.sort((a,b)=>b.lastUpdate.compareTo(a.lastUpdate));
+                  }
                   return _view == 1
-                      ? ListView(children: snapshot.data!)
-                      : GridView.count(crossAxisCount: 2, children: snapshot.data!);
+                      ? ListView(children: data)
+                      : GridView.count(crossAxisCount: 2, children: data);
                 }
               ),
             ),

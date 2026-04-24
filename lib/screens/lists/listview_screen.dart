@@ -46,6 +46,7 @@ class _ListviewScreenState extends State<ListviewScreen> {
                     if (!snapshot.hasData || snapshot.data!.isEmpty)
                       return Text(AppLocalizations.of(context)!.no_lists);
                     List<ItemComponent> items = snapshot.data!;
+                    items.sort((a,b)=>a.createAt.compareTo(b.createAt));
                     return ListView.separated(
                       itemCount: items.length,
                       itemBuilder: (context, int index){

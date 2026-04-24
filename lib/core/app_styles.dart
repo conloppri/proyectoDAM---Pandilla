@@ -4,15 +4,17 @@ class AppStyles{
 
   static final TextStyle title = TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
 
-  static final TextStyle profileSub = TextStyle(color: Colors.white);
-  static final InputDecoration profileTextFieldStyle = InputDecoration(
+  static const TextStyle profileSub = TextStyle(color: Colors.white);
+  static const InputDecoration profileTextFieldStyle = InputDecoration(
     focusedBorder: UnderlineInputBorder(
       borderSide: BorderSide(color: Colors.white)
     ),
 
   );
 
-  //EVENT EDITOR
-
+  static TextStyle tutorialStyle = const TextStyle(
+    color: Colors.white,
+    fontSize: 20
+  );
 
 }

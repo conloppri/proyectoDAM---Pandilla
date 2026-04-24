@@ -77,6 +77,7 @@
     "delete_event" : "Eliminar evento",
     "warning_delete_event" : "¿Estás seguro que quieres eliminar este evento? Una vez eliminado no podrá recuperarse.",
     "edit_event" : "Editar evento",
+    "no_event_this_day" : "No hay ningún evento este día.",
 
     "add_note" : "Añadir nota",
     "new_note" : "Nueva nota",
@@ -122,6 +123,17 @@
     "birthday_event" : "Cumpleaños de",
     "happy_birthday" : "¡Feliz cumpleaños",
 
+    "skip" : "OMITIR",
+    "tutorial_next_events" : "En este cuadro verás los eventos en los próximos 7 días.",
+    "tutorial_create" : "Con este botón puedes crear un nuevo grupo. Puedes elegir un avatar personalizado." ,
+    "tutorial_join" : "Y con este otro puedes unirte a un grupo con un código",
+    "tutorial_listGroups" : "Aquí aparecerá la lista de grupos a los que te has unido",
+    "tutorial_calendar" : "Desde esta pestaña podrás ver el calendario compartido y ver todos los eventos. Puedes cambiar al formato \"Mes\" y \"Semana\". ",
+    "tutorial_notes" : "Desde esta otra pestaña podrás ver las notas compartidas entre todos los miembros de la pandilla. Puedes cambiar la vista de la lista de notas y el orden.",
+    "tutorial_lists" : "En esta pantalla podrás ver las listas colaborativas. ¡Incluso puedes editar las de tus amigos! También puedes cambiar el orden de las listas.",
+    "tutorial_info" : "En esta última pestaña puedes ver la información de la pandilla y la lista de miembros.  También podrás ver el código para poder unir más gente a tu pandilla. Si eres administrador, podrás gestionar los miembros.",
+    "tutorial_last" : "Pulsa el botón + y comienza a darle vida a tu pandilla. No olvides editar tu perfil para que los demás te conozcan mejor. \n\n¡Espero que disfrutes de la aplicación!",
+
     "title" : "Título",
     "description" : "Descripción",
     "no_description" : "Sin descripción",
@@ -137,5 +149,7 @@
     "remove" : "Eliminar",
     "discard" : "Descartar",
     "view" : "Vista",
-    "items" : "elementos"
+    "items" : "elementos",
+    "sort_by" : "Ordenar",
+    "by" : "por"
 }

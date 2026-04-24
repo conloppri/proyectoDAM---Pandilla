@@ -63,24 +63,6 @@ class _NoteComponentState extends State<NoteComponent> {
               style: TextStyle(fontSize: 15, color: Colors.black),
             ),
             onTap: () =>Navigator.push(context, MaterialPageRoute(builder: (context)=>NoteViewScreen(noteID: widget.noteID))),
-            onLongPress: () {
-              String? userUID = FirebaseAuth.instance.currentUser?.uid;
-              if(isAdmin! || userUID == widget.authorID){
-                showDialog(context: context, builder: (context){
-                  return AlertDialog(
-                    title: Text(AppLocalizations.of(context)!.delete_note),
-                    content: Text(AppLocalizations.of(context)!.warning_delete_note),
-                    actions: [
-                      TextButton(onPressed: (){
-                        removeNote(groupUID!, widget.noteID);
-                        Navigator.pop(context);
-                      }, child: Text(AppLocalizations.of(context)!.remove)),
-                      TextButton(onPressed: ()=>Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel))
-                    ],
-                  );
-                });
-              }
-            },
           ),
           Padding(
             padding: const EdgeInsets.all(8),

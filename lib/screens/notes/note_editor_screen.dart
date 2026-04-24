@@ -171,7 +171,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                       ),
                       const Spacer(),
                       Text(
-                        "${AppLocalizations.of(context)!.last_update} $_lastUpdate}",
+                        "${AppLocalizations.of(context)!.last_update} $_lastUpdate",
                         style: TextStyle(color: Colors.black),
                       ),
                     ],

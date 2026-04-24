@@ -16,6 +16,8 @@ import 'package:pandilla/screens/lists/lists_subscreen.dart';
 import 'package:pandilla/screens/group_info/info_subscreen.dart';
 import 'package:pandilla/screens/notes/notes_subscreen.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 import '../core/providers/group_provider.dart';
 import '../l10n/app_localizations.dart';
@@ -46,6 +48,14 @@ class _GroupScreenState extends State<GroupScreen> {
   ];
   late final GroupProvider provider;
 
+  //GLOBAL KEYS
+  GlobalKey calendarKey = GlobalKey();
+  GlobalKey notesKey = GlobalKey();
+  GlobalKey listsKey = GlobalKey();
+  GlobalKey infoKey = GlobalKey();
+  GlobalKey lastKey = GlobalKey();
+
+
   @override
   void initState() {
     super.initState();
@@ -54,6 +64,10 @@ class _GroupScreenState extends State<GroupScreen> {
     provider.startListening(userUID!);
 
     provider.addListener(_handleKick);
+
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      showTutorial();
+    });
   }
   @override
   void dispose() {
@@ -77,7 +91,8 @@ class _GroupScreenState extends State<GroupScreen> {
         backgroundColor: primaryColors[_selectedIndexBottom],
         foregroundColor: Colors.white,
         actions: [
-          PopupMenuButton<String>(itemBuilder: (BuildContext context)=>[
+          PopupMenuButton<String>(
+            itemBuilder: (BuildContext context)=>[
             if(isAdmin!) PopupMenuItem(value: "edit", child: Text(AppLocalizations.of(context)!.edit_group_info)),
             if(isAdmin) PopupMenuItem(value: "delete",child: Text(AppLocalizations.of(context)!.delete_group, style: const TextStyle(color: Colors.red),),),
              PopupMenuItem(value: "info", child: Text(AppLocalizations.of(context)!.about))
@@ -124,18 +139,22 @@ class _GroupScreenState extends State<GroupScreen> {
         unselectedItemColor: secondaryColors[_selectedIndexBottom],
         items:  [
           BottomNavigationBarItem(
+            key: calendarKey,
             icon: Icon(Icons.calendar_month_outlined, size: 40),
             label: AppLocalizations.of(context)!.calendar,
           ),
           BottomNavigationBarItem(
+            key: notesKey,
             icon: Icon(Icons.note, size: 40),
             label: AppLocalizations.of(context)!.notes,
           ),
           BottomNavigationBarItem(
+            key: listsKey,
             icon: Icon(Icons.list, size: 40),
             label: AppLocalizations.of(context)!.lists,
           ),
           BottomNavigationBarItem(
+            key: infoKey,
             icon: Icon(Icons.group, size: 40),
             label: AppLocalizations.of(context)!.group_info,
           ),
@@ -147,6 +166,7 @@ class _GroupScreenState extends State<GroupScreen> {
         },
       ),
       body: SafeArea(
+        key: lastKey,
           child: selectedSubscreen[_selectedIndexBottom]
       ),
       floatingActionButton: SpeedDial(
@@ -250,6 +270,127 @@ class _GroupScreenState extends State<GroupScreen> {
           );
             });
       });
+    }
+  }
+
+  Future<void> showTutorial() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool? completed = prefs.getBool("group_tutorial");
+    if(completed == null || !completed) {
+      int counter = 0;
+      TutorialCoachMark(
+          alignSkip: Alignment.topRight,
+          textSkip: AppLocalizations.of(context)!.skip,
+          textStyleSkip: TextStyle(color: AppColors.primary, fontSize: 20),
+          onClickTarget: (target) {
+            setState(() {
+              if (counter < 3) {
+                counter++;
+                _selectedIndexBottom = counter;
+              } else if (counter == 3) {
+                _selectedIndexBottom = 0;
+                counter++;
+              }
+            });
+          },
+          targets: [
+            TargetFocus(
+                identify: "calendar",
+                keyTarget: calendarKey,
+                enableTargetTab: true,
+                contents: [
+                  TargetContent(
+                      align: ContentAlign.custom,
+                      customPosition: CustomTargetContentPosition(
+                          top: MediaQuery
+                              .of(context)
+                              .size
+                              .height * 0.5),
+                      child: Text(
+                        AppLocalizations.of(context)!.tutorial_calendar,
+                        style: AppStyles.tutorialStyle,)
+                  )
+                ]
+            ),
+            TargetFocus(
+                identify: "notes",
+                keyTarget: notesKey,
+                enableTargetTab: true,
+                contents: [
+                  TargetContent(
+                      align: ContentAlign.custom,
+                      customPosition: CustomTargetContentPosition(
+                          top: MediaQuery
+                              .of(context)
+                              .size
+                              .height * 0.5),
+                      child: Text(AppLocalizations.of(context)!.tutorial_notes,
+                        style: AppStyles.tutorialStyle,)
+                  )
+                ]
+            ),
+            TargetFocus(
+                identify: "lists",
+                keyTarget: listsKey,
+                enableTargetTab: true,
+                contents: [
+                  TargetContent(
+                      align: ContentAlign.custom,
+                      customPosition: CustomTargetContentPosition(
+                          top: MediaQuery
+                              .of(context)
+                              .size
+                              .height * 0.5),
+                      child: Text(AppLocalizations.of(context)!.tutorial_lists,
+                        style: AppStyles.tutorialStyle,)
+                  )
+                ]
+            ),
+            TargetFocus(
+                identify: "info",
+                keyTarget: infoKey,
+                enableTargetTab: true,
+                contents: [
+                  TargetContent(
+                      align: ContentAlign.custom,
+                      customPosition: CustomTargetContentPosition(
+                          top: MediaQuery
+                              .of(context)
+                              .size
+                              .height * 0.5),
+                      child: Text(AppLocalizations.of(context)!.tutorial_info,
+                        style: AppStyles.tutorialStyle,)
+                  )
+                ]
+            ),
+            TargetFocus(
+                identify: "lastKey",
+                keyTarget: lastKey,
+                enableTargetTab: true,
+                contents: [
+                  TargetContent(
+                      align: ContentAlign.custom,
+                      customPosition: CustomTargetContentPosition(
+                          top: MediaQuery
+                              .of(context)
+                              .size
+                              .height * 0.35),
+                      child: Container(
+                          padding: const EdgeInsetsGeometry.all(12),
+                          decoration: BoxDecoration(
+                              color: AppColors.secondary,
+                              borderRadius: BorderRadius.circular(20)
+                          ),
+                          child: Text(
+                              AppLocalizations.of(context)!.tutorial_last,
+                              style: TextStyle(
+                                  color: AppColors.primary, fontSize: 20)))
+                  )
+                ]
+            ),
+          ]
+      ).show(context: context);
+      prefs.setBool("group_tutorial", true);
     }
   }
 }
