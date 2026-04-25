@@ -1,25 +1,57 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class GroupProvider extends ChangeNotifier{
+/// Provider que gestiona el estado del grupo activo.
+///
+/// Se encarga de almacenar la información del grupo seleccionado por el usuario
+/// y de notificar a la UI cuando cambia.
+///
+/// También controla la pertenencia del usuario al grupo mediante un listener
+/// en Firestore (por ejemplo, si es expulsado o el grupo se elimina).
+class GroupProvider extends ChangeNotifier {
+  /// Identificador único del grupo activo.
   String? _groupUID;
+
+  /// Nombre del grupo activo.
   String? _groupName;
+
+  /// Indica si el usuario actual es administrador del grupo.
   bool? _admin;
+
+  /// Código de acceso del grupo.
   String? _code;
 
+  /// Indica si el usuario sigue siendo miembro del grupo.
+  bool _isMember = true;
+
+  /// Stream para escuchar cambios en la membresía del grupo. (Control de pertenencia por expulsión o eliminación de grupo)
+  StreamSubscription? _membershipSub;
+
+  /// Getter del UID del grupo.
   String? get groupUID => _groupUID;
+
+  /// Getter del nombre del grupo.
   String? get groupName => _groupName;
+
+  /// Getter del código del grupo.
   String? get code => _code;
+
+  /// Getter del estado de administrador.
   bool? get isAdmin => _admin;
 
-  //Control de pertenencia por expulsión o eliminación de grupo
-  StreamSubscription? _membershipSub;
-  bool _isMember = true;
+  /// Getter del estado de pertenencia al grupo.
   bool get isMember => _isMember;
 
-  void setGroup(String uid, String name, bool admin, String code){
+  /// Establece el grupo activo en el provider.
+  ///
+  /// Se usa cuando el usuario entra o crea un grupo.
+  /// Resetea el estado de pertenencia.
+  /// - [uid] Identificador único del grupo activo.
+  /// - [name] Nombre del grupo activo.
+  /// - [admin] Indica si el usuario actual es administrador del grupo.
+  /// - [code] Código de acceso del grupo.
+  void setGroup(String uid, String name, bool admin, String code) {
     _groupUID = uid;
     _groupName = name;
     _admin = admin;
@@ -28,39 +60,63 @@ class GroupProvider extends ChangeNotifier{
     notifyListeners();
   }
 
-  void clearGroup(){
+  /// Limpia la información del grupo activo.
+  ///
+  /// Se usa al salir del grupo o cambiar de contexto.
+  void clearGroup() {
     _groupUID = null;
     _groupName = null;
     _admin = null;
     notifyListeners();
   }
 
-  void startListening(String userUID){
+  /// Inicia la escucha en Firestore para detectar cambios en la membresía.
+  ///
+  /// Se comprueba:
+  /// - Si el grupo ha sido eliminado
+  /// - Si el usuario ha sido expulsado del grupo
+  ///
+  ///  - [userUID] Identificador del usuario que inicia la escucha
+  void startListening(String userUID) {
+    /// Cancela cualquier listener previo
     _membershipSub?.cancel();
 
-    _membershipSub = FirebaseFirestore.instance.collection('groups').doc(_groupUID).snapshots().listen((snapshot){
-      if(!snapshot.exists){
-        //Si el grupo no existe, es que ha sido eliminado. Notificamos al usuario
-        _handleKick();
-        return;
-      }
+    ///Inicia la escucha
+    _membershipSub = FirebaseFirestore.instance
+        .collection('groups')
+        .doc(_groupUID)
+        .snapshots()
+        .listen((snapshot) {
+          try {
+            /// Si el grupo ya no existe, se considera eliminado
+            if (!snapshot.exists) {
+              //Si el grupo no existe, es que ha sido eliminado. Notificamos al usuario
+              _handleKick();
+              return;
+            }
 
-      final data = snapshot.data();
-      final List members = data?['members'] ?? [];
+            final data = snapshot.data();
+            final List members = data?['members'] ?? [];
 
-      if(!members.contains(userUID)){
-        //El usuario ha sido expulsado del grupo
-        _handleKick();
-      }
-    });
+            /// Si el usuario ya no está en la lista de miembros
+            if (!members.contains(userUID)) {
+              ///El usuario ha sido expulsado del grupo
+              _handleKick();
+            }
+          } catch (e) {
+            debugPrint("Error escuchando la subscripción: $e");
+          }
+        });
   }
 
-  void _handleKick(){
+  /// Marca al usuario como expulsado o eliminado del grupo.
+  void _handleKick() {
     _isMember = false;
     notifyListeners();
   }
 
-  void stopListening(){
+  /// Detiene la escucha de cambios en Firestore.
+  void stopListening() {
     _membershipSub?.cancel();
     _membershipSub = null;
   }

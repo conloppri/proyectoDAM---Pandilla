@@ -112,7 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           crossAxisCellCount: 2,
                           mainAxisCellCount: 1,
                           child: Card.filled(
-                            color: AppColors.calendar_secondary,
+                            color: AppColors.calendarSecondary,
                             child: Center(
                               child: ListTile(
                                 leading: const Icon(Icons.work, color: Colors.white),
@@ -127,7 +127,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           crossAxisCellCount: 4,
                           mainAxisCellCount: 1,
                           child: Card.filled(
-                            color: AppColors.lists_secondary,
+                            color: AppColors.listsSecondary,
                             child: Center(
                               child: ListTile(
                                 leading: const Icon(Icons.cake, color: Colors.white),
@@ -142,7 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           crossAxisCellCount: 2,
                           mainAxisCellCount:2,
                           child: Card.filled(
-                            color: AppColors.notes_primary,
+                            color: AppColors.notesPrimary,
                             child: Center(
                               child: ListTile(
                                 leading: const Icon(Icons.palette, color: Colors.white),
@@ -172,7 +172,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           crossAxisCellCount: 4,
                           mainAxisCellCount: 1,
                           child: Card.filled(
-                            color: AppColors.calendar_primary,
+                            color: AppColors.calendarPrimary,
                             child: Center(
                               child: ListTile(
                                 leading: const Icon(Icons.sports_basketball, color: Colors.white),
@@ -187,7 +187,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           crossAxisCellCount: 4,
                           mainAxisCellCount: 2,
                           child: Card.filled(
-                            color: AppColors.notes_secondary,
+                            color: AppColors.notesSecondary,
                             child: Center(
                               child: ListTile(
                                 leading: const Icon(Icons.star, color: Colors.white,),

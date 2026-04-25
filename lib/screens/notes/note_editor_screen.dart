@@ -50,11 +50,11 @@ class NoteEditorScreen extends StatefulWidget {
 class _NoteEditorScreenState extends State<NoteEditorScreen> {
   /// Mapa de colores disponibles para la nota.
   final Map<String, Color> colors = {
-    "pink": AppColors.pink_note,
-    "purple": AppColors.purple_note,
-    "blue": AppColors.blue_note,
-    "green": AppColors.green_note,
-    "yellow": AppColors.yellow_note,
+    "pink": AppColors.pinkNote,
+    "purple": AppColors.purpleNote,
+    "blue": AppColors.blueNote,
+    "green": AppColors.greenNote,
+    "yellow": AppColors.yellowNote,
   };
 
   /// Color actualmente seleccionado (clave del mapa `colors`).
@@ -82,13 +82,17 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   /// - Formatea la fecha de creación
   /// - Actualiza el estado de la pantalla
   loadNote() async {
-    noteInfo = await getNote(widget.groupUID, widget.noteID);
-    DateTime date = noteInfo["createAt"].toDate();
-    _lastUpdate = DateFormat("HH:mm dd/MM/yyyy", "es_ES").format(date);
-    _titleController.text = noteInfo["title"];
-    _bodyController.text = noteInfo["body"];
-    _selectedColor = noteInfo["color"];
-    setState(() {});
+    try {
+      noteInfo = await getNote(widget.groupUID, widget.noteID);
+      DateTime date = noteInfo["createAt"].toDate();
+      _lastUpdate = DateFormat("HH:mm dd/MM/yyyy", "es_ES").format(date);
+      _titleController.text = noteInfo["title"];
+      _bodyController.text = noteInfo["body"];
+      _selectedColor = noteInfo["color"];
+      setState(() {});
+    } catch (e) {
+      debugPrint("Error cargando información: $e");
+    }
   }
 
   /// Inicialización del estado.
@@ -109,12 +113,12 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   /// - Botón de guardado en la AppBar
   @override
   Widget build(BuildContext context) {
-    String? _groupUID = context.watch<GroupProvider>().groupUID;
-    String? _groupName = context.watch<GroupProvider>().groupName;
+    String? groupUID = context.watch<GroupProvider>().groupUID;
+    String? groupName = context.watch<GroupProvider>().groupName;
     return Scaffold(
       appBar: AppBar(
-        title: Text(_groupName!, style: AppStyles.title),
-        backgroundColor: AppColors.notes_primary,
+        title: Text(groupName!, style: AppStyles.title),
+        backgroundColor: AppColors.notesPrimary,
         foregroundColor: Colors.white,
         actions: [
           /// Botón para guardar los cambios de la nota en Firestore
@@ -130,7 +134,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 );
               }else { //Si está bien, actualiza la nota en la base de datos
                 updateNote(
-                  _groupUID!,
+                  groupUID!,
                   widget.noteID,
                   _titleController.text,
                   _bodyController.text,
@@ -156,7 +160,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             height: MediaQuery.of(context).size.height * 0.75,
             child: Card.filled(
               shape: RoundedRectangleBorder(
-                side: BorderSide(color: AppColors.notes_primary, width: 2),
+                side: BorderSide(color: AppColors.notesPrimary, width: 2),
                 borderRadius: BorderRadius.circular(10),
               ),
               color: colors[_selectedColor],
@@ -191,10 +195,10 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         style: const TextStyle(color: Colors.black),
                         decoration: InputDecoration(filled: false,
                         enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.notes_secondary),
+                          borderSide: BorderSide(color: AppColors.notesSecondary),
                         ),
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.notes_primary)
+                          borderSide: BorderSide(color: AppColors.notesPrimary)
                         )),
                       ),
                       const SizedBox(
@@ -210,11 +214,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         decoration: InputDecoration(
                           filled: false,
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.notes_secondary),
+                            borderSide: BorderSide(color: AppColors.notesSecondary),
                             borderRadius: BorderRadius.circular(20)
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.notes_primary),
+                            borderSide: BorderSide(color: AppColors.notesPrimary),
                             borderRadius: BorderRadius.circular(20)
                           )
                         ),

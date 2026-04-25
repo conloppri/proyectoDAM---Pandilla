@@ -41,11 +41,11 @@ class NoteViewScreen extends StatefulWidget {
 class _NoteViewScreenState extends State<NoteViewScreen> {
   /// Mapa de colores disponibles para las notas.
   final Map<String, Color> colors = {
-    "pink": AppColors.pink_note,
-    "purple": AppColors.purple_note,
-    "blue": AppColors.blue_note,
-    "green": AppColors.green_note,
-    "yellow": AppColors.yellow_note,
+    "pink": AppColors.pinkNote,
+    "purple": AppColors.purpleNote,
+    "blue": AppColors.blueNote,
+    "green": AppColors.greenNote,
+    "yellow": AppColors.yellowNote,
   };
 
   /// Estilo de texto utilizado en el contenido de la nota.
@@ -67,7 +67,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(groupName!, style: AppStyles.title),
-        backgroundColor: AppColors.notes_primary,
+        backgroundColor: AppColors.notesPrimary,
         foregroundColor: Colors.white,
       ),
       body: SafeArea(
@@ -95,7 +95,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                 height: MediaQuery.of(context).size.height * 0.75,
                 child: Card.filled(
                   shape: RoundedRectangleBorder(
-                    side: BorderSide(color: AppColors.notes_primary, width: 1),
+                    side: BorderSide(color: AppColors.notesPrimary, width: 1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   color: colors[noteInfo["color"]],
@@ -137,7 +137,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                                         ),
                                       ),
                                     ),
-                                    icon: Icon(Icons.edit, color: AppColors.notes_primary, size: 30,),
+                                    icon: Icon(Icons.edit, color: AppColors.notesPrimary, size: 30,),
                                   ),
                                 if (isAdmin || userUID == authorID)
                                 /// Botón de edición (solo admin o autor)
@@ -192,7 +192,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                                         navigator.pop();
                                       }
                                     },
-                                    icon: Icon(Icons.delete, color: AppColors.notes_primary, size: 30,),
+                                    icon: Icon(Icons.delete, color: AppColors.notesPrimary, size: 30,),
                                   ),
 
                               ],

@@ -85,7 +85,9 @@ class _MainScreenState extends State<MainScreen> {
 
   /// Carga la información del usuario desde Firestore
   /// y la guarda en el `UserProvider`.
-  Future<void> loadUser() async {
+  ///
+  /// También lanza el tutorial, si procede
+  Future<void> loadInfo() async {
     String? userUID = FirebaseAuth.instance.currentUser?.uid;
     UserProvider userProvider = context.read<UserProvider>();
     Map userInfo = await getUser(userUID!);
@@ -99,21 +101,23 @@ class _MainScreenState extends State<MainScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     tutorialCompleted = prefs.getBool("main_tutorial");
     setState(() {});
+
+    if(!tutorialCompleted!) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showTutorial(); //Guía interactiva
+      });
+    }
   }
 
   /// Metodo de inicialización del estado.
   ///
   /// - Carga los datos del usuario
   /// - Reprograma los eventos cada vez que el usuario entra a la app
-  /// - Lanza el tutorial tras el primer frame
   @override
   void initState() {
     super.initState();
-    loadUser(); //Carga de datos
+    loadInfo(); //Carga de datos
     scheduleAllEvents(); //Reprogramación de eventos
-  WidgetsBinding.instance.addPostFrameCallback((_){
-    showTutorial(); //Guía interactiva
-  });
   }
 
   /// Construye la interfaz principal de la pantalla.
@@ -425,7 +429,7 @@ class _MainScreenState extends State<MainScreen> {
   ///
   /// Solo se muestra una vez, guardando su estado en `SharedPreferences`.
   Future<void> showTutorial() async {
-  if(tutorialCompleted == null || !tutorialCompleted!) {
+
     TutorialCoachMark(
         alignSkip: Alignment.topRight,
         textSkip: AppLocalizations.of(context)!.skip,
@@ -501,5 +505,5 @@ class _MainScreenState extends State<MainScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool("main_tutorial", true);
   }
-  }
+
 }

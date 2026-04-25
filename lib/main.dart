@@ -1,26 +1,26 @@
-import 'package:firebase_core/firebase_core.dart';
+//Básicos
 import 'package:flutter/material.dart';
-
-import 'package:flutter_localizations/flutter_localizations.dart';
-
 import 'package:pandilla/core/app_theme.dart';
 import 'package:pandilla/core/services/navigator_key.dart';
+//Firebase
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+//Servicios y providers
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pandilla/core/providers/group_provider.dart';
 import 'package:pandilla/core/providers/locale_provider.dart';
 import 'package:pandilla/core/providers/user_provider.dart';
 import 'package:pandilla/core/services/notification_services.dart';
 import 'package:pandilla/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
+import 'core/providers/theme_provider.dart';
+//Pantallas
 import 'package:pandilla/screens/log_screen.dart';
 import 'package:pandilla/screens/main_screen.dart';
-
 import 'package:pandilla/screens/profile/profile_editor_screen.dart';
 import 'package:pandilla/screens/settings_screen.dart';
 import 'package:pandilla/screens/splash_screen.dart';
-import 'package:provider/provider.dart';
 
-
-import 'core/providers/theme_provider.dart';
-import 'firebase_options.dart';
 
 /// Punto de entrada principal de la aplicación.
 ///
@@ -31,11 +31,11 @@ import 'firebase_options.dart';
 /// - Registra los providers utilizados en la aplicación.
 Future<void> main() async {
 
-  //inicialización de Firebase
+  ///inicialización de Firebase
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  //Inicialización de servicios de notificación
+  ///Inicialización de servicios de notificación
   NotificationServices.setupTimezone();
   await NotificationServices.init();
 

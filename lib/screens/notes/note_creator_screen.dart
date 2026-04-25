@@ -7,8 +7,6 @@ import 'package:pandilla/core/app_colors.dart';
 //Firebase
 import 'package:pandilla/core/services/firebase_service.dart';
 //Providers y servicios
-import 'package:pandilla/core/providers/group_provider.dart';
-import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 
 /// Pantalla encargada de la creación de una nueva nota dentro de un grupo.
@@ -54,7 +52,7 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
   ///
   /// Aplica color base del módulo de notas y bordes redondeados.
   BoxDecoration boxDecoration = BoxDecoration(
-      color: AppColors.notes_primary,
+      color: AppColors.notesPrimary,
       borderRadius: BorderRadius.circular(12)
   );
 
@@ -70,7 +68,7 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.groupName),
-        backgroundColor: AppColors.notes_primary,
+        backgroundColor: AppColors.notesPrimary,
         foregroundColor: Colors.white,
       ),
       body: Padding(
@@ -83,10 +81,10 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
             /// Título de la pantalla
             Text(
               AppLocalizations.of(context)!.new_note,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
-                color: AppColors.notes_primary,
+                color: AppColors.notesPrimary,
               ),
             ),
             /// Campo de título de la nota
@@ -97,9 +95,9 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
                 maxLength: 15,
                 decoration: InputDecoration(
                   filled: true,
-                 fillColor: AppColors.notes_secondary,
+                 fillColor: AppColors.notesSecondary,
                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: AppColors.notes_primary),
+                    borderSide: const BorderSide(color: AppColors.notesPrimary),
                    borderRadius: BorderRadius.circular(10)
                   ),
                   labelText: AppLocalizations.of(context)!.title,
@@ -118,9 +116,9 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
                 maxLines: 20,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: AppColors.notes_secondary,
+                  fillColor: AppColors.notesSecondary,
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: AppColors.notes_primary),
+                    borderSide: const BorderSide(color: AppColors.notesPrimary),
                     borderRadius: BorderRadius.circular(12)
                   ),
                   labelText: AppLocalizations.of(context)!.body_note,
@@ -153,8 +151,8 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
                   onPressed: () => Navigator.pop(context),
                   child: Text(
                     AppLocalizations.of(context)!.discard,
-                    style: TextStyle(
-                      color: AppColors.notes_secondary,
+                    style: const TextStyle(
+                      color: AppColors.notesSecondary,
                       fontSize: 20,
                     ),
                   ),
@@ -182,8 +180,8 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
                   },
                   child: Text(
                     AppLocalizations.of(context)!.save,
-                    style: TextStyle(
-                      color: AppColors.notes_secondary,
+                    style: const TextStyle(
+                      color: AppColors.notesSecondary,
                       fontSize: 20,
                     ),
                   ),

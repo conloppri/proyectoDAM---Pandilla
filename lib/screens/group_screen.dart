@@ -32,14 +32,17 @@ import '../l10n/app_localizations.dart';
 /// También incluye acciones rápidas (crear eventos, notas y listas)
 /// y gestión de miembros/admin.
 class GroupScreen extends StatefulWidget {
-
   /// Identificador único del grupo.
   final String groupName;
 
   /// Nombre del grupo.
   final String groupUID;
 
-  const GroupScreen({super.key, required this.groupUID, required this.groupName});
+  const GroupScreen({
+    super.key,
+    required this.groupUID,
+    required this.groupName,
+  });
 
   @override
   State<GroupScreen> createState() => _GroupScreenState();
@@ -61,18 +64,18 @@ class _GroupScreenState extends State<GroupScreen> {
 
   /// Colores principales por sección.
   List primaryColors = [
-    AppColors.calendar_primary,
-    AppColors.notes_primary,
-    AppColors.lists_primary,
-    AppColors.members_primary,
+    AppColors.calendarPrimary,
+    AppColors.notesPrimary,
+    AppColors.listsPrimary,
+    AppColors.infoPrimary,
   ];
 
   /// Colores secundarios por sección.
   List secondaryColors = [
-    AppColors.calendar_secondary,
-    AppColors.notes_secondary,
-    AppColors.lists_secondary,
-    AppColors.members_secondary,
+    AppColors.calendarSecondary,
+    AppColors.notesSecondary,
+    AppColors.listsSecondary,
+    AppColors.infoSecondary,
   ];
 
   /// Provider del grupo (estado global del grupo).
@@ -92,7 +95,6 @@ class _GroupScreenState extends State<GroupScreen> {
   ///
   /// - Inicia escucha del provider del grupo
   /// - Registra listener para expulsión
-  /// - Muestra tutorial si procede
   @override
   void initState() {
     super.initState();
@@ -104,16 +106,20 @@ class _GroupScreenState extends State<GroupScreen> {
 
     provider.addListener(_handleKick);
 
-
-
-    WidgetsBinding.instance.addPostFrameCallback((_){
-      showTutorial();
-    });
+    loadPrefs();
   }
 
+  ///Carga las preferencias respecto al tutorial
+  ///y lo lanza si procede
   loadPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     tutorialCompleted = prefs.getBool("group_tutorial");
+    setState(() {});
+    if(!tutorialCompleted!){
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showTutorial();
+      });
+    }
   }
 
   /// Libera recursos del listener del provider.
@@ -134,57 +140,107 @@ class _GroupScreenState extends State<GroupScreen> {
       const CalendarSubscreen(),
       const NotesSubscreen(),
       const ListsSubscreen(),
-      InfoSubscreen(groupUID: widget.groupUID,),
+      InfoSubscreen(groupUID: widget.groupUID),
     ];
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.groupName, style: AppStyles.title,),
+        title: Text(widget.groupName, style: AppStyles.title),
         backgroundColor: primaryColors[_selectedIndexBottom],
         foregroundColor: Colors.white,
         actions: [
           /// Menú de opciones del grupo
           PopupMenuButton<String>(
-            itemBuilder: (BuildContext context)=>[
-            if(isAdmin!) PopupMenuItem(value: "edit", child: Text(AppLocalizations.of(context)!.edit_group_info)), //Editar grupo => Solo admins
-            if(isAdmin) PopupMenuItem(value: "delete",child: Text(AppLocalizations.of(context)!.delete_group, style: const TextStyle(color: Colors.red),),), //Elimiar grupo => Solo admins
-             PopupMenuItem(value: "info", child: Text(AppLocalizations.of(context)!.about)) //Info sobre la app
-          ],
-          //Control de elección del popMenu
-          onSelected: (value){
-            if(value=="info"){ //info
-              showDialog(context: context, builder: (context){
-                return AlertDialog(
-                  title: Text(AppLocalizations.of(context)!.about),
-                  content: Text("App desarrollada por Consuelo López Prieto para Proyecto Intermodular de DAM 2025/2026."),
-                  actions: [
-                    TextButton(onPressed: ()=> Navigator.pop(context), child: Text(AppLocalizations.of(context)!.close))
-                  ],
+            itemBuilder: (BuildContext context) => [
+              if (isAdmin!)
+                PopupMenuItem(
+                  value: "edit",
+                  child: Text(AppLocalizations.of(context)!.edit_group_info),
+                ), //Editar grupo => Solo admins
+              if (isAdmin)
+                PopupMenuItem(
+                  value: "delete",
+                  child: Text(
+                    AppLocalizations.of(context)!.delete_group,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ), //Elimiar grupo => Solo admins
+              PopupMenuItem(
+                value: "info",
+                child: Text(AppLocalizations.of(context)!.about),
+              ), //Info sobre la app
+            ],
+            //Control de elección del popMenu
+            onSelected: (value) {
+              if (value == "info") {
+                //info
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text(AppLocalizations.of(context)!.about),
+                      content: Text(
+                        "App desarrollada por Consuelo López Prieto para Proyecto Intermodular de DAM 2025/2026.",
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(AppLocalizations.of(context)!.close),
+                        ),
+                      ],
+                    );
+                  },
                 );
-              });
-            }
-            if(value == "delete"){ //eliminar grupo
-              showDialog(context: context, builder: (context){
-                return AlertDialog( //Advertencia de si está seguro de eliminar
-                  title: Text(AppLocalizations.of(context)!.delete_group),
-                  content: Text(AppLocalizations.of(context)!.warning_group_removal),
-                  actions: [
-                    TextButton(onPressed: ()=> Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel)),
-                    TextButton(onPressed: (){
-                      deleteGroup(widget.groupUID);
-                      Navigator.pushReplacementNamed(context, "/home");
-                      Navigator.pushReplacementNamed(context, "/home");
-                    }, child: Text(AppLocalizations.of(context)!.remove, style: const TextStyle(color: Colors.redAccent),)),
-                  ],
+              }
+              if (value == "delete") {
+                //eliminar grupo
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      //Advertencia de si está seguro de eliminar
+                      title: Text(AppLocalizations.of(context)!.delete_group),
+                      content: Text(
+                        AppLocalizations.of(context)!.warning_group_removal,
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(AppLocalizations.of(context)!.cancel),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            deleteGroup(widget.groupUID);
+                            Navigator.pushReplacementNamed(context, "/home");
+                            Navigator.pushReplacementNamed(context, "/home");
+                          },
+                          child: Text(
+                            AppLocalizations.of(context)!.remove,
+                            style: const TextStyle(color: Colors.redAccent),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 );
-              });
-            }
-            if(value == "edit"){ //editar => Pantalla de edicción de grupo
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>InfoEditor(groupUID: widget.groupUID, groupName: widget.groupName)) );
-            }
-          },)
+              }
+              if (value == "edit") {
+                //editar => Pantalla de edicción de grupo
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => InfoEditor(
+                      groupUID: widget.groupUID,
+                      groupName: widget.groupName,
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
         ],
       ),
+
       ///Drawer lateral personalizado
       drawer: const LeftDrawer(),
 
@@ -194,23 +250,27 @@ class _GroupScreenState extends State<GroupScreen> {
         currentIndex: _selectedIndexBottom,
         selectedItemColor: primaryColors[_selectedIndexBottom],
         unselectedItemColor: secondaryColors[_selectedIndexBottom],
-        items:  [
-          BottomNavigationBarItem( //CALENDARIO
+        items: [
+          BottomNavigationBarItem(
+            //CALENDARIO
             key: calendarKey,
             icon: const Icon(Icons.calendar_month_outlined, size: 40),
             label: AppLocalizations.of(context)!.calendar,
           ),
-          BottomNavigationBarItem(//NOTAS
+          BottomNavigationBarItem(
+            //NOTAS
             key: notesKey,
             icon: const Icon(Icons.note, size: 40),
             label: AppLocalizations.of(context)!.notes,
           ),
-          BottomNavigationBarItem( //LISTAS
+          BottomNavigationBarItem(
+            //LISTAS
             key: listsKey,
             icon: const Icon(Icons.list, size: 40),
             label: AppLocalizations.of(context)!.lists,
           ),
-          BottomNavigationBarItem( //INFO DEL GRUPO
+          BottomNavigationBarItem(
+            //INFO DEL GRUPO
             key: infoKey,
             icon: const Icon(Icons.group, size: 40),
             label: AppLocalizations.of(context)!.group_info,
@@ -223,11 +283,25 @@ class _GroupScreenState extends State<GroupScreen> {
           });
         },
       ),
+
       ///Subpantalla activa
       body: SafeArea(
         key: lastKey,
-          child: selectedSubscreen[_selectedIndexBottom]
+        ///Animación de transición entre subpantallas
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          transitionBuilder: (child, animation) {
+            final offsetAnimation = Tween<Offset>(
+              begin: const Offset(1, 0),
+              end: const Offset(0, 0),
+            ).animate(animation);
+
+            return SlideTransition(position: offsetAnimation, child: child);
+          },
+          child: selectedSubscreen[_selectedIndexBottom],
+        ),
       ),
+
       /// Botón flotante con speedDial para añadir elementos al grupo (eventos, notas y listas)
       floatingActionButton: SpeedDial(
         icon: Icons.add,
@@ -241,16 +315,22 @@ class _GroupScreenState extends State<GroupScreen> {
           SpeedDialChild(
             child: const Icon(Icons.event),
             label: AppLocalizations.of(context)!.add_event,
-            backgroundColor: AppColors.calendar_primary,
+            backgroundColor: AppColors.calendarPrimary,
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context)=> const EventCreatorScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const EventCreatorScreen(),
+                ),
+              );
             },
           ),
+
           ///SpeedDial para añadir notas
           SpeedDialChild(
             child: const Icon(Icons.note_add),
             label: AppLocalizations.of(context)!.add_note,
-            backgroundColor: AppColors.notes_primary,
+            backgroundColor: AppColors.notesPrimary,
             onTap: () {
               Navigator.push(
                 context,
@@ -263,24 +343,27 @@ class _GroupScreenState extends State<GroupScreen> {
               );
             },
           ),
+
           ///SpeedDial para añadir listas
           SpeedDialChild(
             child: const Icon(Icons.list_alt),
-            label:AppLocalizations.of(context)!.add_list,
-            backgroundColor: AppColors.lists_primary,
+            label: AppLocalizations.of(context)!.add_list,
+            backgroundColor: AppColors.listsPrimary,
             onTap: () {
               showDialog(
                 context: context,
                 builder: (context) {
                   ///Formulario creación listas
-                  return AlertDialog( //Diálogo de creación de lista (Solo nombre)
+                  return AlertDialog(
+                    //Diálogo de creación de lista (Solo nombre)
                     title: Text(AppLocalizations.of(context)!.new_list),
+
                     ///Título de la lista
                     content: TextField(
                       decoration: InputDecoration(
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: AppColors.lists_primary,
+                            color: AppColors.listsPrimary,
                           ),
                         ),
                         border: const UnderlineInputBorder(),
@@ -294,12 +377,23 @@ class _GroupScreenState extends State<GroupScreen> {
                         onPressed: () => Navigator.pop(context),
                         child: Text(AppLocalizations.of(context)!.discard),
                       ),
+
                       ///Botón "Guardar"
                       TextButton(
-                        onPressed: (){
-                          if (_listTitle == ""){ //Comprobamos que no esté vacío el nombre
-                            ScaffoldMessenger.of(context,).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.all_fields_required)));}
-                          else { //Creamos la lista
+                        onPressed: () {
+                          if (_listTitle == "") {
+                            //Comprobamos que no esté vacío el nombre
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.error_title_required,
+                                ),
+                              ),
+                            );
+                          } else {
+                            //Creamos la lista
                             newList(widget.groupUID, _listTitle);
                             Navigator.pop(context);
                           }
@@ -322,150 +416,165 @@ class _GroupScreenState extends State<GroupScreen> {
   /// Si ya no pertenece:
   /// - Redirige a home
   /// - Muestra aviso informativo
-  void _handleKick(){
+  void _handleKick() {
     final GroupProvider provider = context.read<GroupProvider>();
-    if(!provider.isMember){ //Si ha sido expulsado, lo devolvemos al MainScreen
-      navigatorKey.currentState?.pushNamedAndRemoveUntil("/home", (route)=>false);
+    if (!provider.isMember) {
+      //Si ha sido expulsado, lo devolvemos al MainScreen
+      navigatorKey.currentState?.pushNamedAndRemoveUntil(
+        "/home",
+        (route) => false,
+      );
 
-      Future.microtask((){ //Mostramos aviso al usuario de que ha sido expulsado o el grupo ha sido eliminado
-        showDialog(context: navigatorKey.currentContext!,
-            builder: (_){
-          return AlertDialog(
-            title: Text(AppLocalizations.of(context)!.notif_group_removal_title),
-            content: Text(AppLocalizations.of(context)!.notif_group_removal_content),
-            actions: [
-              TextButton(onPressed: ()=>Navigator.pop(navigatorKey.currentContext!), child: Text(AppLocalizations.of(context)!.accept))
-            ],
-          );
-            });
+      Future.microtask(() {
+        //Mostramos aviso al usuario de que ha sido expulsado o el grupo ha sido eliminado
+        showDialog(
+          context: navigatorKey.currentContext!,
+          builder: (_) {
+            return AlertDialog(
+              title: Text(
+                AppLocalizations.of(context)!.notif_group_removal_title,
+              ),
+              content: Text(
+                AppLocalizations.of(context)!.notif_group_removal_content,
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(navigatorKey.currentContext!),
+                  child: Text(AppLocalizations.of(context)!.accept),
+                ),
+              ],
+            );
+          },
+        );
       });
     }
   }
+
   /// Muestra la guía interactiva del grupo (solo primera vez).
   Future<void> showTutorial() async {
-    if(tutorialCompleted == null || !tutorialCompleted!) {
-      int counter = 0;
-      TutorialCoachMark(
-          alignSkip: Alignment.topRight,
-          textSkip: AppLocalizations.of(context)!.skip,
-          textStyleSkip: TextStyle(color: AppColors.primary, fontSize: 20),
-          onClickTarget: (target) {
-            setState(() {
-              //Control de las subpantallas conforme pase el tutorial
-              if (counter < 3) {
-                counter++;
-                _selectedIndexBottom = counter;
-              } else if (counter == 3) {
-                _selectedIndexBottom = 0;
-                counter++;
-              }
-            });
-          },
-          targets: [
-            ///Paso 1: Calendario
-            TargetFocus(
-                identify: "calendar",
-                keyTarget: calendarKey,
-                enableTargetTab: true,
-                contents: [
-                  TargetContent(
-                      align: ContentAlign.custom,
-                      customPosition: CustomTargetContentPosition(
-                          top: MediaQuery
-                              .of(context)
-                              .size
-                              .height * 0.5),
-                      child: Text(
-                        AppLocalizations.of(context)!.tutorial_calendar,
-                        style: AppStyles.tutorialStyle,)
-                  )
-                ]
+    int counter = 0;
+    TutorialCoachMark(
+      alignSkip: Alignment.topRight,
+      textSkip: AppLocalizations.of(context)!.skip,
+      textStyleSkip: TextStyle(color: AppColors.primary, fontSize: 20),
+      onClickTarget: (target) {
+        setState(() {
+          //Control de las subpantallas conforme pase el tutorial
+          if (counter < 3) {
+            counter++;
+            _selectedIndexBottom = counter;
+          } else if (counter == 3) {
+            _selectedIndexBottom = 0;
+            counter++;
+          }
+        });
+      },
+      targets: [
+        ///Paso 1: Calendario
+        TargetFocus(
+          identify: "calendar",
+          keyTarget: calendarKey,
+          enableTargetTab: true,
+          contents: [
+            TargetContent(
+              align: ContentAlign.custom,
+              customPosition: CustomTargetContentPosition(
+                top: MediaQuery.of(context).size.height * 0.5,
+              ),
+              child: Text(
+                AppLocalizations.of(context)!.tutorial_calendar,
+                style: AppStyles.tutorialStyle,
+              ),
             ),
-            ///Paso 2: Notas
-            TargetFocus(
-                identify: "notes",
-                keyTarget: notesKey,
-                enableTargetTab: true,
-                contents: [
-                  TargetContent(
-                      align: ContentAlign.custom,
-                      customPosition: CustomTargetContentPosition(
-                          top: MediaQuery
-                              .of(context)
-                              .size
-                              .height * 0.5),
-                      child: Text(AppLocalizations.of(context)!.tutorial_notes,
-                        style: AppStyles.tutorialStyle,)
-                  )
-                ]
+          ],
+        ),
+
+        ///Paso 2: Notas
+        TargetFocus(
+          identify: "notes",
+          keyTarget: notesKey,
+          enableTargetTab: true,
+          contents: [
+            TargetContent(
+              align: ContentAlign.custom,
+              customPosition: CustomTargetContentPosition(
+                top: MediaQuery.of(context).size.height * 0.5,
+              ),
+              child: Text(
+                AppLocalizations.of(context)!.tutorial_notes,
+                style: AppStyles.tutorialStyle,
+              ),
             ),
-            ///Paso 3: Listas
-            TargetFocus(
-                identify: "lists",
-                keyTarget: listsKey,
-                enableTargetTab: true,
-                contents: [
-                  TargetContent(
-                      align: ContentAlign.custom,
-                      customPosition: CustomTargetContentPosition(
-                          top: MediaQuery
-                              .of(context)
-                              .size
-                              .height * 0.5),
-                      child: Text(AppLocalizations.of(context)!.tutorial_lists,
-                        style: AppStyles.tutorialStyle,)
-                  )
-                ]
+          ],
+        ),
+
+        ///Paso 3: Listas
+        TargetFocus(
+          identify: "lists",
+          keyTarget: listsKey,
+          enableTargetTab: true,
+          contents: [
+            TargetContent(
+              align: ContentAlign.custom,
+              customPosition: CustomTargetContentPosition(
+                top: MediaQuery.of(context).size.height * 0.5,
+              ),
+              child: Text(
+                AppLocalizations.of(context)!.tutorial_lists,
+                style: AppStyles.tutorialStyle,
+              ),
             ),
-            ///Paso 4: Info del grupo
-            TargetFocus(
-                identify: "info",
-                keyTarget: infoKey,
-                enableTargetTab: true,
-                contents: [
-                  TargetContent(
-                      align: ContentAlign.custom,
-                      customPosition: CustomTargetContentPosition(
-                          top: MediaQuery
-                              .of(context)
-                              .size
-                              .height * 0.5),
-                      child: Text(AppLocalizations.of(context)!.tutorial_info,
-                        style: AppStyles.tutorialStyle,)
-                  )
-                ]
+          ],
+        ),
+
+        ///Paso 4: Info del grupo
+        TargetFocus(
+          identify: "info",
+          keyTarget: infoKey,
+          enableTargetTab: true,
+          contents: [
+            TargetContent(
+              align: ContentAlign.custom,
+              customPosition: CustomTargetContentPosition(
+                top: MediaQuery.of(context).size.height * 0.5,
+              ),
+              child: Text(
+                AppLocalizations.of(context)!.tutorial_info,
+                style: AppStyles.tutorialStyle,
+              ),
             ),
-            ///Paso 5: Fin de la guía
-            TargetFocus(
-                identify: "lastKey",
-                keyTarget: lastKey,
-                enableTargetTab: true,
-                contents: [
-                  TargetContent(
-                      align: ContentAlign.custom,
-                      customPosition: CustomTargetContentPosition(
-                          top: MediaQuery
-                              .of(context)
-                              .size
-                              .height * 0.35),
-                      child: Container(
-                          padding: const EdgeInsetsGeometry.all(12),
-                          decoration: BoxDecoration(
-                              color: AppColors.secondary,
-                              borderRadius: BorderRadius.circular(20)
-                          ),
-                          child: Text(
-                              AppLocalizations.of(context)!.tutorial_last,
-                              style: TextStyle(
-                                  color: AppColors.primary, fontSize: 20)))
-                  )
-                ]
+          ],
+        ),
+
+        ///Paso 5: Fin de la guía
+        TargetFocus(
+          identify: "lastKey",
+          keyTarget: lastKey,
+          enableTargetTab: true,
+          contents: [
+            TargetContent(
+              align: ContentAlign.custom,
+              customPosition: CustomTargetContentPosition(
+                top: MediaQuery.of(context).size.height * 0.35,
+              ),
+              child: Container(
+                padding: const EdgeInsetsGeometry.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.secondary,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  AppLocalizations.of(context)!.tutorial_last,
+                  style: TextStyle(color: AppColors.primary, fontSize: 20),
+                ),
+              ),
             ),
-          ]
-      ).show(context: context);
-      //Guardamos el tutorial como completado para el usuario
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setBool("group_tutorial", true);
-    }
+          ],
+        ),
+      ],
+    ).show(context: context);
+    //Guardamos el tutorial como completado para el usuario
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool("group_tutorial", true);
   }
 }

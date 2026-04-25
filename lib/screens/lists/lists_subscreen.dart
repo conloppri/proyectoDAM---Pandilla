@@ -47,7 +47,7 @@ class _ListsSubscreenState extends State<ListsSubscreen> {
           /// Fila superior con opciones de ordenación
           Row(
             children: [
-              Text(AppLocalizations.of(context)!.sort_by, style: TextStyle(color: AppColors.lists_primary, fontSize: 15),),
+              Text(AppLocalizations.of(context)!.sort_by, style: TextStyle(color: AppColors.listsPrimary, fontSize: 15),),
               IconButton(onPressed: (){
                 setState(() {
                   sortedBy=="ABC"
@@ -56,11 +56,11 @@ class _ListsSubscreenState extends State<ListsSubscreen> {
                 });
               },
                   icon: Icon(sortedBy == "ABC" ? Icons.sort_by_alpha : Icons.access_time, size: 30,),
-                color: AppColors.lists_primary,
+                color: AppColors.listsPrimary,
               ),
             ],
           ),
-          Divider(color: AppColors.lists_primary),
+          Divider(color: AppColors.listsPrimary),
           Expanded(
             /// Lista de listas obtenidas desde Firestore en tiempo real
             child: StreamBuilder(

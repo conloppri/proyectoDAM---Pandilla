@@ -48,7 +48,7 @@ class _ListviewScreenState extends State<ListviewScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(groupName!),
-        backgroundColor: AppColors.lists_primary,
+        backgroundColor: AppColors.listsPrimary,
       ),
       body: SafeArea(
         child: Padding(
@@ -103,7 +103,7 @@ class _ListviewScreenState extends State<ListviewScreen> {
                       maxLength: 30,
                       decoration: InputDecoration(
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.lists_primary),
+                          borderSide: BorderSide(color: AppColors.listsPrimary),
                         ),
                         border: const OutlineInputBorder(),
                         labelText: AppLocalizations.of(context)!.new_item,
@@ -118,7 +118,7 @@ class _ListviewScreenState extends State<ListviewScreen> {
                   Padding(
                     padding: const EdgeInsetsGeometry.only(bottom: 25),
                     child: FloatingActionButton(
-                      backgroundColor: AppColors.lists_secondary,
+                      backgroundColor: AppColors.listsSecondary,
                       foregroundColor: Colors.white,
                       onPressed: () async {
                         if (_controller.text == "") { //Comprueba que el campo no este vacío

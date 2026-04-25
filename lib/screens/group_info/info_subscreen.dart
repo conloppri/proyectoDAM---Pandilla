@@ -63,7 +63,7 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
         children: [
           /// Card con información general del grupo
           Card.filled(
-            color: AppColors.members_primary,
+            color: AppColors.infoPrimary,
             child: Container(
               padding: const EdgeInsets.all(10),
               height: MediaQuery.of(context).size.height * 0.3,
@@ -218,7 +218,7 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                         itemCount: data.length,
                         itemBuilder: (context, index) {
                           return Card.filled(
-                            color: AppColors.members_secondary,
+                            color: AppColors.infoSecondary,
                             child: GestureDetector( //si pulsa sobre un elemento de la lista, lo envía al perfil del usuario seleccinado
                               onTap: () => Navigator.push(
                                 context,
@@ -250,7 +250,7 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                                       ),
                                     ),
                                     /// Icono de administrador
-                                    if(data[index]["admin"])Icon(Icons.star, color: AppColors.lists_primary,),
+                                    if(data[index]["admin"])Icon(Icons.star, color: AppColors.listsPrimary,),
 
                                     const Spacer(),
                                     /// Botón para promocionar a admin (solo visible para admins)

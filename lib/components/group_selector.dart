@@ -1,59 +1,115 @@
-import 'package:firebase_auth/firebase_auth.dart';
+//Básicos
 import 'package:flutter/material.dart';
+//Estilos y colores
 import 'package:pandilla/core/app_colors.dart';
+//Firebase
+import '../core/services/firebase_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+//Servicios y providers
 import 'package:pandilla/core/providers/group_provider.dart';
 import 'package:provider/provider.dart';
-
-import '../core/services/firebase_service.dart';
+//Pantallas
 import '../screens/group_screen.dart';
 
+/// Widget selector de grupo.
+///
+/// Representa una tarjeta visual de un grupo al que pertenece el usuario.
+/// Permite seleccionar un grupo y navegar a su pantalla principal,
+/// cargando previamente la información en [GroupProvider].
 class GroupSelector extends StatefulWidget {
-  final String groupName;
+  /// ID único del grupo.
   final String groupUID;
+
+  /// Nombre del grupo.
+  final String groupName;
+
+  /// Código de acceso del grupo.
   final String code;
+
+  /// Nombre del avatar del grupo (asset).
   final String avatar;
-  const GroupSelector({super.key, required this.groupUID, required this.groupName, required this.code, required this.avatar});
+  const GroupSelector({
+    super.key,
+    required this.groupUID,
+    required this.groupName,
+    required this.code,
+    required this.avatar,
+  });
 
   @override
   State<GroupSelector> createState() => _GroupSelectorState();
 }
 
+/// Estado del widget [GroupSelector].
+///
+/// Gestiona la interacción del usuario al seleccionar un grupo
+/// y realiza la navegación a la pantalla principal del grupo.
 class _GroupSelectorState extends State<GroupSelector> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8.0),
+
+      /// Tarjeta seleccionable del grupo
       child: GestureDetector(
         onTap: () async {
-          String? _userUID = FirebaseAuth.instance.currentUser?.uid;
-          bool _admin = await isAdmin(widget.groupUID, _userUID!);
-          context.read<GroupProvider>().setGroup(widget.groupUID, widget.groupName, _admin, widget.code);
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context)=>GroupScreen(groupName: widget.groupName, groupUID: widget.groupUID,))); //linea 24
+          try {
+            final GroupProvider groupProvider = context.read<GroupProvider>();
+            final navigator = Navigator.of(context);
+            String? userUID = FirebaseAuth.instance.currentUser?.uid;
+
+            /// Comprueba si el usuario es administrador del grupo
+            bool admin = await isAdmin(widget.groupUID, userUID!);
+
+            /// Guarda la información del grupo en el provider global
+            groupProvider.setGroup(
+              widget.groupUID,
+              widget.groupName,
+              admin,
+              widget.code,
+            );
+
+            /// Navega a la pantalla del grupo seleccionado
+            navigator.push(
+              MaterialPageRoute(
+                builder: (context) => GroupScreen(
+                  groupName: widget.groupName,
+                  groupUID: widget.groupUID,
+                ),
+              ),
+            );
+          } catch (e) {
+            debugPrint("Error al cargar grupo: $e");
+          }
+//linea 24
         },
+
+        /// Contenedor visual del grupo
         child: Container(
           height: 100,
           width: 100,
           decoration: BoxDecoration(
             color: AppColors.secondary,
-            borderRadius: BorderRadius.circular(10)
+            borderRadius: BorderRadius.circular(10),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              /// Avatar del grupo
               CircleAvatar(
                 radius: 30,
                 backgroundImage: AssetImage("assets/images/${widget.avatar}"),
               ),
-              Text(widget.groupName, style: TextStyle(color: Colors.white, fontSize: 20),)
+
+              /// Nombre del grupo
+              Text(
+                widget.groupName,
+                style: const TextStyle(color: Colors.white, fontSize: 20),
+              ),
             ],
           ),
-
         ),
       ),
     );
   }
-
-
-
 }

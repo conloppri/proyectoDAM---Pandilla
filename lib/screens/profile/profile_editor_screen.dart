@@ -73,17 +73,21 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   /// Rellena los controladores con los datos actuales del perfil
   /// para permitir su edición.
   loadProfile() async {
-    _userInfo = await getUser(userUID!);
-    _nameController.text = _userInfo["name"];
-    _jobController.text = _userInfo["job"];
-    _colorsController.text = _userInfo["fav_colors"];
-    _animalsController.text = _userInfo["fav_animal"];
-    _hobbiesController.text = _userInfo["hobbies"];
-    _moreController.text = _userInfo["description"];
-    DateTime date = _userInfo["bithdate"].toDate();
-    birthdate = DateFormat("dd/MM/yyyy", "es_ES").format(date);
-    _selectedAvatar = _userInfo["avatar"];
-    setState(() {});
+    try {
+      _userInfo = await getUser(userUID!);
+      _nameController.text = _userInfo["name"];
+      _jobController.text = _userInfo["job"];
+      _colorsController.text = _userInfo["fav_colors"];
+      _animalsController.text = _userInfo["fav_animal"];
+      _hobbiesController.text = _userInfo["hobbies"];
+      _moreController.text = _userInfo["description"];
+      DateTime date = _userInfo["bithdate"].toDate();
+      birthdate = DateFormat("dd/MM/yyyy", "es_ES").format(date);
+      _selectedAvatar = _userInfo["avatar"];
+      setState(() {});
+    } catch (e) {
+      debugPrint("Error cargando información: $e");
+    }
   }
 
   ///Inicializa el estado y carga los datos del perfil
@@ -140,7 +144,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                     ),
                     /// Trabajo
                     Card.filled(
-                      color: AppColors.calendar_secondary,
+                      color: AppColors.calendarSecondary,
                       child: ListTile(
                         leading: const Icon(Icons.work),
                         title: Text(AppLocalizations.of(context)!.job),
@@ -151,7 +155,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                     ),
                     /// Colores favoritos
                     Card.filled(
-                      color: AppColors.notes_primary,
+                      color: AppColors.notesPrimary,
                       child: ListTile(
                         leading: const Icon(Icons.palette),
                         title: Text(AppLocalizations.of(context)!.fav_colors),
@@ -173,7 +177,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                     ),
                     /// Hobbies
                     Card.filled(
-                      color: AppColors.calendar_primary,
+                      color: AppColors.calendarPrimary,
                       child: ListTile(
                         leading: const Icon(Icons.sports_basketball),
                         title: Text(AppLocalizations.of(context)!.hobbies),
@@ -189,7 +193,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                     ),
                     /// Información adicional
                     Card.filled(
-                      color: AppColors.notes_secondary,
+                      color: AppColors.notesSecondary,
                       child: ListTile(
                         leading: const Icon(Icons.star),
                         title: Text(AppLocalizations.of(context)!.more_info),

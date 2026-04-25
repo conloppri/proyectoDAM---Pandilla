@@ -117,6 +117,7 @@
     "warning_remove_member": "Are you sure you want to remove this member from the group? They will no longer have access to the group's information.",
 
     "all_fields_required": "All fields are required.",
+    "error_title_required" : "Title is required.",
 
     "pick_avatar": "Select an avatar",
     "pick_another_avatar": "Change avatar",

@@ -1,60 +1,108 @@
+//Básicos
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
+//Componentes personalizados
 import '../../components/date_picker_widget.dart';
+//Estilos y colores
 import '../../core/app_colors.dart';
 import '../../core/app_styles.dart';
-import '../../core/providers/group_provider.dart';
+//Firebase
 import '../../core/services/firebase_service.dart';
+//Servicios y providers
+import 'package:provider/provider.dart';
+import '../../core/providers/group_provider.dart';
 import '../../l10n/app_localizations.dart';
 
+/// Pantalla para editar un evento existente.
+///
+/// Permite:
+/// - Modificar título, descripción y localización
+/// - Cambiar la fecha del evento
+/// - Seleccionar la recurrencia (único, semanal, mensual, anual)
 class EventEditorScreen extends StatefulWidget {
+  /// UID del grupo al que pertenece el evento.
   final String groupUID;
+
+  /// ID del evento a editar.
   final String eventID;
+
   const EventEditorScreen({super.key, required this.groupUID, required this.eventID});
 
   @override
   State<EventEditorScreen> createState() => _EventEditorScreenState();
 }
 
+/// Estado de la pantalla de edición de eventos.
+///
+/// Gestiona:
+/// - Carga de datos del evento
+/// - Control de inputs del formulario
+/// - Actualización del evento en la base de datos
 class _EventEditorScreenState extends State<EventEditorScreen> {
+  /// Controlador del campo título.
   final TextEditingController _titleController = TextEditingController();
+
+  /// Controlador del campo descripción.
   final TextEditingController _descController = TextEditingController();
+
+  /// Controlador del campo localización.
   final TextEditingController _locController = TextEditingController();
+
+  /// Fecha seleccionada para el evento.
   DateTime _date = DateTime.now();
+
+  /// Lista de tipos de recurrencia disponibles.
   final List _recurrence = ["unique", "weekly", "monthly", "yearly"];
+
+  /// Índice de la recurrencia seleccionada.
   int _recSelected = 0;
 
+  /// Carga la información del evento desde Firestore.
+  ///
+  /// Rellena los campos del formulario con los datos actuales.
   loadEventInfo() async {
-    final data =await getEventInfo(widget.groupUID, widget.eventID);
-    setState(() {
-      _titleController.text = data["title"];
-      _descController.text = data["description"];
-      _locController.text = data["location"];
-      _date = DateTime(data["year"], data["month"], data["day"]);
-      _recSelected = _recurrence.indexOf(data["recurrence"]);
-    });
+    try {
+      final data =await getEventInfo(widget.groupUID, widget.eventID);
+      setState(() {
+        _titleController.text = data["title"];
+        _descController.text = data["description"];
+        _locController.text = data["location"];
+        _date = DateTime(data["year"], data["month"], data["day"]);
+        _recSelected = _recurrence.indexOf(data["recurrence"]);
+      });
+    } catch (e) {
+      debugPrint("Error cargando información del evento: $e");
+    }
   }
 
+  /// Metodo de inicialización.
+  ///
+  /// Carga los datos del evento al iniciar la pantalla.
   @override
   void initState() {
     super.initState();
     loadEventInfo();
   }
+
+  /// Construye la interfaz de edición del evento.
   @override
   Widget build(BuildContext context) {
+    /// Textos traducidos para los tipos de recurrencia.
     final List recurrenceButton = [
       AppLocalizations.of(context)!.one_time,
       AppLocalizations.of(context)!.weekly,
       AppLocalizations.of(context)!.monthly,
       AppLocalizations.of(context)!.yearly,
     ];
+
+    ///Datos del grupo recogidos desde provider
     String? groupUID = context.watch<GroupProvider>().groupUID;
     String? groupName = context.watch<GroupProvider>().groupName;
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text(groupName!),
-        backgroundColor: AppColors.calendar_primary,
+        backgroundColor: AppColors.calendarPrimary,
       ),
       body: Padding(
         padding: const EdgeInsets.all(15),
@@ -62,10 +110,13 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
           spacing: 20,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(AppLocalizations.of(context)!.edit_event, style: AppStyles.title,),
+            /// Título de la pantalla
+            Text(AppLocalizations.of(context)!.edit_event, style: AppStyles.title),
+
+            /// Contenedor de título del evento y descripción
             Container(
               decoration: BoxDecoration(
-                  color: AppColors.calendar_primary,
+                  color: AppColors.calendarPrimary,
                   borderRadius: BorderRadius.circular(10)
               ),
               child: Padding(
@@ -73,29 +124,31 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                 child: Column(
                   spacing: 15,
                   children: [
+                    /// Campo título
                     TextField(
                       controller: _titleController,
                       decoration: InputDecoration(
                           filled: true,
-                          fillColor: AppColors.calendar_secondary,
-                          labelStyle: TextStyle(color: AppColors.calendar_primary),
+                          fillColor: AppColors.calendarSecondary,
+                          labelStyle: const TextStyle(color: AppColors.calendarPrimary),
                           labelText: AppLocalizations.of(context)!.title,
                           enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
+                              borderSide: const BorderSide(color: Colors.white),
                               borderRadius: BorderRadius.circular(15)
                           )
                       ),
                     ),
+                    /// Campo descripción
                     TextField(
                       controller: _descController,
                       maxLines: 3,
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: AppColors.calendar_secondary,
-                        labelStyle: TextStyle(color: AppColors.calendar_primary),
+                        fillColor: AppColors.calendarSecondary,
+                        labelStyle: const TextStyle(color: AppColors.calendarPrimary),
                         labelText: AppLocalizations.of(context)!.description,
                         enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
+                            borderSide: const BorderSide(color: Colors.white),
                             borderRadius: BorderRadius.circular(15)
                         ),
                       ),
@@ -106,19 +159,21 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
+              /// Selector de fecha del evento
               child: DatePickerWidget(
                 selectedDate: _date,
-                labelStyle: TextStyle(fontSize: 20),
-                buttonColor: AppColors.calendar_primary,
+                labelStyle: const TextStyle(fontSize: 20),
+                buttonColor: AppColors.calendarPrimary,
                 label: AppLocalizations.of(context)!.event_date,
                 firstDate: DateTime(1900),
                 lastDate: DateTime(DateTime.now().year + 50),
                 onDateSelected: (date) => _date = date,
               ),
             ),
+            /// Contenedor de localización y recurrencia
             Container(
               decoration: BoxDecoration(
-                  color: AppColors.calendar_primary,
+                  color: AppColors.calendarPrimary,
                   borderRadius: BorderRadius.circular(10)
               ),
               child: Padding(
@@ -126,29 +181,32 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                 child: Column(
                   spacing: 15,
                   children: [
+                    /// Campo localización
                     TextField(
                       controller: _locController,
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: AppColors.calendar_secondary,
-                        labelStyle: TextStyle(color: AppColors.calendar_primary),
+                        fillColor: AppColors.calendarSecondary,
+                        labelStyle: const TextStyle(color: AppColors.calendarPrimary),
                         labelText: AppLocalizations.of(context)!.location,
                         enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
+                            borderSide: const BorderSide(color: Colors.white),
                             borderRadius: BorderRadius.circular(15)
                         ),
                       ),
                     ),
+                    /// Selector de recurrencia
                     Row(
                       spacing: 15,
                       children: [
-                        Text("${AppLocalizations.of(context)!.recurrence}: ", style: TextStyle(fontSize: 20),),
+                        Text("${AppLocalizations.of(context)!.recurrence}: ", style: const TextStyle(fontSize: 20),),
+                        /// Botón que abre diálogo de selección
                         ElevatedButton(
-                          style: ElevatedButton.styleFrom(backgroundColor: AppColors.calendar_secondary),
+                          style: ElevatedButton.styleFrom(backgroundColor: AppColors.calendarSecondary),
                           onPressed: () {
                             showDialog(
                               context: context,
-                              builder: (context) => AlertDialog(
+                              builder: (context) => AlertDialog( //Diálogo de selección de recurrencia con lista
                                 title: Text(AppLocalizations.of(context)!.recurrence_dialog_title),
                                 content: Container(
                                   width: double.maxFinite,
@@ -198,7 +256,7 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                               ),
                             );
                           },
-                          child: Text(recurrenceButton[_recSelected], style: TextStyle(fontSize: 15, color: AppColors.calendar_primary)),
+                          child: Text(recurrenceButton[_recSelected], style: const TextStyle(fontSize: 15, color: AppColors.calendarPrimary)),
                         ),
                       ],
                     ),
@@ -206,31 +264,50 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                 ),
               ),
             ),
+            /// Botones de acción (guardar / descartar)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                ///Botón cancelar
                 ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       AppLocalizations.of(context)!.discard,
-                      style: TextStyle(color: AppColors.calendar_secondary, fontSize: 20),
+                      style: const TextStyle(color: AppColors.calendarSecondary, fontSize: 20),
                     ),
                   ),
                 ),
+                ///Botón guardar
                 ElevatedButton(
                   onPressed: () {
-                    setState(() {
-                      editEvent(groupUID!, groupName, widget.eventID, _titleController.text, _descController.text, _locController.text, _recurrence[_recSelected], _date);
-                    });
-                    Navigator.pop(context);
+                    if(_titleController.text==""){ //Comprobamos que haya introducido un título
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.error_title_required)));
+                    }else {
+                      try {
+                        setState(() {
+                          editEvent(
+                              groupUID!,
+                              groupName,
+                              widget.eventID,
+                              _titleController.text,
+                              _descController.text,
+                              _locController.text,
+                              _recurrence[_recSelected],
+                              _date);
+                        });
+                      } catch (e) {
+                        debugPrint("Error editando evento: $e");
+                      }
+                      Navigator.pop(context);
+                    }
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       AppLocalizations.of(context)!.save,
-                      style: TextStyle(color: AppColors.calendar_secondary, fontSize: 20),
+                      style: const TextStyle(color: AppColors.calendarSecondary, fontSize: 20),
                     ),
                   ),
                 ),

@@ -4,7 +4,6 @@ import 'package:pandilla/components/date_picker_widget.dart';
 import 'package:pandilla/l10n/app_localizations.dart';
 //Pantallas
 import 'package:pandilla/screens/profile/profile_editor_screen.dart';
-
 //Estilos y colores
 import '../core/app_colors.dart';
 //Firebase

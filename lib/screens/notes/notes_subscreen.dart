@@ -56,7 +56,7 @@ class _NotesSubscreenState extends State<NotesSubscreen> {
             Row(
               children: [
                 ///Control de ordenación
-                Text(AppLocalizations.of(context)!.sort_by, style: TextStyle(color: AppColors.notes_primary, fontSize: 20),),
+                Text(AppLocalizations.of(context)!.sort_by, style: TextStyle(color: AppColors.notesPrimary, fontSize: 20),),
                 IconButton(onPressed: (){
                   setState(() {
                     sortedBy=="ABC"
@@ -65,7 +65,7 @@ class _NotesSubscreenState extends State<NotesSubscreen> {
                   });
                 },
                   icon: Icon(sortedBy == "ABC" ? Icons.sort_by_alpha : Icons.access_time, size: 30,),
-                  color: AppColors.notes_primary,
+                  color: AppColors.notesPrimary,
                 ),
                 const Spacer(),
                 Row(
@@ -73,7 +73,7 @@ class _NotesSubscreenState extends State<NotesSubscreen> {
                     /// Control de vista (lista/grid)
                     Text(
                       AppLocalizations.of(context)!.view,
-                      style: TextStyle(color: AppColors.appbar_pink, fontSize: 20),
+                      style: const TextStyle(color: AppColors.notesPrimary, fontSize: 20),
                     ),
                     IconButton(
                       onPressed: () {
@@ -82,13 +82,13 @@ class _NotesSubscreenState extends State<NotesSubscreen> {
                         });
                       },
                       icon: Icon(_view == 1 ? Icons.list : Icons.grid_view_sharp, size: 30,),
-                      color: AppColors.appbar_pink,
+                      color: AppColors.notesPrimary,
                     ),
                   ],
                 ),
               ],
             ),
-            Divider(color: AppColors.appbar_pink),
+            Divider(color: AppColors.notesPrimary),
             Expanded(
               /// Lista o grid de notas en tiempo real
               child: StreamBuilder(

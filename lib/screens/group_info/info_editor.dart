@@ -1,17 +1,35 @@
+//Básico
 import 'package:flutter/material.dart';
+//Componentes personalizados
 import 'package:pandilla/components/avatar_picker.dart';
+//Estilos y colores
 import 'package:pandilla/core/app_colors.dart';
-
+//Firebase
 import 'package:pandilla/core/services/firebase_service.dart';
+//Servicios y providers
 import 'package:pandilla/core/providers/group_provider.dart';
-import 'package:pandilla/screens/group_screen.dart';
 import 'package:provider/provider.dart';
-
 import '../../l10n/app_localizations.dart';
+//Pantallas
+import 'package:pandilla/screens/group_screen.dart';
 
+/// Pantalla de edición de la información de un grupo.
+///
+/// Permite modificar:
+/// - Nombre del grupo
+/// - Descripción
+/// - Avatar
+/// - Código de invitación
+///
+/// También actualiza los datos en Firestore y en el `GroupProvider`.
 class InfoEditor extends StatefulWidget {
+  /// ID del grupo a editar.
   final String groupUID;
+
+  /// Nombre actual del grupo.
   final String groupName;
+
+
   const InfoEditor({
     super.key,
     required this.groupUID,
@@ -22,10 +40,24 @@ class InfoEditor extends StatefulWidget {
   State<InfoEditor> createState() => _InfoEditorState();
 }
 
+/// Estado de la pantalla de edición de grupo.
+///
+/// Gestiona:
+/// - Carga de datos del grupo
+/// - Controladores de formularios
+/// - Selección de avatar
+/// - Regeneración de código
 class _InfoEditorState extends State<InfoEditor> {
+  /// Controlador del campo nombre.
   final TextEditingController _nameController = TextEditingController();
+
+  /// Controlador del campo descripción.
   final TextEditingController _descController = TextEditingController();
+
+  /// Código de invitación del grupo.
   String _code = "";
+
+  /// Lista de avatares disponibles.
   final List<String> _avatarList = [
     "reading",
     "cooking",
@@ -36,37 +68,58 @@ class _InfoEditorState extends State<InfoEditor> {
     "pool",
     "working",
   ];
+
+  /// Avatar seleccionado actualmente. (reading.png por defecto)
   String _selectedAvatar = "reading.png";
 
+  /// Información completa del grupo.
   Map<String, dynamic> info = {};
 
+  /// Carga la información del grupo desde Firestore
+  /// y la asigna a los controladores y variables locales.
   loadInfo() async {
-    info = await getGroupInfo(widget.groupUID);
-    _nameController.text = info["name"];
-    _descController.text = info["description"];
-    _code = info["code"];
-    _selectedAvatar = info["avatar"];
-    setState(() {});
+    try {
+      info = await getGroupInfo(widget.groupUID);
+      _nameController.text = info["name"];
+      _descController.text = info["description"];
+      _code = info["code"];
+      _selectedAvatar = info["avatar"];
+      setState(() {});
+    }catch (e) {
+      debugPrint("Error cargando información: $e");
+    }
   }
 
+  /// Inicialización del estado.
+  ///
+  /// Se ejecuta al crear la pantalla:
+  /// - Llama a `loadInfo()` para obtener los datos actuales del grupo.
   @override
   void initState() {
     super.initState();
     loadInfo();
   }
 
+  /// Construye la interfaz de edición del grupo.
+  ///
+  /// Incluye:
+  /// - Selector de avatar
+  /// - Campos de nombre y descripción
+  /// - Código de invitación con opción de regenerar
+  /// - Botones de guardar y descartar
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.edit_group_info),
-        backgroundColor: AppColors.members_primary,
+        backgroundColor: AppColors.infoPrimary,
       ),
       body: SafeArea(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
+              /// Selector de avatar del grupo
               AvatarPicker(
                 selectedAvatar: _selectedAvatar,
                 onSelectedAvatar: (avatar) {
@@ -75,15 +128,17 @@ class _InfoEditorState extends State<InfoEditor> {
                 },
                 avatarList: _avatarList,
               ),
+              /// Tarjeta con campos de nombre y descripción
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: Card.filled(
-                  color: AppColors.members_primary,
+                  color: AppColors.infoPrimary,
                   child: Padding(
                     padding: const EdgeInsets.all(10),
                     child: Column(
                       spacing: 10,
                       children: [
+                        /// Título del campo nombre
                         Text(
                           AppLocalizations.of(context)!.group_name,
                           style: const TextStyle(
@@ -92,16 +147,18 @@ class _InfoEditorState extends State<InfoEditor> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        /// Campo de edición del nombre
                         TextField(
                           controller: _nameController,
                           decoration: InputDecoration(
                             filled: true,
-                            fillColor: AppColors.members_secondary,
+                            fillColor: AppColors.infoSecondary,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),
                           ),
                         ),
+                        /// Título del campo descripción
                         Text(
                           AppLocalizations.of(context)!.description,
                           style: const TextStyle(
@@ -110,13 +167,14 @@ class _InfoEditorState extends State<InfoEditor> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        /// Campo de edición de la descripción
                         TextField(
                           controller: _descController,
                           minLines: 5,
                           maxLines: 10,
                           decoration: InputDecoration(
                             filled: true,
-                            fillColor: AppColors.members_secondary,
+                            fillColor: AppColors.infoSecondary,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),
@@ -127,16 +185,20 @@ class _InfoEditorState extends State<InfoEditor> {
                   ),
                 ),
               ),
+              /// Tarjeta con el código de invitación
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: Card.filled(
-                  color: AppColors.members_secondary,
+                  color: AppColors.infoSecondary,
                   child: Padding(
                     padding: const EdgeInsets.all(15),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        /// Muestra el código actual
                         Text("${AppLocalizations.of(context)!.code}: $_code"),
+
+                        /// Botón para regenerar el código
                         TextButton(
                           onPressed: () async {
                             _code = await generateCode();
@@ -149,50 +211,60 @@ class _InfoEditorState extends State<InfoEditor> {
                   ),
                 ),
               ),
+              /// Botones de acción: descartar / guardar
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+
+                  /// Botón para cancelar cambios
                   ElevatedButton(
                     onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.members_primary,
+                      backgroundColor: AppColors.infoPrimary,
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(10),
-                      child: Text(AppLocalizations.of(context)!.discard, style: TextStyle(color: Colors.white, fontSize: 20),),
+                      child: Text(AppLocalizations.of(context)!.discard, style: const TextStyle(color: Colors.white, fontSize: 20),),
                     ),
                   ),
+
+                  /// Botón para guardar cambios
                   ElevatedButton(
                     onPressed: () {
-                      editGroup(
-                        widget.groupUID,
-                        _nameController.text,
-                        _descController.text,
-                        _code,
-                        _selectedAvatar,
-                      );
-                      context.read<GroupProvider>().setGroup(
-                        widget.groupUID,
-                        _nameController.text,
-                        true,
-                        _code,
-                      );
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => GroupScreen(
-                            groupUID: widget.groupUID,
-                            groupName: _nameController.text,
+                      if(_nameController.text==""){ //Comprueba que haya introducido el nombre
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.error_title_required)));
+                      }else {
+                        editGroup( //Actualiza la información del grupo en la base de datos
+                          widget.groupUID,
+                          _nameController.text,
+                          _descController.text,
+                          _code,
+                          _selectedAvatar,
+                        );
+                        context.read<GroupProvider>().setGroup( //Actualiza el provider
+                          widget.groupUID,
+                          _nameController.text,
+                          true,
+                          _code,
+                        );
+                        Navigator.pushReplacement( //regreso a la pantalla del grupo
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                GroupScreen(
+                                  groupUID: widget.groupUID,
+                                  groupName: _nameController.text,
+                                ),
                           ),
-                        ),
-                      );
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.members_primary,
+                      backgroundColor: AppColors.infoPrimary,
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(10),
-                      child: Text(AppLocalizations.of(context)!.save, style: TextStyle(color: Colors.white, fontSize: 20)),
+                      child: Text(AppLocalizations.of(context)!.save, style: const TextStyle(color: Colors.white, fontSize: 20)),
                     ),
                   ),
                 ],

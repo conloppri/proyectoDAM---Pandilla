@@ -1,22 +1,45 @@
-import 'package:firebase_auth/firebase_auth.dart';
+//Básicos
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pandilla/core/app_colors.dart';
-import 'package:pandilla/core/services/firebase_service.dart';
-import 'package:pandilla/screens/lists/listview_screen.dart';
-import 'package:provider/provider.dart';
+//Componentes personalizados
 
+//Estilos y colores
+import 'package:pandilla/core/app_colors.dart';
+//Firebase
+import 'package:pandilla/core/services/firebase_service.dart';
+//Servicios y providers
+import 'package:provider/provider.dart';
 import '../core/providers/group_provider.dart';
 import '../l10n/app_localizations.dart';
+//Pantallas
+import 'package:pandilla/screens/lists/listview_screen.dart';
 
+/// Widget que representa una lista dentro del listado de listas en grupos.
+///
+/// Muestra información básica de la lista, como título, autor,
+/// número de elementos y última actualización.
+/// Permite acceder a los detalles de la lista y eliminarla
+/// si el usuario tiene permisos.
 class ListComponent extends StatefulWidget {
+  /// ID del grupo al que pertenece la lista.
   final String groupUID;
+
+  /// Título de la lista.
   final String title;
+
+  /// Nombre del autor de la lista.
   final String author;
+
+  /// Fecha de la última actualización.
   final DateTime lastUpdate;
+
+  /// ID de la lista.
   final String listID;
+
+  /// ID del usuario autor de la lista.
   final String authorID;
-  ListComponent({
+
+  const ListComponent({
     super.key,
     required this.title,
     required this.author,
@@ -30,28 +53,54 @@ class ListComponent extends StatefulWidget {
   State<ListComponent> createState() => _ListComponentState();
 }
 
+/// Estado del widget [ListComponent].
+///
+/// Gestiona la carga del número de elementos de la lista
+/// y la interacción del usuario con la misma.
 class _ListComponentState extends State<ListComponent> {
+  /// Número de elementos actuales en la lista.
   int numItems = 0;
 
+  /// Carga el número de elementos desde la base de datos.
   loadNumItems() async {
-    numItems  = await getNumItems(widget.groupUID, widget.listID);
-    setState((){});
-    print(numItems);
+    try {
+      numItems  = await getNumItems(widget.groupUID, widget.listID);
+      setState((){});
+    } catch (e) {
+      debugPrint("Error cargando el número de items: $e");
+    }
   }
 
+  /// Mwtodo de inicialización del estado del widget.
+  ///
+  /// Carga el número de elementos de la lista desde
+  /// la base de datos al iniciar el widget.
   @override
   void initState() {
     super.initState();
     loadNumItems();
   }
 
+  /// Construye la interfaz visual del componente de lista.
+  ///
+  /// Muestra una tarjeta con información de la lista, incluyendo:
+  /// - Autor de la lista
+  /// - Título
+  /// - Número de elementos
+  /// - Fecha de última actualización
+  ///
+  /// También permite:
+  /// - Navegar al detalle de la lista al pulsar.
+  /// - Eliminar la lista si el usuario es administrador o creador.
   @override
   Widget build(BuildContext context) {
-    bool? _isAdmin = context.read<GroupProvider>().isAdmin;
+    bool? isAdmin = context.read<GroupProvider>().isAdmin;
+
+    ///Contenedor del componente
     return Card.filled(
-      color: AppColors.lists_secondary,
+      color: AppColors.listsSecondary,
       shape: RoundedRectangleBorder(
-        side: BorderSide(color: AppColors.lists_primary, width: 2),
+        side: const BorderSide(color: AppColors.listsPrimary, width: 2),
         borderRadius: BorderRadius.circular(10)
       ),
       child: Padding(
@@ -61,28 +110,36 @@ class _ListComponentState extends State<ListComponent> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Row(
+              ///Línea para indicar el autor de la lista
               children: [
-                Text("${AppLocalizations.of(context)!.created_by} ",style: TextStyle(color: Colors.black)),
-                Text(widget.author, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
+                Text("${AppLocalizations.of(context)!.created_by} ",style: const TextStyle(color: Colors.black)),
+                Text(widget.author, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
+
                 const Spacer(),
-                if (_isAdmin!||userUID == widget.authorID)IconButton(onPressed: (){
+
+                /// Botón de eliminación de la lista (solo admin o autor).
+                if (isAdmin!||userUID == widget.authorID)IconButton(onPressed: (){
                   showDialog(
                     context: context,
                     builder: (context) {
-                      return AlertDialog(
+                      return AlertDialog( //warning de eliminación
                         title: Text(AppLocalizations.of(context)!.delete_list),
                         content: Text(
                           AppLocalizations.of(context)!.warning_delete_list,
                         ),
                         actions: [
-                          TextButton(
+                          TextButton( //Eliminar
                             onPressed: () {
-                              removeList(widget.groupUID, widget.listID);
-                              Navigator.pop(context);
+                              try {
+                                removeList(widget.groupUID, widget.listID);
+                                Navigator.pop(context);
+                              } catch (e) {
+                                debugPrint("Error eliminando lista: $e");
+                              }
                             },
                             child: Text(AppLocalizations.of(context)!.remove),
                           ),
-                          TextButton(
+                          TextButton( //Cancelar
                             onPressed: () => Navigator.pop(context),
                             child: Text(AppLocalizations.of(context)!.cancel),
                           ),
@@ -90,16 +147,20 @@ class _ListComponentState extends State<ListComponent> {
                       );
                     },
                   );
-                }, icon: Icon(Icons.delete, color: AppColors.lists_primary,))
+                }, icon: const Icon(Icons.delete, color: AppColors.listsPrimary,))
               ],
             ),
+            /// Información principal de la lista.
             Padding(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: ListTile(
-                title: Text(widget.title, style: TextStyle(color: AppColors.lists_primary, fontWeight: FontWeight.bold, fontSize: 20),),
+                ///Título
+                title: Text(widget.title, style: const TextStyle(color: AppColors.listsPrimary, fontWeight: FontWeight.bold, fontSize: 20),),
+                ///Número de elementos de la lista
                 subtitle: Text(
-                  "${numItems} ${AppLocalizations.of(context)!.items}", style: TextStyle(color: Colors.black, fontSize: 15)
+                  "$numItems ${AppLocalizations.of(context)!.items}", style: const TextStyle(color: Colors.black, fontSize: 15)
                 ),
+                /// Navega al detalle de la lista y refresca al volver.
                 onTap: () async {
                   await Navigator.push(
                     context,
@@ -112,9 +173,10 @@ class _ListComponentState extends State<ListComponent> {
                 },
               ),
             ),
+            /// Fecha de última actualización.
             Text(
               "${AppLocalizations.of(context)!.last_update} ${DateFormat("HH:mm dd/MM/yyyy", "es_ES").format(widget.lastUpdate)}",
-              style: TextStyle(color: Colors.black),
+              style: const TextStyle(color: Colors.black),
             ),
           ],
         ),

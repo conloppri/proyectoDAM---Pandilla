@@ -11,7 +11,7 @@ class AppTheme {
 
     colorScheme: ColorScheme.light(
       primary: Colors.black,
-      secondary: AppColors.lightmode_secondary
+      secondary: AppColors.lightmodeSecondary
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -25,7 +25,7 @@ class AppTheme {
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.white_noalpha,
+      fillColor: AppColors.whiteNoAlpha,
       border: const UnderlineInputBorder(
         borderSide: BorderSide(color: Colors.black)
       ),
@@ -36,16 +36,16 @@ class AppTheme {
       brightness: Brightness.dark,
       primaryColor: Colors.black,
 
-      scaffoldBackgroundColor: AppColors.darkmode_BG,
+      scaffoldBackgroundColor: AppColors.darkmodeBG,
 
       colorScheme: ColorScheme.dark(
           primary: Colors.white,
-          secondary: AppColors.lightmode_secondary
+          secondary: AppColors.lightmodeSecondary
       ),
 
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.lightmode_secondary,
+        fillColor: AppColors.lightmodeSecondary,
         border: const UnderlineInputBorder(
             borderSide: BorderSide(color: Colors.white)
         ),

@@ -117,6 +117,7 @@
     "warning_remove_member" : "¿Quieres expulsar a este miembro del grupo? No podrá volver a acceder a la información del grupo.",
 
     "all_fields_required" : "Todos los campos son obligatorios.",
+    "error_title_required" : "El título es obligatorio.",
 
     "pick_avatar" : "Selecciona un avatar",
     "pick_another_avatar" : "Cambiar avatar",
