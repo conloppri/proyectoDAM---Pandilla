@@ -1,30 +1,56 @@
-import 'package:firebase_auth/firebase_auth.dart';
+//Básicos
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
+//Componentes personalizados
 import 'package:pandilla/components/avatar_picker.dart';
 import 'package:pandilla/components/left_drawer.dart';
-import 'package:pandilla/core/providers/user_provider.dart';
-import 'package:pandilla/l10n/app_localizations.dart';
+//Providers
 import 'package:provider/provider.dart';
+import 'package:pandilla/core/providers/user_provider.dart';
+//Localizaciones
+import 'package:pandilla/l10n/app_localizations.dart';
+//SharePreferences
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
-
+//Estilos y colores
 import '../core/app_colors.dart';
 import '../core/app_styles.dart';
+//Firebase
 import '../core/services/firebase_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-
+/// Pantalla principal de la aplicación.
+///
+/// Muestra:
+/// - Próximos eventos del usuario
+/// - Lista de grupos a los que pertenece
+/// - Opciones para crear o unirse a grupos
+///
+/// También gestiona la carga de datos del usuario y el tutorial inicial.
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
-
+/// Estado de la pantalla principal.
+///
+/// Gestiona:
+/// - Datos temporales para creación/unión de grupos
+/// - Carga del usuario
+/// - Programación de eventos
+/// - Tutorial interactivo
 class _MainScreenState extends State<MainScreen> {
+  /// Nombre del grupo a crear.
   String _groupName = "";
+
+  /// Descripción del grupo.
   String _groupDescription = "";
+
+  /// Código introducido para unirse a un grupo.
   String _code = "";
+
+  /// Lista de avatares disponibles para grupos.
   final List<String> _avatarList = [
     "reading",
     "cooking",
@@ -35,36 +61,62 @@ class _MainScreenState extends State<MainScreen> {
     "pool",
     "working",
   ];
+
+  /// Avatar seleccionado actualmente (reading.png por defecto)
   String _selectedAvatar = "reading.png";
 
 
   //Global Keys para tutorial
+
+  /// Referencia al widget de próximos eventos.
   GlobalKey nextEvents = GlobalKey();
+
+  /// Referencia al botón de crear grupo.
   GlobalKey createButton = GlobalKey();
+
+  /// Referencia al botón de unirse a grupo.
   GlobalKey joinButton = GlobalKey();
+
+  /// Referencia a la lista de grupos.
   GlobalKey groupList = GlobalKey();
 
+  //Variable para para comprobar si el usuario ya ha realizado la guía interactiva
+  bool? tutorialCompleted;
+
+  /// Carga la información del usuario desde Firestore
+  /// y la guarda en el `UserProvider`.
   Future<void> loadUser() async {
     String? userUID = FirebaseAuth.instance.currentUser?.uid;
+    UserProvider userProvider = context.read<UserProvider>();
     Map userInfo = await getUser(userUID!);
-    context.read<UserProvider>().setUser(
+    userProvider.setUser(
       userUID,
       userInfo["name"],
       userInfo["avatar"],
       userInfo["email"],
     );
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    tutorialCompleted = prefs.getBool("main_tutorial");
+    setState(() {});
   }
 
+  /// Metodo de inicialización del estado.
+  ///
+  /// - Carga los datos del usuario
+  /// - Reprograma los eventos cada vez que el usuario entra a la app
+  /// - Lanza el tutorial tras el primer frame
   @override
   void initState() {
     super.initState();
-    loadUser();
-    scheduleAllEvents();
+    loadUser(); //Carga de datos
+    scheduleAllEvents(); //Reprogramación de eventos
   WidgetsBinding.instance.addPostFrameCallback((_){
-    showTutorial();
+    showTutorial(); //Guía interactiva
   });
   }
 
+  /// Construye la interfaz principal de la pantalla.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,13 +125,16 @@ class _MainScreenState extends State<MainScreen> {
         foregroundColor: Colors.white,
         backgroundColor: AppColors.primary,
       ),
+      ///Drawer lateral personalizado
       drawer: const LeftDrawer(),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(30),
           child: Column(
             children: [
+              /// Sección de próximos eventos
               Text(AppLocalizations.of(context)!.next_events, style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
+              /// Contenedor de eventos próximos
               SizedBox(
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height * 0.2,
@@ -87,8 +142,10 @@ class _MainScreenState extends State<MainScreen> {
                   key: nextEvents,
                   children: [
                     Image.asset("assets/images/main.png", height: MediaQuery.of(context).size.height * 0.15 ),
+                    /// Lista de eventos próximos
                     Container(
                       width: MediaQuery.of(context).size.width * 0.55,
+                      height: MediaQuery.of(context).size.height * 0.2,
                       margin: const EdgeInsetsGeometry.symmetric(
                         vertical: 20,
                         horizontal: 10,
@@ -102,15 +159,18 @@ class _MainScreenState extends State<MainScreen> {
                         child: FutureBuilder(
                           future: getNextEvents(),
                           builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
+
+                            //Control del estado del Builder
+                            if (snapshot.connectionState == ConnectionState.waiting) { //Mientras carga los datos
                               return const Center(child: CircularProgressIndicator());
                             }
-                            if (snapshot.hasError) {
+                            if (snapshot.hasError) { //Si hay error
                               return Center(child: Text("Error: ${snapshot.error}"));
                             }
-                            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            if (!snapshot.hasData || snapshot.data!.isEmpty) { //Si el future no devuelve datos
                               return Text(AppLocalizations.of(context)!.no_next_events);
                             }
+                            //Si se obtiene los datos conéxito
                             List<Map<String, dynamic>> events = snapshot.data!;
                             return ListView.builder(
                               itemCount: events.length,
@@ -120,10 +180,11 @@ class _MainScreenState extends State<MainScreen> {
                                 return Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text("${dateFormat.format(dateEvent)}: ", style: TextStyle(fontWeight: FontWeight.bold),),
+                                    Text("${dateFormat.format(dateEvent)}: ", style: const TextStyle(fontWeight: FontWeight.bold),),
                                     Expanded(
                                       child: Text(events[index]["title"],
-                                        overflow: TextOverflow.ellipsis,),
+                                        overflow: TextOverflow.ellipsis, //Si no cabe en el container, lo indicará con "..."
+                                      ),
                                     )
                                   ],
                                 );
@@ -137,15 +198,19 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
               const Divider(height: 40),
+
+              /// Título de la sección de grupos
               Text(
                 AppLocalizations.of(context)!.my_groups,
                 style: TextStyle(color: AppColors.primary, fontSize: 20),
               ),
+              /// Lista de grupos del usuario
               Expanded(
                 child: StreamBuilder(
                   key: groupList,
                   stream: getGroups(),
                   builder: (context, snapshot) {
+                    //Control del Stream
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
                     }
@@ -155,6 +220,7 @@ class _MainScreenState extends State<MainScreen> {
                     if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return Text(AppLocalizations.of(context)!.no_groups);
                     }
+                    //Muestra la info en un grid de 2 columnas
                     return GridView.count(
                       crossAxisCount: 2,
                       crossAxisSpacing: 10,
@@ -163,6 +229,8 @@ class _MainScreenState extends State<MainScreen> {
                   },
                 ),
               ),
+
+              /// Botones de acciones (crear / unirse)
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 0,
@@ -171,6 +239,7 @@ class _MainScreenState extends State<MainScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
+                    /// Botón para crear grupo
                     ElevatedButton(
                       key:createButton ,
                       onPressed: () {
@@ -181,11 +250,13 @@ class _MainScreenState extends State<MainScreen> {
                               builder: (context, setStateDialog) {
                                 return AlertDialog(
                                   title: Text(AppLocalizations.of(context)!.new_group),
+                                  /// Formulario de creación de grupo
                                   content: Container(
                                     width: MediaQuery.of(context).size.width * 0.8,
                                     height: MediaQuery.of(context).size.height * 0.5,
                                     child: Column(
                                       children: [
+                                        ///Widget para selección de avatar
                                         AvatarPicker(
                                           selectedAvatar: _selectedAvatar,
                                           onSelectedAvatar: (avatar) {
@@ -195,6 +266,7 @@ class _MainScreenState extends State<MainScreen> {
                                           },
                                           avatarList: _avatarList,
                                         ),
+                                        /// Campo nombre
                                         TextField(
                                           maxLength: 20,
                                           onChanged: (value) =>
@@ -203,6 +275,7 @@ class _MainScreenState extends State<MainScreen> {
                                             labelText: AppLocalizations.of(context)!.group_name,
                                           ),
                                         ),
+                                        /// Campo descripción
                                         TextField(
                                           minLines: 3,
                                           maxLines: 10,
@@ -218,21 +291,31 @@ class _MainScreenState extends State<MainScreen> {
                                     ),
                                   ),
                                   actions: [
+                                    /// Confirmar creación
                                     TextButton(
                                       onPressed: () {
-                                        String? userName = context.read<UserProvider>().name;
-                                        createGroup(
-                                          _groupName,
-                                          _groupDescription,
-                                          _selectedAvatar,
-                                          userName!
-                                        );
-                                        Navigator.pop(context);
+                                        if(_groupName!= "") {
+                                          String? userName = context
+                                              .read<UserProvider>()
+                                              .name; //Tomamos el nombre para guardar autor
+                                          createGroup(
+                                              _groupName,
+                                              _groupDescription,
+                                              _selectedAvatar,
+                                              userName!
+                                          );
+                                          Navigator.pop(context);
+                                        }else{
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text(AppLocalizations.of(context)!.error_group_name))
+                                          );
+                                        }
                                       },
                                       child: Text(AppLocalizations.of(context)!.create),
                                     ),
+                                    /// Cancelar
                                     TextButton(
-                                      onPressed: () => Navigator.pop(context),
+                                      onPressed: () => Navigator.pop(context), //Cierra el diálogo
                                       child: Text(AppLocalizations.of(context)!.cancel),
                                     ),
                                   ],
@@ -249,7 +332,7 @@ class _MainScreenState extends State<MainScreen> {
                         padding: const EdgeInsetsGeometry.all(10),
                         child: Row(
                           children: [
-                            Icon(Icons.add, size: 25, color: Colors.white),
+                            const Icon(Icons.add, size: 25, color: Colors.white),
                             Text(
                               AppLocalizations.of(context)!.create,
                               style: const TextStyle(
@@ -261,6 +344,7 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                       ),
                     ),
+                    /// Botón para unirse a grupo
                     ElevatedButton(
                       key: joinButton,
                       onPressed: () {
@@ -279,13 +363,19 @@ class _MainScreenState extends State<MainScreen> {
                               actions: [
                                 TextButton(
                                   onPressed: () async {
-                                    bool joined = await joinGroup(_code.toUpperCase());
-                                    if (joined) {
-                                      setState(() {
-                                        Navigator.pop(context);
-                                      });
-                                    } else {
-                                      print("NO EXISTE");
+                                    //Elementos que necesitan context, los iniciamos antes del await para evitar problemas de sincronización
+                                    final messenger = ScaffoldMessenger.of(context);
+                                    final navigator = Navigator.of(context);
+                                    final loc = AppLocalizations.of(context)!;
+                                    bool joined = await joinGroup(_code.toUpperCase()); //Compruba código y trata de unirse
+
+                                    if (joined) { //si lo ha conseguido, cierra el diálogo y aparece el grupo en la lista
+                                      setState(() {});
+                                      navigator.pop;
+                                    } else { //Si no, le notifica al usuario
+                                      messenger.showSnackBar(
+                                          SnackBar(content: Text(loc.error_invalid_code))
+                                      );
                                     }
                                   },
                                   child: Text(AppLocalizations.of(context)!.join),
@@ -330,11 +420,18 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
+
+  /// Muestra el tutorial interactivo de la pantalla principal.
+  ///
+  /// Solo se muestra una vez, guardando su estado en `SharedPreferences`.
   Future<void> showTutorial() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  bool? completed = prefs.getBool("main_tutorial");
-  if(completed == null || !completed) {
-    TutorialCoachMark(targets: [
+  if(tutorialCompleted == null || !tutorialCompleted!) {
+    TutorialCoachMark(
+        alignSkip: Alignment.topRight,
+        textSkip: AppLocalizations.of(context)!.skip,
+        textStyleSkip: TextStyle(color: AppColors.primary, fontSize: 20),
+        targets: [
+      /// Paso: eventos próximos
       TargetFocus(
           identify: "nextEvents",
           keyTarget: nextEvents,
@@ -351,6 +448,7 @@ class _MainScreenState extends State<MainScreen> {
             )
           ]
       ),
+      /// Paso: crear grupo
       TargetFocus(
           identify: "createButton",
           keyTarget: createButton,
@@ -365,6 +463,7 @@ class _MainScreenState extends State<MainScreen> {
             )
           ]
       ),
+      /// Paso: unirse a grupo
       TargetFocus(
           identify: "joinButton",
           keyTarget: joinButton,
@@ -379,6 +478,7 @@ class _MainScreenState extends State<MainScreen> {
             )
           ]
       ),
+      /// Paso: lista de grupos
       TargetFocus(
           identify: "groupList",
           keyTarget: groupList,
@@ -396,6 +496,9 @@ class _MainScreenState extends State<MainScreen> {
       ),
     ]
     ).show(context: context);
+
+    //Marca el tutorial como visto
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool("main_tutorial", true);
   }
   }

@@ -18,6 +18,7 @@
     "error_week_psw": "Weak password.",
     "error_psw_not_match": "The passwords do not match",
     "error_email_registered": "That email is already registered. Try signing in.",
+    "error_username_too_short": "Username must be at least 4 characters long.",
 
     "next_events": "Upcoming events",
     "no_next_events": "You have no upcoming events",
@@ -30,6 +31,7 @@
     "join": "Join",
     "code": "Code",
 
+    "error_group_name" : "Group name is required.",
     "error_invalid_code": "Invalid code",
 
     "profile" : "Profile",
@@ -41,6 +43,8 @@
     "spanish" : "Spanish",
     "english" : "English",
     "dark_mode" : "Dark mode",
+    "notifications" : "Notifications",
+    "automatic_mode" : "Automatic mode",
 
     "my_profile" : "My profile",
     "job" : "Job",

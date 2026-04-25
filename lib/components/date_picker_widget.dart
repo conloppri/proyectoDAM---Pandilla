@@ -18,7 +18,20 @@ class DatePickerWidget extends StatefulWidget {
 class _DatePickerWidgetState extends State<DatePickerWidget> {
   DateTime _selectedDate =  DateTime.now();
 
+  @override
+  void didUpdateWidget(covariant DatePickerWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
 
+    if (oldWidget.selectedDate != widget.selectedDate) {
+      _selectedDate = widget.selectedDate;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDate = widget.selectedDate;
+  }
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -26,12 +39,16 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
         Text(widget.label, style: widget.labelStyle,),
         const SizedBox(width: 20),
         ElevatedButton(onPressed: () async {
-                _selectedDate = await showDatePicker(context: context,
+                final picked = await showDatePicker(context: context,
                 firstDate: widget.firstDate ,
                 lastDate: widget.lastDate ,
-                initialDate: widget.selectedDate) as DateTime;
-              setState(() {});
-              widget.onDateSelected(_selectedDate);
+                initialDate: widget.selectedDate);
+                if(picked!=null){
+                  setState(() {
+                    _selectedDate = picked;
+                  });
+                  widget.onDateSelected(_selectedDate);
+                }
         },
             style: ElevatedButton.styleFrom(backgroundColor: widget.buttonColor ),
             child: Text(DateFormat("dd/MM/yyyy").format(_selectedDate), style: widget.labelStyle,))

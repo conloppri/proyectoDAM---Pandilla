@@ -15,26 +15,25 @@ import 'package:pandilla/l10n/app_localizations.dart';
 
 import '../event.dart';
 
+///Instancia de Firestore utilizada para todas las operaciones de base de datos.
 FirebaseFirestore db = FirebaseFirestore.instance;
+
+///Servicio encargado de gestionar notificaciones de la aplicación.
 NotificationServices notifServices = NotificationServices();
 
+///UID del usuario actual (puede ser nulo si no está autenticado).
 String? userUID = "";
 
-Future<List> getUsers() async {
-  List usersList = [];
-  QuerySnapshot querySnapshot = await db
-      .collection("users")
-      .where("name", isEqualTo: "Cheli")
-      .get();
-
-  for (var doc in querySnapshot.docs) {
-    usersList.add(doc.data());
-  }
-  return usersList;
-}
-
+///Crea un nuevo usuario en la base de datos en la colección "users"
+///
+///Se usa el UID del usuario autenticado y se inicializan los campos básicos
+/// del perfil con valores por defecto
+///
+/// [name] nombre del usuario.
+/// [birthdate] fecha de nacimiento.
+/// [email] correo electrónico.
 newUser(String name, DateTime birthdate, String email) async {
-  String? _userUID = FirebaseAuth.instance.currentUser?.uid;
+  String? _userUID = FirebaseAuth.instance.currentUser?.uid; //Usuario actual
   await db.collection("users").doc(_userUID).set({
     "name": name,
     "bithdate": birthdate,
@@ -48,17 +47,19 @@ newUser(String name, DateTime birthdate, String email) async {
     'description': "Vacío",
   });
 }
-
-Future<bool> saveProfile(
-  String name,
-  String colors,
-  String job,
-  String hobbies,
-  String description,
-  String avatar,
-  String animal,
-) async {
-  String? _userUID = FirebaseAuth.instance.currentUser?.uid;
+/// Guarda o actualiza el perfil del usuario.
+///
+/// Retorna 'true' si la operación fue correcta, 'false' en caso de error.
+///
+/// [name] nombre.
+/// [colors] colores favoritos.
+/// [job] trabajo.
+/// [hobbies] aficiones.
+/// [description] descripción personal.
+/// [avatar] avatar seleccionado.
+/// [animal] animal favorito.
+Future<bool> saveProfile(String name, String colors, String job, String hobbies, String description, String avatar, String animal) async {
+  String? _userUID = FirebaseAuth.instance.currentUser?.uid; //Usuario actual
   try {
     await db.collection("users").doc(_userUID).update({
       'name': name,
@@ -75,32 +76,41 @@ Future<bool> saveProfile(
     return false;
   }
 }
-
+/// Obtiene el nombre del usuario actual desde Firestore.
 Future<String> getUserName() async {
   String? _userUID = FirebaseAuth.instance.currentUser?.uid;
   DocumentSnapshot doc = await db.collection("users").doc(_userUID).get();
   return doc["name"];
 }
 
+/// Obtiene todos los datos de un usuario a partir de su UID.
+///
+/// [uid] UID del usuario.
 Future<Map<String, dynamic>> getUser(String uid) async {
   DocumentSnapshot doc = await db.collection("users").doc(uid).get();
   return doc.data() as Map<String, dynamic>;
 }
 
+/// Comprueba si un usuario es administrador de un grupo.
+///
+/// [groupUID] UID del grupo.
+/// [userUID] UID del usuario.
 Future<bool> isAdmin(String groupUID, String userUID) async {
   DocumentSnapshot doc = await db.collection("groups").doc(groupUID).get();
   List _admins = doc["admins"];
   return _admins.contains(userUID);
 }
 
+/// Obtiene la fecha de nacimiento del usuario actual.
 Future<DateTime> getBirthday() async {
   String? _userUID = FirebaseAuth.instance.currentUser?.uid;
   DocumentSnapshot doc = await db.collection("users").doc(_userUID).get();
   return doc["bithdate"].toDate();
 }
 
-//PANTALLA PRINCIPAL
+//----------------------PANTALLA PRINCIPAL---------------------------------
 
+/// Devuelve un stream con los grupos a los que pertenece el usuario actual.
 Stream<List<GroupSelector>> getGroups() {
   String? _uid = FirebaseAuth.instance.currentUser?.uid;
   return db
@@ -123,12 +133,23 @@ Stream<List<GroupSelector>> getGroups() {
         return list;
       });
 }
-
+/// Crea un nuevo grupo en Firestore.
+///
+/// También genera un evento automático de cumpleaños para el usuario.
+///
+/// [name] nombre del grupo.
+/// [description] descripción.
+/// [avatar] imagen.
+/// [authorName] nombre del creador.
 createGroup(String name, String description, String avatar, String authorName) async {
+  //Usuario actual
   String? _uid = FirebaseAuth.instance.currentUser?.uid;
+  //Generamos el código para unirse al grupo
   String groupCode = await generateCode();
+  //Creamos el documento para el grupo y obtenemos su referencia
   DocumentReference docRef = db.collection("groups").doc();
 
+  //Guardamos la información del grupo
   await docRef.set({
     "code": groupCode,
     "name": name,
@@ -140,11 +161,19 @@ createGroup(String name, String description, String avatar, String authorName) a
     "admins": [_uid],
     "authorName" : authorName
   });
+  //Obtenemos nombre de usuario y cumpleaños del usuario actual
   String userName = await getUserName();
   DateTime userBirthday = await getBirthday();
+  //Guardamos su compleaños como evento del grupo
   saveBirthday(docRef, userName, userBirthday, _uid!);
 }
 
+/// Crea un evento de cumpleaños automático en un grupo.
+///
+/// [docRef] referencia al documento en que el se va a registrar el cumpleaños.
+/// [userName] nombre del usuario.
+/// [birthday] fecha de cumpleaños del usuario.
+/// [userUID] UID del usuario.
 saveBirthday(DocumentReference docRef, String userName, DateTime birthday, String userUID){
   docRef.collection("events").doc().set({
     "title": "${AppLocalizations.of(navigatorKey.currentContext!)!.birthday_event} $userName",
@@ -159,15 +188,20 @@ saveBirthday(DocumentReference docRef, String userName, DateTime birthday, Strin
   });
 }
 
+/// Genera un código único de grupo de 6 caracteres para usarlo como código de grupo.
 Future<String> generateCode() async {
+  //Caracteres permitidos para generar el código automático
   const String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   String newcode = "";
+  //Variable de control
   bool exist = false;
   do {
+    //Generamos un código de 6 caracteres aleatorios entre los del String chars
     newcode = "";
     for (int i = 0; i < 6; i++) {
       newcode += chars[Random().nextInt(chars.length)];
     }
+    //Comprobamos si ese código pertenece a otro grupo
     QuerySnapshot snapshot = await db
         .collection("groups")
         .where("code", isEqualTo: newcode)
@@ -175,51 +209,64 @@ Future<String> generateCode() async {
         .get();
     exist = snapshot.docs.isNotEmpty;
   } while (exist);
+  //Si no pertenece a otro grupo, termina el bucle y devuelve el código.
   return newcode;
 }
 
+/// Permite a un usuario unirse a un grupo mediante código.
+///
+/// [code] código de unión del grupo.
 Future<bool> joinGroup(String code) async {
-  String? _uid = FirebaseAuth.instance.currentUser?.uid;
+  String? uid = FirebaseAuth.instance.currentUser?.uid; //Usuario actual
+  //Buscamos si el código pertenece a algún grupo
   QuerySnapshot snapshot = await db
       .collection("groups")
       .where("code", isEqualTo: code)
       .limit(1)
       .get();
   QueryDocumentSnapshot doc = snapshot.docs.first;
-  if (doc.exists) {
+  if (doc.exists) { //Si el código coincide, añadimos al usuario al grupo
     doc.reference.update({
-      "members": FieldValue.arrayUnion([_uid]),
+      "members": FieldValue.arrayUnion([uid]),
     });
+    //Guardamos el cumpleaños del nuevo miembro en el calendario del grupo
     String userName = await getUserName();
     DateTime userBirthday = await getBirthday();
-    saveBirthday(doc.reference, userName, userBirthday, _uid!);
-    return true;
+    saveBirthday(doc.reference, userName, userBirthday, uid!);
+    return true; //devolvemos 'true'
   }
-  return false;
+  return false; //Si el código no coincide, devolvemos 'false'
 }
 
-//NOTAS
-
+//----------------------------------NOTAS-----------------------------
+/// Crea una nueva nota dentro de un grupo.
+///
+/// [groupUID] UID del grupo en el que guardar la nota.
+/// [title] título de la nota.
+/// [body] cuerpo de la nota.
+/// [color] color elegido para el fondo de la nota
 void createNote(
   String? groupUID,
   String title,
   String body,
   String color,
 ) async {
-  String? _userUID = FirebaseAuth.instance.currentUser?.uid;
-  String _authorName = await getUserName();
+  String? userUID = FirebaseAuth.instance.currentUser?.uid; //Usuario actual
+  String authorName = await getUserName(); //Obtenemos su nombre para guardarlo de autor
+  //Creamos la nota en la base de datos
   await db.collection("groups").doc(groupUID).collection("notes").doc().set({
     "title": title,
     "body": body,
     "color": color,
-    "authorUID": _userUID,
-    "authorName": _authorName,
+    "authorUID": userUID,
+    "authorName": authorName,
     "createAt": DateTime.now(),
     "lastUpdate": DateTime.now(),
   });
-  print("CREADA");
 }
-
+/// Obtiene todas las notas del grupo y las guarda en un Stream.
+///
+/// [groupUID] UID del grupo del que se quiere obtener las notas.
 Stream<List<NoteComponent>> getNotes(String groupUID) {
   return db
       .collection("groups")
@@ -243,8 +290,12 @@ Stream<List<NoteComponent>> getNotes(String groupUID) {
       });
 }
 
+///Obtiene la información sobre una nota específica.
+///
+/// [groupUID] UID del grupo al que pertenece la nota.
+/// [noteID] ID de la nota.
 Future<Map<String, dynamic>> getNote(String groupUID, String noteID) async {
-  Map<String, dynamic>? noteData = {};
+  Map<String, dynamic>? noteData = {}; //Inicializamos el mapa que contendrá la información
   DocumentSnapshot doc = await db
       .collection("groups")
       .doc(groupUID)
@@ -252,9 +303,16 @@ Future<Map<String, dynamic>> getNote(String groupUID, String noteID) async {
       .doc(noteID)
       .get();
   noteData = doc.data() as Map<String, dynamic>?;
-  return noteData!;
+  return noteData!; //devolvemos el mapa, confirmamos que no es nulo
 }
 
+///Actualiza la nota editada en la base de datos.
+///
+/// [groupUID] UID del grupo al que pertenece la nota.
+/// [noteID] ID de la nota.
+/// [newTitle] nuevo título de la nota.
+/// [newBody] nuevo cuerpo de la nota.
+/// [newColor] nuevo color de la nota.
 updateNote(
   String groupUID,
   String noteID,
@@ -266,10 +324,14 @@ updateNote(
     "title": newTitle,
     "body": newBody,
     "color": newColor,
-    "lastUpdate": DateTime.now(),
+    "lastUpdate": DateTime.now(), //Actulizamos con la fecha actual
   });
 }
 
+///Elimina una nota de la base de datos
+///
+/// [groupUID] UID del grupo al que pertenece la nota.
+/// [noteID] ID de la nota.
 removeNote(String groupUID, String noteID) {
   db
       .collection("groups")
@@ -281,9 +343,13 @@ removeNote(String groupUID, String noteID) {
 
 //LISTAS
 
+///Crea una nueva lista en la base de datos
+///
+/// [groupUID] UID del grupo en el que quiere guardar la lista.
+/// [title] título de la lista.
 Future<void> newList(String groupUID, String title) async {
-  String? _userUID = FirebaseAuth.instance.currentUser?.uid;
-  String _authorName = await getUserName();
+  String? _userUID = FirebaseAuth.instance.currentUser?.uid; //Usuario actual
+  String _authorName = await getUserName(); //Nombre del usuario para autorName
   db.collection("groups").doc(groupUID).collection("lists").doc().set({
     "title": title,
     "authorUID": _userUID,
@@ -293,6 +359,12 @@ Future<void> newList(String groupUID, String title) async {
   });
 }
 
+///Obtiene el listado de listas del grupo en un Stream
+///
+/// Cada vez que cambia la colección en Firestore, se reconstruye
+/// la lista de listas.
+///
+/// [groupUID] UID del grupo del que queremos obtener las listas.
 Stream<List<ListComponent>> getLists(String groupUID) {
   return db
       .collection("groups")
@@ -315,12 +387,21 @@ Stream<List<ListComponent>> getLists(String groupUID) {
       });
 }
 
+///Modificación de la fecha de la última actualización de la lista.
+///
+/// [listID] ID de la lista actualizada.
+/// [groupUID] UID del grupo al que pertenece la lista
 newListUpdate(String listID, String groupUID) {
   db.collection("groups").doc(groupUID).collection("lists").doc(listID).update({
     "last_update": DateTime.now(),
   });
 }
 
+///Añadir elementos a una lista.
+///
+/// [groupUID] UID del grupo al que pertenece la lista.
+/// [listID] ID de la lista.
+/// [item] elemento a añadir a la lista.
 addItem(String groupUID, String listID, String item) {
   db
       .collection("groups")
@@ -330,9 +411,10 @@ addItem(String groupUID, String listID, String item) {
       .collection("items")
       .doc()
       .set({"text": item, "isCompleted": false, "createAt":Timestamp.now()});
-  newListUpdate(listID, groupUID);
+  newListUpdate(listID, groupUID); //Actualizamos la fecha de última actualización
 }
 
+///Cambia el estado de un elemento de la lista entre completado y no completado
 changeItemStatus(
   String groupUID,
   String listID,
@@ -347,9 +429,15 @@ changeItemStatus(
       .collection("items")
       .doc(itemID)
       .update({"isCompleted": isCompleted});
-  newListUpdate(listID, groupUID);
+  newListUpdate(listID, groupUID);//Actualizamos la fecha de última actualización
 }
 
+///Obtiene los elementos de una lista y los devuelve en un Stream
+///
+/// Nos devuelve un Stream de ItemComponents, directamente para mostrar
+///
+/// [groupUID] UID del grupo al que pertenece la lista.
+/// [listID] ID de la lista.
 Stream<List<ItemComponent>> getItems(String groupUID, String listID) {
   return db
       .collection("groups")
@@ -371,7 +459,10 @@ Stream<List<ItemComponent>> getItems(String groupUID, String listID) {
         }).toList();
       });
 }
-
+///Obtiene el número de elementos de la lista.
+///
+/// [groupUID] UID del grupo al que pertenece la lista.
+/// [listID] ID de la lista.
 Future<int> getNumItems(String groupUID, String listID) async {
   AggregateQuerySnapshot snapshot = await db
       .collection("groups")
@@ -384,6 +475,11 @@ Future<int> getNumItems(String groupUID, String listID) async {
   return snapshot.count!;
 }
 
+///Elimina elementos de la lista.
+///
+/// [groupUID] UID del grupo al que pertenece la lista.
+/// [listID] ID de la lista.
+/// [itemID] ID del elemento a eliminar
 removeItem(String groupUID, String listID, String itemID) {
   db
       .collection("groups")
@@ -393,23 +489,45 @@ removeItem(String groupUID, String listID, String itemID) {
       .collection("items")
       .doc(itemID)
       .delete();
-  newListUpdate(listID, groupUID);
+  newListUpdate(listID, groupUID);//Actualizamos la fecha de última actualización
 }
 
+///Elimina una lista de la base de datos
+///
+/// La eliminación se realiza de manera escalonada, primero los Items y después la lista.
+///
+/// [groupUID] UID del grupo al que pertenece la lista.
+/// [listID] ID de la lista.
 removeList(String groupUID, String listID) {
-  db
-      .collection("groups")
-      .doc(groupUID)
-      .collection("lists")
-      .doc(listID)
-      .delete();
+  db.collection("groups").doc(groupUID).collection("lists").get().then((lists) async {
+    for (var list in lists.docs) {
+      list.reference.collection("items").get().then((items) async {
+        for (var item in items.docs) { //Debemos eleminar  los items
+          await item.reference.delete();
+        }
+      });
+      list.reference.delete(); //Por última, la lista
+    }
+  });
 }
 
-//CALENDARIO
+//------------------CALENDARIO----------------------
 
+/// Guarda un evento dentro de un grupo en la base de datos.
+///
+/// Además de almacenar la información del evento, también programa
+/// una notificación asociada.
+///
+/// [groupUID] identificador del grupo.
+/// [groupName] nombre del grupo (usado para notificaciones).
+/// [title] título del evento.
+/// [description] descripción del evento.
+/// [date] fecha del evento.
+/// [location] ubicación del evento.
+/// [recurrence] tipo de repetición del evento.
 saveEvent(String groupUID, String groupName, String title, String description, DateTime date, String location, String recurrence,) async {
-  String? _userUID = FirebaseAuth.instance.currentUser?.uid;
-  String _authorName = await getUserName();
+  String? _userUID = FirebaseAuth.instance.currentUser?.uid; //Usuario actual
+  String _authorName = await getUserName(); //Nombre del usuario para autorName
   final DocumentReference docRef = await db.collection("groups").doc(groupUID).collection("events").add({
     "title": title,
     "day" : date.day,
@@ -421,9 +539,18 @@ saveEvent(String groupUID, String groupName, String title, String description, D
     "authorID": _userUID,
     "authorName": _authorName,
   });
-  NotificationServices.scheduleEvents(docRef.id, title, groupName, date);
+  NotificationServices.scheduleEvents(docRef.id, title, groupName, date); //Programamos notificaciones
 }
 
+/// Devuelve un stream con todos los eventos de un grupo.
+///
+/// Cada vez que cambia la colección en Firestore, se reconstruye
+/// la lista de eventos.
+///
+/// Además, programa notificaciones para cada evento obtenido.
+///
+/// [groupUID] identificador del grupo.
+/// [groupName] nombre del grupo.
 Stream<List<Event>> getEventsStream(String groupUID, String groupName) {
   return db
       .collection("groups")
@@ -434,7 +561,7 @@ Stream<List<Event>> getEventsStream(String groupUID, String groupName) {
         return snapshot.docs.map((doc) {
           final data = doc.data();
           DateTime date = DateTime(data["year"], data["month"], data["day"]);
-          NotificationServices.scheduleEvents(doc.id, data["title"], groupName, date);
+          NotificationServices.scheduleEvents(doc.id, data["title"], groupName, date); //Programamos eventos mientras se van cargando.
           return Event(
             id: doc.id,
             title: data["title"],
@@ -449,33 +576,56 @@ Stream<List<Event>> getEventsStream(String groupUID, String groupName) {
       });
 }
 
-scheduleAllEvents(){
+/// Programa todas las notificaciones de eventos de los grupos del usuario.
+///
+/// Primero cancela todas las notificaciones existentes y posteriormente
+/// recorre todos los grupos del usuario para volver a programarlas.
+///
+/// No recibe parámetros y utiliza el usuario actualmente autenticado.
+scheduleAllEvents() async {
+  //1º Cancela todos los eventos
   NotificationServices.plugin.cancelAll();
+
   List<Map<String,String>> groups = [];
   String? userUID = FirebaseAuth.instance.currentUser?.uid;
-  db.collection("groups").where("members", arrayContains: userUID).get().then((snapshot){
-    for(var doc in snapshot.docs){
-      Map<String, dynamic> data = doc.data();
-      groups.add({"name":data["name"], "uid":doc.id});
-    }
-  });
-  if(groups.isNotEmpty){
-    for(var group in groups){
-      db.collection("groups").doc(group["uid"]).collection("events").get().then((snapshot){
-        for(var doc in snapshot.docs){
-          Map<String, dynamic> data = doc.data();
-          NotificationServices.scheduleEvents(doc.id, data["title"], group["name"]!, DateTime(data["year"], data["month"], data["day"]));
-        }
-      });
+
+  // 2º Obtiene lista de grupos
+  final groupsSnap = await db.collection("groups").where("members", arrayContains: userUID).get();
+  for(var groupDoc in groupsSnap.docs){
+    final groupData = groupDoc.data();
+    //3º Obtiene los eventos de los grupos y los reprograma
+    final eventSnap = await db.collection("groups").doc(groupDoc.id).collection("events").get();
+    for(var eventDoc in eventSnap.docs){
+      final eventData = eventDoc.data();
+      NotificationServices.scheduleEvents(eventDoc.id, eventData["title"], groupData["name"]!, DateTime(eventData["year"], eventData["month"], eventData["day"]));
     }
   }
 }
 
+/// Obtiene la información de un evento específico.
+///
+/// Recupera el documento de Firestore correspondiente a un evento dentro de un grupo
+/// y lo devuelve como un `Map<String, dynamic>`.
+///
+/// [groupUID] identificador del grupo.
+/// [eventID] identificador del evento.
 Future<Map<String, dynamic>> getEventInfo(String groupUID, String eventID) async {
   DocumentSnapshot doc = await db.collection("groups").doc(groupUID).collection("events").doc(eventID).get();
   return doc.data() as Map<String, dynamic>;
 }
 
+/// Edita un evento existente dentro de un grupo.
+///
+/// Actualiza los datos del evento en Firestore y vuelve a programar la notificación.
+///
+/// [groupUID] identificador del grupo.
+/// [groupName] nombre del grupo (usado en notificaciones).
+/// [eventID] identificador del evento.
+/// [title] título del evento.
+/// [description] descripción.
+/// [location] ubicación.
+/// [recurrence] tipo de repetición.
+/// [date] nueva fecha del evento.
 editEvent(String groupUID, String groupName, String eventID, String title, String description, String location, String recurrence, DateTime date) async {
    await db.collection("groups").doc(groupUID).collection("events").doc(eventID).update({
     "title": title,
@@ -486,9 +636,14 @@ editEvent(String groupUID, String groupName, String eventID, String title, Strin
     "description": description,
     "location": location,
   });
-  NotificationServices.scheduleEvents(eventID, title, groupName, date);
+  NotificationServices.scheduleEvents(eventID, title, groupName, date); //Cancela la notificación anterior y programamos con la info nueva
 }
 
+
+/// Elimina un evento de un grupo.
+///
+/// [groupUID] identificador del grupo.
+/// [eventID] identificador del evento.
 removeEvent(String groupUID, String eventID) {
   db
       .collection("groups")
@@ -498,25 +653,38 @@ removeEvent(String groupUID, String eventID) {
       .delete();
 }
 
-//INFO DEL GRUPO
+//------------------INFO DEL GRUPO---------------------
 
+/// Obtiene la información general de un grupo.
+///
+/// Recupera el documento del grupo desde Firestore y lo devuelve
+/// como un `Map<String, dynamic>`.
+///
+/// [groupUID] UID del grupo.
 Future<Map<String, dynamic>> getGroupInfo(String groupUID) async {
   DocumentSnapshot doc = await db.collection("groups").doc(groupUID).get();
   return doc.data() as Map<String, dynamic>;
 }
 
+/// Obtiene la lista de miembros de un grupo con información básica.
+///
+/// Recupera los usuarios pertenecientes al grupo y construye una lista
+/// con sus datos principales, incluyendo si son administradores.
+///
+/// [groupUID] UID del grupo.
 Future<List<Map<String, dynamic>>> getMembersList(String groupUID) async {
   List<Map<String, dynamic>> result = [];
-  List verified_list = [];
+  List membersList = [];
 
+  //1º Obtiene los UID de todos los miembros del grupo
   await db.collection("groups").doc(groupUID).get().then((doc) {
     var data = doc.data();
-    verified_list = data!["members"];
+    membersList = data!["members"];
   });
-
+  //2º Recorre la colección de usuarios y obtiene la información necesaria de los UID que están en la lista de miembros
   await db
       .collection("users")
-      .where(FieldPath.documentId, whereIn: verified_list)
+      .where(FieldPath.documentId, whereIn: membersList)
       .get()
       .then((snapshot) async {
         for (var doc in snapshot.docs) {
@@ -531,7 +699,9 @@ Future<List<Map<String, dynamic>>> getMembersList(String groupUID) async {
       });
   return result;
 }
-
+/// Devuelve el número total de administradores de un grupo.
+///
+/// [groupUID] UID del grupo.
 Future<int> getAdminsLength(String groupUID) {
   return db.collection("groups").doc(groupUID).get().then((snapshot) {
     Map<String, dynamic> data = snapshot.data()!;
@@ -540,58 +710,83 @@ Future<int> getAdminsLength(String groupUID) {
   });
 }
 
+/// Elimina a un miembro de un grupo.
+///
+/// Realiza las siguientes acciones:
+/// - Elimina el usuario de la lista de miembros.
+/// - Si el usuario es administrador, también lo elimina de esa lista.
+/// - Elimina los eventos creados por ese usuario dentro del grupo.
+///
+/// [groupUID] UID del grupo.
+/// [memberID] UID del miembro a expulsar.
 kickMember(String groupUID, String memberID) async {
-  List members_list = [];
-  List admins_list = [];
+  List membersList = [];
+  List adminsList = [];
 
   //Eliminamos al miembro del grupo
   await db.collection("groups").doc(groupUID).get().then((doc) {
     var data = doc.data();
-    members_list = data!["members"];
-    admins_list = data["admins"];
+    membersList = data!["members"];
+    adminsList = data["admins"];
   });
-  members_list.remove(memberID);
+  membersList.remove(memberID);
   db.collection("groups").doc(groupUID).update({
-    "members": members_list,
+    "members": membersList,
   });
 
   //Comprobamos si está en la lista de admins, y se elimina de esa lista si está
-  if (admins_list.contains(memberID)) {
-    admins_list.remove(memberID);
-    db.collection("groups").doc(groupUID).update({"admins": admins_list});
+  if (adminsList.contains(memberID)) {
+    adminsList.remove(memberID);
+    db.collection("groups").doc(groupUID).update({"admins": adminsList});
   }
   final snapshot  = await db.collection("groups").doc(groupUID).collection("events").where("authorID", isEqualTo: memberID).get();
 
   //Eliminamos los eventos creados por ese miembro. Las notas y listas se quedarán guardadas, será decisión del admin borrarlas.
   WriteBatch batch = db.batch();
   int counter = 0;
-  for(var doc in snapshot.docs){
+  for(var doc in snapshot.docs) {
     batch.delete(doc.reference);
     counter++;
-  }
 
-  if(counter == 450){ //Solo puede hacer hasta 500 operaciones, por lo tanto hacemos commit y comenzamos a borrar. Solo en caso de seguridad, lo más probable es que un miembro no haya creado 500 eventos.
-    await batch.commit();
-    batch = db.batch();
-    counter = 0;
-  }
+    /*Solo puede hacer hasta 500 operaciones, por lo tanto hacemos commit y comenzamos a borrar. Solo en caso de seguridad, lo más
+   *probable es que un miembro no haya creado 500 eventos.
+   */
 
-  if(counter > 0){
-    await batch.commit();
+    if (counter == 450) {
+      await batch.commit();
+      batch = db.batch();
+      counter = 0;
+    }
   }
+    if (counter > 0) {
+      await batch.commit();
+    }
 
 }
 
+/// Añade un usuario como administrador dentro de un grupo.
+///
+/// [groupUID] UID del grupo.
+/// [userUID] UID del usuario a promover.
 addAdmin(String groupUID, String userUID) async {
-  List admins_list = [];
+  List adminsList = [];
   await db.collection("groups").doc(groupUID).get().then((doc) {
     var data = doc.data()!;
-    admins_list = data["admins"];
+    adminsList = data["admins"];
   });
-  admins_list.add(userUID);
-  db.collection("groups").doc(groupUID).update({"admins": admins_list});
+  adminsList.add(userUID);
+  db.collection("groups").doc(groupUID).update({"admins": adminsList});
 }
 
+/// Edita la información básica de un grupo.
+///
+/// Actualiza los campos principales del grupo en Firestore.
+///
+/// [groupUID] UID del grupo.
+/// [name] nuevo nombre del grupo.
+/// [description] nueva descripción.
+/// [code] código de acceso del grupo.
+/// [avatar] imagen del grupo.
 editGroup(
   String groupUID,
   String name,
@@ -607,43 +802,58 @@ editGroup(
   });
 }
 
-deleteGroup(String groupUID) {
-  //BORRAR EVENTOS
-
+/// Elimina completamente un grupo y todos sus datos asociados.
+///
+/// Se eliminan de forma secuencial:
+/// - Eventos del grupo
+/// - Notas del grupo
+/// - Listas y sus elementos
+/// - Finalmente el documento del grupo
+///
+/// [groupUID] UID del grupo a eliminar.
+deleteGroup(String groupUID) async {
   DocumentReference groupRef = db.collection("groups").doc(groupUID);
-  groupRef.collection("events").get().then((events) async {
-    for (var doc in events.docs) {
-      await doc.reference.delete();
-    }
-  });
+  //1º BORRAR EVENTOS
+  final events = await groupRef.collection("events").get();
+  for (var doc in events.docs) {
+    await doc.reference.delete();
+  }
 
-  //BORRAR NOTAS
-  groupRef.collection("notes").get().then((notes) async {
-    for (var doc in notes.docs) {
-      await doc.reference.delete();
-    }
-  });
+  //2º BORRAR NOTAS
+  final notes = await groupRef.collection("notes").get();
+  for (var doc in notes.docs) {
+    await doc.reference.delete();
+  }
 
-  //BORRAR LISTAS Y ELEMENTOS DE LISTAS
-  groupRef.collection("lists").get().then((lists) async {
-    for (var list in lists.docs) {
-      list.reference.collection("items").get().then((items) async {
-        for (var item in items.docs) {
-          await item.reference.delete();
-        }
-      });
-      list.reference.delete();
+  //3º BORRAR LISTAS Y ELEMENTOS DE LISTAS
+  final lists = await groupRef.collection("lists").get();
+  for (var list in lists.docs) {
+    final items = await list.reference.collection("items").get();
+    for (var item in items.docs) {
+      await item.reference.delete();
     }
-  });
+    await list.reference.delete();
+  }
 
-  //BORRAR GRUPO
-  groupRef.delete();
+  //4º BORRAR GRUPO
+  await groupRef.delete();
 }
+
+/// Obtiene los eventos próximos de los grupos del usuario.
+///
+/// Busca todos los eventos de los grupos a los que pertenece el usuario
+/// y filtra aquellos que ocurren en los próximos 7 días.
+///
+/// El resultado se ordena por fecha ascendente.
 
 Future<List<Map<String,dynamic>>> getNextEvents() async {
   String? _userUID = FirebaseAuth.instance.currentUser?.uid;
+  //Inicializamos la lista que recogerá los próximos eventos
   List<Map<String,dynamic>> eventsList = [];
+
+  //Establecemos la ficha límite de los eventos a recoger (en los próximos 7 días)
   DateTime limitDate = DateTime.now().add(Duration(days: 7));
+  //Obtenemos todos los grupos a los que pertenece el usuario
   List<String> groupsID = await db
       .collection("groups")
       .where("members", arrayContains: _userUID)
@@ -655,6 +865,7 @@ Future<List<Map<String,dynamic>>> getNextEvents() async {
         }
         return list;
       });
+  //Por cada grupo, revisamos los eventos
   for (String group in groupsID) {
     await db
         .collection("groups")
@@ -665,12 +876,13 @@ Future<List<Map<String,dynamic>>> getNextEvents() async {
           for (var doc in snapshot.docs) {
             Map<String, dynamic> event = doc.data();
             DateTime date = DateTime(event["year"], event["month"], event["day"]);
+            //Recogemos los eventos que se encuentren dentro del intervalo de tiempo
             if(date.isAfter(DateTime.now()) && date.isBefore(DateTime.now().add(Duration(days: 7)))) {
               eventsList.add({"date": date, "title": event["title"]});
             }
           }
         });
   }
-  eventsList.sort((a,b)=>a["date"].compareTo(b["date"]));
+  eventsList.sort((a,b)=>a["date"].compareTo(b["date"])); //Ordenamos por fecha
   return eventsList;
 }

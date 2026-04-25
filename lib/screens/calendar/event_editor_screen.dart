@@ -27,18 +27,19 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
 
   loadEventInfo() async {
     final data =await getEventInfo(widget.groupUID, widget.eventID);
-    _titleController.text = data["title"];
-    _descController.text = data["description"];
-    _locController.text = data["location"];
-    _date = DateTime(data["year"], data["month"], data["day"]);
-    _recSelected = _recurrence.indexOf(data["recurrence"]);
-    setState(() {});
+    setState(() {
+      _titleController.text = data["title"];
+      _descController.text = data["description"];
+      _locController.text = data["location"];
+      _date = DateTime(data["year"], data["month"], data["day"]);
+      _recSelected = _recurrence.indexOf(data["recurrence"]);
+    });
   }
 
   @override
   void initState() {
-    loadEventInfo();
     super.initState();
+    loadEventInfo();
   }
   @override
   Widget build(BuildContext context) {
@@ -221,7 +222,7 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      editEvent(groupUID!, groupName, widget.eventID, _titleController.text, _descController.text, _locController.text, recurrenceButton[_recSelected], _date);
+                      editEvent(groupUID!, groupName, widget.eventID, _titleController.text, _descController.text, _locController.text, _recurrence[_recSelected], _date);
                     });
                     Navigator.pop(context);
                   },

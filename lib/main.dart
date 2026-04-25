@@ -1,8 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:pandilla/core/app_colors.dart';
+
 import 'package:pandilla/core/app_theme.dart';
 import 'package:pandilla/core/services/navigator_key.dart';
 import 'package:pandilla/core/providers/group_provider.dart';
@@ -22,14 +22,25 @@ import 'package:provider/provider.dart';
 import 'core/providers/theme_provider.dart';
 import 'firebase_options.dart';
 
+/// Punto de entrada principal de la aplicación.
+///
+/// Realiza las inicializaciones necesarias antes de ejecutar la app:
+/// - Inicializa Flutter bindings.
+/// - Inicializa Firebase.
+/// - Configura el sistema de notificaciones.
+/// - Registra los providers utilizados en la aplicación.
 Future<void> main() async {
+
+  //inicialización de Firebase
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  //Inicialización de servicios de notificación
   NotificationServices.setupTimezone();
   await NotificationServices.init();
 
   runApp(
+    //Configuración de providers utilizados
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => GroupProvider()),
@@ -42,10 +53,20 @@ Future<void> main() async {
   );
 }
 
+/// Widget principal de la aplicación.
+///
+/// Configura el `MaterialApp`, incluyendo:
+/// - Tema claro y oscuro.
+/// - Localización (idioma).
+/// - Rutas de navegación.
+/// - Pantalla inicial.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  /// Construye el árbol principal de la aplicación.
+  ///
+  /// Obtiene el idioma y el tema desde los providers y los aplica
+  /// a la configuración global del `MaterialApp`.
   @override
   Widget build(BuildContext context) {
     final LocaleProvider localeProvider = context.watch<LocaleProvider>();
@@ -53,9 +74,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       navigatorKey: navigatorKey,
+
+      //Configuración de temas
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeProvider.themeMode,
+
+      //Configuración de localización
       locale: localeProvider.locale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -64,7 +89,11 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
+
+      //Pantalla principal => SplashScreen() = pantalla intermedia para verificar si hay usuario verificado
       home: const SplashScreen(),
+
+      //Rutas para navegación rápida
       routes: {
         '/splash': (context) => const SplashScreen(),
         '/login': (context) => const LogScreen(),

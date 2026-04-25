@@ -18,6 +18,7 @@
     "error_week_psw": "Contraseña débil",
     "error_psw_not_match": "Las contraseñas no coinciden.",
     "error_email_registered": "Ese email ya ha sido registrado. Intente iniciar sesión.",
+    "error_username_too_short" : "Longitud mínima del nombre: 4 caracteres",
 
     "next_events": "Próximos eventos",
     "no_next_events" : "No tienes eventos próximos",
@@ -30,6 +31,7 @@
     "join" : "Unirse",
     "code" : "Código",
 
+    "error_group_name" : "Nombre de la pandilla obligatorio.",
     "error_invalid_code" : "Código incorrecto",
 
     "profile" : "Perfil",
@@ -40,6 +42,8 @@
     "spanish" : "Español",
     "english" : "Inglés",
     "dark_mode" : "Modo oscuro",
+    "notifications" : "Notificaciones",
+    "automatic_mode" : "Modo automático",
 
     "my_profile" : "Mi perfil",
     "job" : "Ocupación",
