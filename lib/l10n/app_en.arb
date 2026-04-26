@@ -8,6 +8,7 @@
     "repeat" : "Repeat password",
     "submit" : "Submit",
     "psw_indications" : "Password may contains: \n - A Uppercase letter \n - A Lowercase letter \n - A number \n - A special character \n - Min lenght: 8 characters",
+    "hold" : "(Hold)",
 
     "no_account_yet" : "Don't have an account yet?",
     "with_account" : "Already have an account?",
@@ -156,5 +157,7 @@
     "view" : "View",
     "items" : "items",
     "sort_by" : "Sort by",
-    "by" : "por"
+    "by" : "por",
+    "app_info" : "App developed by Consuelo López Prieto for \"Proyecto Intermodular\" of DAM.",
+    "version" : "Version"
 }

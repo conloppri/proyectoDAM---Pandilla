@@ -15,8 +15,10 @@ import 'package:provider/provider.dart';
 //Pantallas
 import 'package:pandilla/screens/profile/profile_screen.dart';
 
+import '../../core/app_styles.dart';
 
-/// Pantalla de edición del perfil del usuario.
+
+/// Pantalla de edición del perfil del usuario [ProfileEditorScreen]
 ///
 /// Permite al usuario modificar su información personal como:
 /// - Nombre
@@ -138,17 +140,27 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                           leading: const Icon(Icons.person),
                           title: Text(AppLocalizations.of(context)!.username),
                           subtitle: TextField(
+                            decoration: InputDecoration(
+                                filled: true,
+                                fillColor: AppColors.secondary,
+                                enabledBorder: AppStyles.outlineInputBorderRounded
+                            ),
                             maxLength: 20,
                             controller: _nameController,
                           )),
                     ),
                     /// Trabajo
                     Card.filled(
-                      color: AppColors.calendarSecondary,
+                      color: AppColors.pinkNote,
                       child: ListTile(
                         leading: const Icon(Icons.work),
                         title: Text(AppLocalizations.of(context)!.job),
                         subtitle: TextField(
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: AppColors.profileLowerPink,
+                              enabledBorder: AppStyles.outlineInputBorderRounded
+                          ),
                           controller: _jobController,
                         ),
                       ),
@@ -160,6 +172,11 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                         leading: const Icon(Icons.palette),
                         title: Text(AppLocalizations.of(context)!.fav_colors),
                         subtitle: TextField(
+                          decoration: InputDecoration(
+                              filled: true,
+                              fillColor: AppColors.notesSecondary,
+                              enabledBorder: AppStyles.outlineInputBorderRounded
+                          ),
                           controller: _colorsController,
                         ),
                       ),
@@ -171,6 +188,11 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                         leading: const Icon(Icons.pets),
                         title: Text(AppLocalizations.of(context)!.fav_animal),
                         subtitle: TextField(
+                          decoration: InputDecoration(
+                              filled: true,
+                              fillColor: AppColors.profileLowerSecondary,
+                            enabledBorder: AppStyles.outlineInputBorderRounded
+                          ),
                           controller: _animalsController,
                         ),
                       ),
@@ -185,15 +207,17 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                           controller: _hobbiesController,
                           minLines: 2,
                           maxLines: 10,
-                          decoration: const InputDecoration(
-                              border: OutlineInputBorder()
+                          decoration: InputDecoration(
+                              filled: true,
+                              fillColor: AppColors.calendarSecondary,
+                              enabledBorder: AppStyles.outlineInputBorderRounded
                           ),
                         ),
                       ),
                     ),
                     /// Información adicional
                     Card.filled(
-                      color: AppColors.notesSecondary,
+                      color: AppColors.listsPrimary,
                       child: ListTile(
                         leading: const Icon(Icons.star),
                         title: Text(AppLocalizations.of(context)!.more_info),
@@ -201,9 +225,11 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                           controller: _moreController,
                           minLines: 3,
                           maxLines: 10,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder()
-                          ),
+                            decoration: InputDecoration(
+                                filled: true,
+                                fillColor: AppColors.listsSecondary,
+                                enabledBorder: AppStyles.outlineInputBorderRounded
+                            ),
                         ),
                       ),
                     ),

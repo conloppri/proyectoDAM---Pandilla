@@ -66,7 +66,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
     String? userUID = FirebaseAuth.instance.currentUser?.uid;
     return Scaffold(
       appBar: AppBar(
-        title: Text(groupName!, style: AppStyles.title),
+        title: Text(groupName!, style: AppStyles.appBarTitle),
         backgroundColor: AppColors.notesPrimary,
         foregroundColor: Colors.white,
       ),
@@ -95,7 +95,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                 height: MediaQuery.of(context).size.height * 0.75,
                 child: Card.filled(
                   shape: RoundedRectangleBorder(
-                    side: BorderSide(color: AppColors.notesPrimary, width: 1),
+                    side: const BorderSide(color: AppColors.notesPrimary, width: 1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   color: colors[noteInfo["color"]],
@@ -119,10 +119,11 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                               children: [
                                 Text(
                                   "${AppLocalizations.of(context)!.created_by} ",
+                                  style: const TextStyle(color: Colors.black, fontSize: 15),
                                 ),
                                 Text(
                                   noteInfo["authorName"],
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                  style: const TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
                                 ),
                                 const Spacer(),
                                 if (isAdmin! || userUID == authorID)
@@ -137,7 +138,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                                         ),
                                       ),
                                     ),
-                                    icon: Icon(Icons.edit, color: AppColors.notesPrimary, size: 30,),
+                                    icon: const Icon(Icons.edit, color: AppColors.notesPrimary, size: 30,),
                                   ),
                                 if (isAdmin || userUID == authorID)
                                 /// Botón de edición (solo admin o autor)
@@ -192,22 +193,23 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                                         navigator.pop();
                                       }
                                     },
-                                    icon: Icon(Icons.delete, color: AppColors.notesPrimary, size: 30,),
+                                    icon: const Icon(Icons.delete, color: AppColors.notesPrimary, size: 30,),
                                   ),
 
                               ],
                             ),
                             const SizedBox(height: 10),
                             /// Título de la nota
-                            Text(noteInfo["title"], style: AppStyles.title),
+                            Text(noteInfo["title"], style: const TextStyle(color: AppColors.notesPrimary, fontSize: 25, fontWeight: FontWeight.bold)),
                             /// Contenido de la nota
-                            Text(noteInfo["body"], style: textStyle),
+                            Text(noteInfo["body"], style: const TextStyle(fontFamily: 'Astroph', color: Colors.black, fontSize: 18)),
 
                             const Spacer(),
 
                             /// Fecha de última actualización
                             Text(
                               "${AppLocalizations.of(context)!.last_update}: ${DateFormat("HH:mm dd/MM/yyyy", "es_ES").format(lastUpdate)}",
+                              style: const TextStyle(color: Colors.black, fontSize: 15),
                             ),
                           ],
                         ),

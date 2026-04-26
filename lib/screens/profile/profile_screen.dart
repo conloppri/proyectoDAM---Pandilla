@@ -28,7 +28,7 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-/// Estado de la pantalla de perfil.
+/// Estado de la pantalla de perfil [ProfileScreen]
 ///
 /// Gestiona la carga de datos del usuario y la lógica de propietario.
 class _ProfileScreenState extends State<ProfileScreen> {
@@ -59,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.profile, style: AppStyles.title),
+        title: Text(AppLocalizations.of(context)!.profile, style: AppStyles.appBarTitle),
         foregroundColor: Colors.white,
         backgroundColor: AppColors.primary,
         actions: [
@@ -86,7 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                     ),
-                    /// Información en formato de grid
+                    /// Información en formato de grid modular
                     StaggeredGrid.count(
                       crossAxisCount: 4,
                       mainAxisSpacing: 5,
@@ -101,7 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Center(
                               child: ListTile(
                                 leading: const Icon(Icons.person, color: Colors.white),
-                                title: Text(AppLocalizations.of(context)!.username),
+                                title: Text(AppLocalizations.of(context)!.username, style: AppStyles.profileTitles),
                                 subtitle: Text(_userInfo["name"], style: AppStyles.profileSub,),
                               ),
                             ),
@@ -112,12 +112,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           crossAxisCellCount: 2,
                           mainAxisCellCount: 1,
                           child: Card.filled(
-                            color: AppColors.calendarSecondary,
+                            color: AppColors.pinkNote,
                             child: Center(
                               child: ListTile(
                                 leading: const Icon(Icons.work, color: Colors.white),
-                                title: Text(AppLocalizations.of(context)!.job),
-                                subtitle: Text(_userInfo["job"]),
+                                title: Text(AppLocalizations.of(context)!.job, style: AppStyles.profileTitles),
+                                subtitle: Text(_userInfo["job"], style: AppStyles.profileSub),
                               ),
                             ),
                           ),
@@ -131,8 +131,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Center(
                               child: ListTile(
                                 leading: const Icon(Icons.cake, color: Colors.white),
-                                title: Text(AppLocalizations.of(context)!.birthdate),
-                                subtitle: Text("${birthdateToString()} (${getAge()} ${AppLocalizations.of(context)!.years})"),
+                                title: Text(AppLocalizations.of(context)!.birthdate, style: AppStyles.profileTitles),
+                                subtitle: Text("${birthdateToString()} (${getAge()} ${AppLocalizations.of(context)!.years})", style: AppStyles.profileSub),
                               ),
                             ),
                           ),
@@ -146,7 +146,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Center(
                               child: ListTile(
                                 leading: const Icon(Icons.palette, color: Colors.white),
-                                title: Text(AppLocalizations.of(context)!.fav_colors),
+                                title: Text(AppLocalizations.of(context)!.fav_colors, style: AppStyles.profileTitles),
                                 subtitle: Text(_userInfo["fav_colors"], style: AppStyles.profileSub),
                               ),
                             ),
@@ -161,7 +161,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Center(
                               child: ListTile(
                                 leading: const Icon(Icons.pets, color: Colors.white),
-                                title: Text(AppLocalizations.of(context)!.fav_animal),
+                                title: Text(AppLocalizations.of(context)!.fav_animal, style: AppStyles.profileTitles),
                                 subtitle: Text(_userInfo["fav_animal"], style: AppStyles.profileSub),
                               ),
                             ),
@@ -176,7 +176,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Center(
                               child: ListTile(
                                 leading: const Icon(Icons.sports_basketball, color: Colors.white),
-                                title: Text(AppLocalizations.of(context)!.hobbies),
+                                title: Text(AppLocalizations.of(context)!.hobbies, style: AppStyles.profileTitles),
                                 subtitle: Text(_userInfo["hobbies"], style: AppStyles.profileSub),
                               ),
                             ),
@@ -187,11 +187,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           crossAxisCellCount: 4,
                           mainAxisCellCount: 2,
                           child: Card.filled(
-                            color: AppColors.notesSecondary,
+                            color: AppColors.listsPrimary,
                             child: Center(
                               child: ListTile(
                                 leading: const Icon(Icons.star, color: Colors.white,),
-                                title: Text(AppLocalizations.of(context)!.more_info),
+                                title: Text(AppLocalizations.of(context)!.more_info, style: AppStyles.profileTitles),
                                 subtitle: Text(_userInfo["description"], style: AppStyles.profileSub),
                               ),
                             ),

@@ -86,7 +86,7 @@ class _EventCreatorScreenState extends State<EventCreatorScreen> {
           children: [
 
             /// Título de la pantalla
-            Text(AppLocalizations.of(context)!.new_event, style: AppStyles.title,),
+            Text(AppLocalizations.of(context)!.new_event, style: AppStyles.appBarTitle,),
 
             /// Contenedor con campos de título y descripción
             Container(

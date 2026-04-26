@@ -56,7 +56,7 @@ class _ListviewScreenState extends State<ListviewScreen> {
           child: Column(
             children: [
               /// Título de la list
-              Text(widget.title, style: AppStyles.title,),
+              Text(widget.title, style: AppStyles.appBarTitle,),
               Expanded(
                 /// Lista de elementos en tiempo real desde Firestore
                 child: StreamBuilder(

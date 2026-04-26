@@ -48,7 +48,7 @@ class GroupScreen extends StatefulWidget {
   State<GroupScreen> createState() => _GroupScreenState();
 }
 
-/// Estado de la pantalla del grupo.
+/// Estado de la pantalla del grupo [GroupScreen]
 ///
 /// Controla:
 /// - Navegación inferior entre subscreens
@@ -145,7 +145,7 @@ class _GroupScreenState extends State<GroupScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.groupName, style: AppStyles.title),
+        title: Text(widget.groupName, style: AppStyles.appBarTitle),
         backgroundColor: primaryColors[_selectedIndexBottom],
         foregroundColor: Colors.white,
         actions: [
@@ -179,8 +179,21 @@ class _GroupScreenState extends State<GroupScreen> {
                   builder: (context) {
                     return AlertDialog(
                       title: Text(AppLocalizations.of(context)!.about),
-                      content: Text(
-                        "App desarrollada por Consuelo López Prieto para Proyecto Intermodular de DAM 2025/2026.",
+                      content: Column(
+                        children: [
+                          const Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: AssetImage("assets/icon.pg"),
+                                radius: 20,
+                              ),
+                              Text("Pandilla")
+                            ],
+                          ),
+                          Text("${AppLocalizations.of(context)!.description}:"),
+                          Text(AppLocalizations.of(context)!.app_info),
+                          Text("${AppLocalizations.of(context)!.version}: 1.0.0")
+                        ],
                       ),
                       actions: [
                         TextButton(
@@ -481,9 +494,12 @@ class _GroupScreenState extends State<GroupScreen> {
               customPosition: CustomTargetContentPosition(
                 top: MediaQuery.of(context).size.height * 0.5,
               ),
-              child: Text(
-                AppLocalizations.of(context)!.tutorial_calendar,
-                style: AppStyles.tutorialStyle,
+              child: Container(
+                decoration: AppStyles.tutorialBox,
+                child: Text(
+                  AppLocalizations.of(context)!.tutorial_calendar,
+                  style: AppStyles.tutorialTextStyle,
+                ),
               ),
             ),
           ],
@@ -500,9 +516,12 @@ class _GroupScreenState extends State<GroupScreen> {
               customPosition: CustomTargetContentPosition(
                 top: MediaQuery.of(context).size.height * 0.5,
               ),
-              child: Text(
-                AppLocalizations.of(context)!.tutorial_notes,
-                style: AppStyles.tutorialStyle,
+              child: Container(
+                decoration: AppStyles.tutorialBox,
+                child: Text(
+                  AppLocalizations.of(context)!.tutorial_notes,
+                  style: AppStyles.tutorialTextStyle,
+                ),
               ),
             ),
           ],
@@ -519,9 +538,12 @@ class _GroupScreenState extends State<GroupScreen> {
               customPosition: CustomTargetContentPosition(
                 top: MediaQuery.of(context).size.height * 0.5,
               ),
-              child: Text(
-                AppLocalizations.of(context)!.tutorial_lists,
-                style: AppStyles.tutorialStyle,
+              child: Container(
+                decoration: AppStyles.tutorialBox,
+                child: Text(
+                  AppLocalizations.of(context)!.tutorial_lists,
+                  style: AppStyles.tutorialTextStyle,
+                ),
               ),
             ),
           ],
@@ -538,9 +560,12 @@ class _GroupScreenState extends State<GroupScreen> {
               customPosition: CustomTargetContentPosition(
                 top: MediaQuery.of(context).size.height * 0.5,
               ),
-              child: Text(
-                AppLocalizations.of(context)!.tutorial_info,
-                style: AppStyles.tutorialStyle,
+              child: Container(
+                decoration: AppStyles.tutorialBox,
+                child: Text(
+                  AppLocalizations.of(context)!.tutorial_info,
+                  style: AppStyles.tutorialTextStyle,
+                ),
               ),
             ),
           ],
@@ -559,13 +584,10 @@ class _GroupScreenState extends State<GroupScreen> {
               ),
               child: Container(
                 padding: const EdgeInsetsGeometry.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.secondary,
-                  borderRadius: BorderRadius.circular(20),
-                ),
+                decoration: AppStyles.tutorialBox,
                 child: Text(
                   AppLocalizations.of(context)!.tutorial_last,
-                  style: TextStyle(color: AppColors.primary, fontSize: 20),
+                  style: AppStyles.tutorialTextStyle,
                 ),
               ),
             ),

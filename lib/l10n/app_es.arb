@@ -8,9 +8,10 @@
     "repeat" : "Repite contraseña",
     "submit" : "Enviar",
     "psw_indications" : "La contraseña debe incluir \n - Una mayúscula \n - Una minúscula \n - Un número \n - Un caracter especial \n - Longitud mínima: 8 caracteres",
+    "hold" : "(Mantener pulsado)",
 
     "no_account_yet" : "¿Aún no tienes cuenta?",
-    "with_account" : "Already registered?",
+    "with_account" : "Si ya tienes tu cuenta ",
 
     "error_user_not_found": "Usuario no registrado.",
     "error_incorrect_psw": "Contraseña incorrecta.",
@@ -22,12 +23,12 @@
 
     "next_events": "Próximos eventos",
     "no_next_events" : "No tienes eventos próximos",
-    "my_groups" : "Mis grupos",
-    "no_groups" : "Aún no perteneces a ningún grupo",
-    "new_group" : "Crear nuevo grupo",
+    "my_groups" : "Mis pandillas",
+    "no_groups" : "Aún no perteneces a ninguna pandilla",
+    "new_group" : "Crear nueva pandilla",
     "regenerate_code" : "Regenerar código",
-    "group_name" : "Nombre del grupo",
-    "join_group" : "Unirse a grupo",
+    "group_name" : "Nombre de la pandilla",
+    "join_group" : "Unirse a pandilla",
     "join" : "Unirse",
     "code" : "Código",
 
@@ -156,5 +157,7 @@
     "view" : "Vista",
     "items" : "elementos",
     "sort_by" : "Ordenar",
-    "by" : "por"
+    "by" : "por",
+    "app_info" : "Aplicación desarrollada por Consuelo López Prieto para Proyecto Intermodular de DAM.",
+    "version" : "Versión"
 }

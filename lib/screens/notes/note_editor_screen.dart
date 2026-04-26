@@ -117,7 +117,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     String? groupName = context.watch<GroupProvider>().groupName;
     return Scaffold(
       appBar: AppBar(
-        title: Text(groupName!, style: AppStyles.title),
+        title: Text(groupName!, style: AppStyles.appBarTitle),
         backgroundColor: AppColors.notesPrimary,
         foregroundColor: Colors.white,
         actions: [
@@ -160,7 +160,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             height: MediaQuery.of(context).size.height * 0.75,
             child: Card.filled(
               shape: RoundedRectangleBorder(
-                side: BorderSide(color: AppColors.notesPrimary, width: 2),
+                side: const BorderSide(color: AppColors.notesPrimary, width: 2),
                 borderRadius: BorderRadius.circular(10),
               ),
               color: colors[_selectedColor],
@@ -193,7 +193,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                       TextField(
                         controller: _titleController,
                         style: const TextStyle(color: Colors.black),
-                        decoration: InputDecoration(filled: false,
+                        decoration: const InputDecoration(filled: false,
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: AppColors.notesSecondary),
                         ),
@@ -214,11 +214,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         decoration: InputDecoration(
                           filled: false,
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.notesSecondary),
+                            borderSide: const BorderSide(color: AppColors.notesSecondary),
                             borderRadius: BorderRadius.circular(20)
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.notesPrimary),
+                            borderSide: const BorderSide(color: AppColors.notesPrimary),
                             borderRadius: BorderRadius.circular(20)
                           )
                         ),

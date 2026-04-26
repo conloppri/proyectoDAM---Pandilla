@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pandilla/components/color_picker.dart';
 //Colores y estilos
 import 'package:pandilla/core/app_colors.dart';
+import 'package:pandilla/core/app_styles.dart';
 //Firebase
 import 'package:pandilla/core/services/firebase_service.dart';
 //Providers y servicios
@@ -96,10 +97,7 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
                 decoration: InputDecoration(
                   filled: true,
                  fillColor: AppColors.notesSecondary,
-                 enabledBorder: UnderlineInputBorder(
-                    borderSide: const BorderSide(color: AppColors.notesPrimary),
-                   borderRadius: BorderRadius.circular(10)
-                  ),
+                 enabledBorder: AppStyles.noteEditorOutlineInput,
                   labelText: AppLocalizations.of(context)!.title,
                 ),
                 onChanged: (value) => _title = value,
@@ -117,10 +115,7 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: AppColors.notesSecondary,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: AppColors.notesPrimary),
-                    borderRadius: BorderRadius.circular(12)
-                  ),
+                  enabledBorder: AppStyles.noteEditorOutlineInput,
                   labelText: AppLocalizations.of(context)!.body_note,
                 ),
                 onChanged: (value) => _description = value,
@@ -133,7 +128,7 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
               child: Column(
                 spacing: 10,
                 children: [
-                  Text(AppLocalizations.of(context)!.note_color, style: const TextStyle(color: Colors.white, fontSize: 15),),
+                  Text(AppLocalizations.of(context)!.note_color, style: const TextStyle(color: Colors.white, fontSize: 15)),
                   /// Widget personalizado de selección de color
                   ColorPicker(
                     onColorSelected: (color) => _selectedColor = color,
@@ -153,7 +148,7 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
                     AppLocalizations.of(context)!.discard,
                     style: const TextStyle(
                       color: AppColors.notesSecondary,
-                      fontSize: 20,
+                      fontSize: 20
                     ),
                   ),
                 ),
@@ -169,12 +164,16 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
                         ),
                       );
                     } else {//Crea la nota
-                      createNote(
-                        widget.groupUID,
-                        _title,
-                        _description,
-                        _selectedColor,
-                      );
+                      try {
+                        createNote(
+                          widget.groupUID,
+                          _title,
+                          _description,
+                          _selectedColor,
+                        );
+                      } catch (e) {
+                        debugPrint("Error al crear nota: $e");
+                      }
                       Navigator.pop(context);
                     }
                   },

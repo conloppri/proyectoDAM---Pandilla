@@ -86,6 +86,7 @@ flutter:
   assets:
     - assets/images/logo.png
     - assets/images/
+    - assets/
   fonts:
     - family: Astroph
       fonts:

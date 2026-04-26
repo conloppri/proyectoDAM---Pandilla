@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pandilla/components/note_component.dart';
 //Estilos y colores
 import 'package:pandilla/core/app_colors.dart';
+import 'package:pandilla/core/app_styles.dart';
 //Firebase
 import 'package:pandilla/core/services/firebase_service.dart';
 //Servicios y providers
@@ -56,7 +57,7 @@ class _NotesSubscreenState extends State<NotesSubscreen> {
             Row(
               children: [
                 ///Control de ordenación
-                Text(AppLocalizations.of(context)!.sort_by, style: TextStyle(color: AppColors.notesPrimary, fontSize: 20),),
+                Text(AppLocalizations.of(context)!.sort_by, style: AppStyles.notesToolBar),
                 IconButton(onPressed: (){
                   setState(() {
                     sortedBy=="ABC"
@@ -73,7 +74,7 @@ class _NotesSubscreenState extends State<NotesSubscreen> {
                     /// Control de vista (lista/grid)
                     Text(
                       AppLocalizations.of(context)!.view,
-                      style: const TextStyle(color: AppColors.notesPrimary, fontSize: 20),
+                      style: AppStyles.notesToolBar
                     ),
                     IconButton(
                       onPressed: () {
@@ -88,7 +89,7 @@ class _NotesSubscreenState extends State<NotesSubscreen> {
                 ),
               ],
             ),
-            Divider(color: AppColors.notesPrimary),
+            const Divider(color: AppColors.notesPrimary),
             Expanded(
               /// Lista o grid de notas en tiempo real
               child: StreamBuilder(

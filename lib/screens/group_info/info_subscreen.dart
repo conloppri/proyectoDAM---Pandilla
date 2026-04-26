@@ -192,7 +192,7 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
             ),
           ),
           /// Título de la sección de miembros
-          Text(AppLocalizations.of(context)!.group_members, style: AppStyles.title),
+          Text(AppLocalizations.of(context)!.group_members, style: AppStyles.appBarTitle),
           /// Lista de miembros del grupo
           Expanded(
             child: FutureBuilder(

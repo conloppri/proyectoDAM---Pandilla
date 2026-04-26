@@ -1,6 +1,7 @@
 //Básicos
 import 'package:flutter/material.dart';
 import 'package:pandilla/components/date_picker_widget.dart';
+import 'package:pandilla/core/app_styles.dart';
 import 'package:pandilla/l10n/app_localizations.dart';
 //Pantallas
 import 'package:pandilla/screens/profile/profile_editor_screen.dart';
@@ -22,7 +23,7 @@ class LogScreen extends StatefulWidget {
   State<LogScreen> createState() => _LogScreenState();
 }
 
-/// Estado de la pantalla de login/registro.
+/// Estado de la pantalla de login/registro [LogScreen]
 ///
 /// Controla qué formulario está activo (login o signup).
 class _LogScreenState extends State<LogScreen> {
@@ -42,7 +43,7 @@ class _LogScreenState extends State<LogScreen> {
             SizedBox(
               height: 200,
               width: 200,
-              child: Image.asset("assets/images/logo.png", fit: BoxFit.contain),
+              child: Image.asset("assets/icon.png", fit: BoxFit.contain),
             ),
             /// Alternancia entre login y registro
             _activeAction == "login"
@@ -60,10 +61,7 @@ class _LogScreenState extends State<LogScreen> {
                       GestureDetector(
                         child: Text(
                           AppLocalizations.of(context)!.signup,
-                          style: const TextStyle(
-                            decoration: TextDecoration.underline,
-                            color: Colors.blueAccent,
-                          ),
+                          style: AppStyles.underlinedLogIn,
                         ),
                         onTap: () {
                           setState(() {
@@ -80,10 +78,7 @@ class _LogScreenState extends State<LogScreen> {
                       GestureDetector(
                         child: Text(
                           AppLocalizations.of(context)!.login,
-                          style: const TextStyle(
-                            decoration: TextDecoration.underline,
-                            color: Colors.blueAccent,
-                          ),
+                          style: AppStyles.underlinedLogIn
                         ),
                         onTap: () {
                           setState(() {
@@ -108,7 +103,7 @@ class LogIn extends StatefulWidget {
   State<LogIn> createState() => _LogInState();
 }
 
-/// Estado del formulario de login.
+/// Estado del formulario de login [LogIn]
 class _LogInState extends State<LogIn> {
   /// Email introducido por el usuario.
   String _logEmail = "";
@@ -151,8 +146,6 @@ class _LogInState extends State<LogIn> {
             labelStyle: const TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             labelText: AppLocalizations.of(context)!.password,
-            filled: true,
-            fillColor: Colors.white,
           ),
           obscureText: true,
           onChanged: (value) {
@@ -176,7 +169,7 @@ class _LogInState extends State<LogIn> {
           },
           child: Text(
             AppLocalizations.of(context)!.submit,
-            style: const TextStyle(fontSize: 20),
+            style: AppStyles.buttonTextStyle,
           ),
         ),
       ],
@@ -222,7 +215,7 @@ class SignIn extends StatefulWidget {
   State<SignIn> createState() => _SignInState();
 }
 
-/// Estado del formulario de registro.
+/// Estado del formulario de registro [SignIn]
 class _SignInState extends State<SignIn> {
   /// Email del nuevo usuario.
   String _signEmail = "";
@@ -258,8 +251,6 @@ class _SignInState extends State<SignIn> {
             labelStyle: const TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             labelText: AppLocalizations.of(context)!.username,
-            filled: true,
-            fillColor: Colors.white,
           ),
           onChanged: (value) {
             setState(() {
@@ -283,8 +274,6 @@ class _SignInState extends State<SignIn> {
             labelStyle: const TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             labelText: AppLocalizations.of(context)!.email,
-            filled: true,
-            fillColor: Colors.white,
           ),
           onChanged: (value) {
             setState(() {
@@ -299,8 +288,6 @@ class _SignInState extends State<SignIn> {
             labelStyle: const TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             labelText: AppLocalizations.of(context)!.password,
-            filled: true,
-            fillColor: Colors.white,
           ),
           obscureText: true,
           onChanged: (value) {
@@ -309,20 +296,12 @@ class _SignInState extends State<SignIn> {
             });
           },
         ),
-        ///Tooltip con indicaciones pra contraseña
-        Tooltip(
-          message: AppLocalizations.of(context)!.psw_indications,
-          child: const Icon(Icons.help_outline),
-        ),
-
         /// Repetir contraseña
         TextField(
           decoration: InputDecoration(
             labelStyle: const TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             labelText: AppLocalizations.of(context)!.repeat,
-            filled: true,
-            fillColor: Colors.white,
           ),
           obscureText: true,
           onChanged: (value) {
@@ -331,7 +310,17 @@ class _SignInState extends State<SignIn> {
             });
           },
         ),
-
+        ///Tooltip con indicaciones pra contraseña
+        Tooltip(
+          message: AppLocalizations.of(context)!.psw_indications,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Icon(Icons.help_outline, color: AppColors.primary,),
+              Text(AppLocalizations.of(context)!.hold),
+            ],
+          ),
+        ),
         /// Botón de registro
         ElevatedButton(
           onPressed: () async {
@@ -341,13 +330,13 @@ class _SignInState extends State<SignIn> {
             }else {
               if (await registerUser(_signEmail, _signPsw1, _signPsw2)) { //Intentamos registrar. En caso positivo => Editar Perfil
                 navigator.pushReplacement(MaterialPageRoute(
-                    builder: (context) => ProfileEditorScreen()),);
+                    builder: (context) => const ProfileEditorScreen()),);
               }
             }
           },
           child: Text(
             AppLocalizations.of(context)!.submit,
-            style: const TextStyle(fontSize: 20),
+            style: AppStyles.buttonTextStyle
           ),
         ),
       ],

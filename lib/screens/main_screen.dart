@@ -33,7 +33,7 @@ class MainScreen extends StatefulWidget {
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
-/// Estado de la pantalla principal.
+/// Estado de la pantalla principal [MainScreen]
 ///
 /// Gestiona:
 /// - Datos temporales para creación/unión de grupos
@@ -125,7 +125,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Pandilla", style: AppStyles.title),
+        title: const Text("Pandilla", style: AppStyles.appBarTitle),
         foregroundColor: Colors.white,
         backgroundColor: AppColors.primary,
       ),
@@ -137,7 +137,7 @@ class _MainScreenState extends State<MainScreen> {
           child: Column(
             children: [
               /// Sección de próximos eventos
-              Text(AppLocalizations.of(context)!.next_events, style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
+              Text(AppLocalizations.of(context)!.next_events, style: AppStyles.title),
               /// Contenedor de eventos próximos
               SizedBox(
                 width: double.infinity,
@@ -174,7 +174,7 @@ class _MainScreenState extends State<MainScreen> {
                             if (!snapshot.hasData || snapshot.data!.isEmpty) { //Si el future no devuelve datos
                               return Text(AppLocalizations.of(context)!.no_next_events);
                             }
-                            //Si se obtiene los datos conéxito
+                            //Carga de datos
                             List<Map<String, dynamic>> events = snapshot.data!;
                             return ListView.builder(
                               itemCount: events.length,
@@ -433,7 +433,7 @@ class _MainScreenState extends State<MainScreen> {
     TutorialCoachMark(
         alignSkip: Alignment.topRight,
         textSkip: AppLocalizations.of(context)!.skip,
-        textStyleSkip: TextStyle(color: AppColors.primary, fontSize: 20),
+        textStyleSkip: const TextStyle(color: AppColors.primary, fontSize: 20),
         targets: [
       /// Paso: eventos próximos
       TargetFocus(
@@ -446,9 +446,12 @@ class _MainScreenState extends State<MainScreen> {
                     .of(context)
                     .size
                     .height * 0.35),
-                child: Text(
-                    AppLocalizations.of(context)!.tutorial_next_events,
-                    style: AppStyles.tutorialStyle)
+                child: Container(
+                  decoration: AppStyles.tutorialBox,
+                  child: Text(
+                      AppLocalizations.of(context)!.tutorial_next_events,
+                      style: AppStyles.tutorialTextStyle),
+                )
             )
           ]
       ),
@@ -461,8 +464,11 @@ class _MainScreenState extends State<MainScreen> {
                 align: ContentAlign.top,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(AppLocalizations.of(context)!.tutorial_create,
-                      style: AppStyles.tutorialStyle),
+                  child: Container(
+                    decoration: AppStyles.tutorialBox,
+                    child: Text(AppLocalizations.of(context)!.tutorial_create,
+                        style: AppStyles.tutorialTextStyle),
+                  ),
                 )
             )
           ]
@@ -476,8 +482,11 @@ class _MainScreenState extends State<MainScreen> {
                 align: ContentAlign.top,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(AppLocalizations.of(context)!.tutorial_join,
-                      style: AppStyles.tutorialStyle),
+                  child: Container(
+                    decoration: AppStyles.tutorialBox,
+                    child: Text(AppLocalizations.of(context)!.tutorial_join,
+                        style: AppStyles.tutorialTextStyle),
+                  ),
                 )
             )
           ]
@@ -491,9 +500,12 @@ class _MainScreenState extends State<MainScreen> {
                 align: ContentAlign.top,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                      AppLocalizations.of(context)!.tutorial_listGroups,
-                      style: AppStyles.tutorialStyle),
+                  child: Container(
+                    decoration: AppStyles.tutorialBox,
+                    child: Text(
+                        AppLocalizations.of(context)!.tutorial_listGroups,
+                        style: AppStyles.tutorialTextStyle),
+                  ),
                 )
             )
           ]

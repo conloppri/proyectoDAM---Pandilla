@@ -111,7 +111,7 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             /// Título de la pantalla
-            Text(AppLocalizations.of(context)!.edit_event, style: AppStyles.title),
+            Text(AppLocalizations.of(context)!.edit_event, style: AppStyles.appBarTitle),
 
             /// Contenedor de título del evento y descripción
             Container(
