@@ -54,6 +54,7 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
   /// Construye la interfaz de la subpantalla de información del grupo.
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations loc = AppLocalizations.of(context)!;
     /// Indica si el usuario actual es administrador del grupo.
     bool? isAdmin = context.watch<GroupProvider>().isAdmin;
     String? userUID = FirebaseAuth.instance.currentUser?.uid;
@@ -80,7 +81,7 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                     return Center(child: Text("Error: ${snapshot.error}"));
                   }
                   if (!snapshot.hasData || snapshot.data!.isEmpty) { //sin datos
-                    return Text(AppLocalizations.of(context)!.no_info);
+                    return Text(loc.no_info);
                   }
                   //cargamos los datos
                   Map<String, dynamic> info = snapshot.data!;
@@ -95,10 +96,13 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                         backgroundImage: AssetImage("assets/images/${info["avatar"]}"),
                       ),
                       /// Descripción del grupo
-                      Text(info["description"], style: const TextStyle(color: Colors.white, fontSize: 18)),
+                      Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Text(info["description"], style: const TextStyle(color: Colors.black, fontSize: 18)),
+                      ),
                       /// Información de creación del grupo (autor + fecha)
                       Text(
-                        "${AppLocalizations.of(context)!.created_at} ${DateFormat("dd MMM yyyy", "es_ES").format(createAt)} ${AppLocalizations.of(context)!.by} ${info["authorName"]}",
+                        "${loc.created_at} ${DateFormat("dd MMM yyyy", "es_ES").format(createAt)} ${loc.by} ${info["authorName"]}",
                         style: const TextStyle(color: Colors.white, fontSize: 15),
                       ),
                       /// Botones de acciones del grupo
@@ -109,7 +113,6 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                           ElevatedButton.icon(
                             onPressed: () async {
                               final messenger = ScaffoldMessenger.of(context);
-                              final loc = AppLocalizations.of(context)!;
                               await Clipboard.setData( //Copiamos el código para poder compartirlo más fácil
                                 ClipboardData(text: code),
                               );
@@ -126,6 +129,8 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                               int numAdmins = await getAdminsLength(
                                 widget.groupUID,
                               );
+                              if(!context.mounted) return; //Para evitar error por contexto no válido por widget destruido
+
                               /// Evita que el último administrador abandone el grupo
                               if (isAdmin! && numAdmins < 2) {
                                 showDialog(
@@ -134,13 +139,13 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                                     return AlertDialog( //Warning: es el último admin, debe nombrar a otro antes de abandonar el grupo
                                       title: const Text("Error"),
                                       content: Text(
-                                          AppLocalizations.of(context)!.warning_no_more_admins
+                                          loc.warning_no_more_admins
                                       ),
                                       actions: [
                                         TextButton(
                                           onPressed: () =>
                                               Navigator.pop(context),
-                                          child: Text(AppLocalizations.of(context)!.accept),
+                                          child: Text(loc.accept),
                                         ),
                                       ],
                                     );
@@ -151,9 +156,9 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
-                                      title: Text(AppLocalizations.of(context)!.leave_group),
+                                      title: Text(loc.leave_group),
                                       content: Text(
-                                        AppLocalizations.of(context)!.warning_leave_group,
+                                        loc.warning_leave_group,
                                       ),
                                       actions: [
                                         TextButton( //Sí
@@ -162,17 +167,22 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                                                 .instance
                                                 .currentUser
                                                 ?.uid;
-                                            kickMember( //es expulsado del grupo
-                                              widget.groupUID,
-                                              userUID!,
-                                            );
+                                            try {
+                                              kickMember( //es expulsado del grupo
+                                                widget.groupUID,
+                                                userUID!,
+                                              );
+                                            } catch (e) {
+                                              debugPrint("Error al expulsar miembro: $e");
+                                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_try_again)));
+                                            }
                                           },
-                                          child: Text(AppLocalizations.of(context)!.confirm),
+                                          child: Text(loc.confirm),
                                         ),
                                         TextButton( //No
                                           onPressed: () =>
                                               Navigator.pop(context),
-                                          child: Text(AppLocalizations.of(context)!.cancel),
+                                          child: Text(loc.cancel),
                                         ),
                                       ],
                                     );
@@ -180,7 +190,7 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                                 );
                               }
                             },
-                            label: Text(AppLocalizations.of(context)!.leave_group),
+                            label: Text(loc.leave_group),
                             icon: const Icon(Icons.logout),
                           ),
                         ],
@@ -192,7 +202,7 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
             ),
           ),
           /// Título de la sección de miembros
-          Text(AppLocalizations.of(context)!.group_members, style: AppStyles.appBarTitle),
+          Text(loc.group_members, style: AppStyles.title),
           /// Lista de miembros del grupo
           Expanded(
             child: FutureBuilder(
@@ -206,7 +216,7 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                   return Center(child: Text("Error: ${snapshot.error}"));
                 }
                 if (!snapshot.hasData || snapshot.data!.isEmpty) { //Sin datos
-                  return Text(AppLocalizations.of(context)!.no_member);
+                  return Text(loc.no_member);
                 }
                 //Carga de datos
                 List<Map<String, dynamic>> data = snapshot.data!;
@@ -232,6 +242,7 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: [
                                     /// Avatar del miembro
                                     CircleAvatar(
@@ -246,55 +257,61 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                                       data[index]["name"],
                                       style: const TextStyle(
                                         color: Colors.white,
-                                        fontSize: 25,
+                                        fontSize: 20,
                                       ),
                                     ),
                                     /// Icono de administrador
-                                    if(data[index]["admin"])Icon(Icons.star, color: AppColors.listsPrimary,),
+                                    if(data[index]["admin"])const Icon(Icons.star, color: AppColors.listsPrimary,),
 
                                     const Spacer(),
                                     /// Botón para promocionar a admin (solo visible para admins)
                                     if (isAdmin! && !data[index]["admin"])
-                                      TextButton(
+                                      IconButton(
                                         onPressed: () {
                                           showDialog(
                                             context: context,
                                             builder: (context) {
                                               return AlertDialog( //Dialogo para preguntar si está seguro
                                                 title: Text(
-                                                  AppLocalizations.of(context)!.make_admin,
+                                                  loc.make_admin,
                                                 ),
                                                 content: Text(
-                                                  AppLocalizations.of(context)!.make_admin_dialog,
+                                                  loc.make_admin_dialog,
                                                 ),
                                                 actions: [
                                                   //cancelar
                                                   TextButton(
                                                     onPressed: () =>
                                                         Navigator.pop(context),
-                                                    child: Text(AppLocalizations.of(context)!.cancel),
+                                                    child: Text(loc.cancel),
                                                   ),
                                                   TextButton(
                                                     //Aceptar
                                                     onPressed: () async {
                                                       final navigator= Navigator.of(context);
-                                                      await addAdmin(widget.groupUID, data[index]["uid"]); //añade a la lista de miembros
-                                                      setState(() { //vuelve a cargar la lista de miembros actualizada
-                                                        _futureData =
-                                                            getMembersList(
-                                                              widget.groupUID,
-                                                            );
-                                                      });
+                                                      final messenger = ScaffoldMessenger.of(context);
+                                                      try {
+                                                        await addAdmin(widget.groupUID, data[index]["uid"]); //añade a la lista de miembros
+                                                        setState(() { //vuelve a cargar la lista de miembros actualizada
+                                                          _futureData =
+                                                              getMembersList(
+                                                                widget.groupUID,
+                                                              );
+                                                        });
+                                                      } catch (e) {
+                                                        debugPrint("Error al ascender miembro: $e");
+                                                        messenger.showSnackBar(SnackBar(content: Text(loc.error_try_again)));
+                                                      }
                                                       navigator.pop();
                                                     },
-                                                    child: Text(AppLocalizations.of(context)!.promote),
+                                                    child: Text(loc.promote),
                                                   ),
                                                 ],
                                               );
                                             },
                                           );
                                         },
-                                        child: const Icon(
+                                        icon: const Icon(
                                           Icons.keyboard_double_arrow_up,
                                           color: Colors.green,
                                           size: 30,
@@ -303,47 +320,53 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                                     /// Botón para expulsar miembro(solo visible para admins)
                                     if (isAdmin &&
                                         userUID != data[index]["uid"])
-                                      TextButton(
+                                      IconButton(
                                         onPressed: () {
                                           showDialog(
                                             context: context,
                                             builder: (context) {
                                               return AlertDialog( //Warning: ¿Estás seguro?
                                                 title: Text(
-                                                  AppLocalizations.of(context)!.remove_member,
+                                                  loc.remove_member,
                                                 ),
                                                 content: Text(
-                                                  AppLocalizations.of(context)!.warning_remove_member,
+                                                  loc.warning_remove_member,
                                                 ),
                                                 actions: [
                                                   TextButton( //Cancelar
                                                     onPressed: () =>
                                                         Navigator.pop(context),
-                                                    child: Text(AppLocalizations.of(context)!.cancel),
+                                                    child: Text(loc.cancel),
                                                   ),
                                                   TextButton( //Expulsar
                                                     onPressed: () async {
                                                       final navigator = Navigator.of(context);
-                                                      await kickMember( //expulsa miembro
-                                                        widget.groupUID,
-                                                        data[index]["uid"],
-                                                      );
-                                                      setState(() { //vuelve a cargar lista de mimembros
-                                                        _futureData =
-                                                            getMembersList(
-                                                              widget.groupUID,
-                                                            );
-                                                      });
+                                                      final messenger = ScaffoldMessenger.of(context);
+                                                      try {
+                                                        await kickMember( //expulsa miembro
+                                                          widget.groupUID,
+                                                          data[index]["uid"],
+                                                        );
+                                                        setState(() { //vuelve a cargar lista de mimembros
+                                                          _futureData =
+                                                              getMembersList(
+                                                                widget.groupUID,
+                                                              );
+                                                        });
+                                                      } catch (e) {
+                                                        debugPrint("Error al expulsar miembro: $e");
+                                                        messenger.showSnackBar(SnackBar(content: Text(loc.error_try_again)));
+                                                      }
                                                       navigator.pop();
                                                     },
-                                                    child: Text(AppLocalizations.of(context)!.remove),
+                                                    child: Text(loc.remove),
                                                   ),
                                                 ],
                                               );
                                             },
                                           );
                                         },
-                                        child: const Icon(
+                                        icon: const Icon(
                                           Icons.close,
                                           color: Colors.red,
                                           size: 30,

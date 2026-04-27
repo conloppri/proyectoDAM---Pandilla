@@ -25,6 +25,7 @@ class LeftDrawer extends StatefulWidget {
 class _LeftDrawerState extends State<LeftDrawer> {
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations loc = AppLocalizations.of(context)!;
 
     ///Datos del usuario desde el Provider para utilización en la cabecera del Drawer
     String? userUID = context.watch<UserProvider>().uid;
@@ -52,7 +53,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
       children: [
         /// Encabezado del drawer con información del usuario
         DrawerHeader(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: AppColors.secondary
           ),
             child: Column(
@@ -65,7 +66,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
               )
             ),
             /// Nombre del usuario
-            Text(userName!),
+            Text(userName!, style: const TextStyle(fontWeight: FontWeight.bold),),
             /// Email del usuario
             Text(userEmail!)
           ],
@@ -78,17 +79,17 @@ class _LeftDrawerState extends State<LeftDrawer> {
         /// Navegación a perfil
         NavigationDrawerDestination(
           icon: const Icon(Icons.person),
-          label: Text(AppLocalizations.of(context)!.profile),
+          label: Text(loc.profile),
         ),
         /// Navegación a ajustes
         NavigationDrawerDestination(
           icon: const Icon(Icons.settings),
-          label: Text(AppLocalizations.of(context)!.settings),
+          label: Text(loc.settings),
         ),
         /// Cerrar sesión y navegación a pantalla de LogIn
         NavigationDrawerDestination(
           icon: const Icon(Icons.logout),
-          label: Text(AppLocalizations.of(context)!.logout),
+          label: Text(loc.logout),
         ),
       ],
     );

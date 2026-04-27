@@ -59,6 +59,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
   /// - Permite editar o eliminar si el usuario tiene permisos
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations loc = AppLocalizations.of(context)!;
     ///Datos de los providers
     String? groupUID = context.watch<GroupProvider>().groupUID;
     String? groupName = context.watch<GroupProvider>().groupName;
@@ -83,7 +84,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
               return Center(child: Text("Error: ${snapshot.error}"));
             }
             if (!snapshot.hasData || snapshot.data!.isEmpty) {//sin datos
-              return Text(AppLocalizations.of(context)!.no_notes);
+              return Text(loc.no_notes);
             }
             //Cargamos los datos
             Map<String, dynamic> noteInfo = snapshot.data!;
@@ -118,12 +119,12 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                             Row(
                               children: [
                                 Text(
-                                  "${AppLocalizations.of(context)!.created_by} ",
-                                  style: const TextStyle(color: Colors.black, fontSize: 15),
+                                  "${loc.created_by} ",
+                                  style: AppStyles.notesCreatedByStyle,
                                 ),
                                 Text(
                                   noteInfo["authorName"],
-                                  style: const TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
+                                  style: AppStyles.notesAuthorStyle,
                                 ),
                                 const Spacer(),
                                 if (isAdmin! || userUID == authorID)
@@ -208,7 +209,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
 
                             /// Fecha de última actualización
                             Text(
-                              "${AppLocalizations.of(context)!.last_update}: ${DateFormat("HH:mm dd/MM/yyyy", "es_ES").format(lastUpdate)}",
+                              "${loc.last_update}: ${DateFormat("HH:mm dd/MM/yyyy", "es_ES").format(lastUpdate)}",
                               style: const TextStyle(color: Colors.black, fontSize: 15),
                             ),
                           ],

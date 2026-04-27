@@ -66,6 +66,7 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
   /// - Botones de guardar y cancelar
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.groupName),
@@ -81,7 +82,7 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
           children: [
             /// Título de la pantalla
             Text(
-              AppLocalizations.of(context)!.new_note,
+              loc.new_note,
               style: const TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
@@ -98,7 +99,7 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
                   filled: true,
                  fillColor: AppColors.notesSecondary,
                  enabledBorder: AppStyles.noteEditorOutlineInput,
-                  labelText: AppLocalizations.of(context)!.title,
+                  labelText: loc.title,
                 ),
                 onChanged: (value) => _title = value,
               ),
@@ -116,7 +117,7 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
                   filled: true,
                   fillColor: AppColors.notesSecondary,
                   enabledBorder: AppStyles.noteEditorOutlineInput,
-                  labelText: AppLocalizations.of(context)!.body_note,
+                  labelText: loc.body_note,
                 ),
                 onChanged: (value) => _description = value,
               ),
@@ -128,7 +129,7 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
               child: Column(
                 spacing: 10,
                 children: [
-                  Text(AppLocalizations.of(context)!.note_color, style: const TextStyle(color: Colors.white, fontSize: 15)),
+                  Text(loc.note_color, style: const TextStyle(color: Colors.white, fontSize: 15)),
                   /// Widget personalizado de selección de color
                   ColorPicker(
                     onColorSelected: (color) => _selectedColor = color,
@@ -145,11 +146,8 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
                 ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   child: Text(
-                    AppLocalizations.of(context)!.discard,
-                    style: const TextStyle(
-                      color: AppColors.notesSecondary,
-                      fontSize: 20
-                    ),
+                    loc.discard,
+                    style: AppStyles.buttonTextStyle
                   ),
                 ),
                 /// Botón para guardar la nota
@@ -159,7 +157,7 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            AppLocalizations.of(context)!.all_fields_required,
+                            loc.all_fields_required,
                           ),
                         ),
                       );
@@ -172,17 +170,15 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
                           _selectedColor,
                         );
                       } catch (e) {
-                        debugPrint("Error al crear nota: $e");
+                        debugPrint("Error al crear la nota: $e");
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_try_again)));
                       }
                       Navigator.pop(context);
                     }
                   },
                   child: Text(
-                    AppLocalizations.of(context)!.save,
-                    style: const TextStyle(
-                      color: AppColors.notesSecondary,
-                      fontSize: 20,
-                    ),
+                    loc.save,
+                    style: AppStyles.buttonTextStyle
                   ),
                 ),
               ],

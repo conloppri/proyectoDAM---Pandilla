@@ -98,6 +98,7 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
     String? groupUID = context.watch<GroupProvider>().groupUID;
     String? groupName = context.watch<GroupProvider>().groupName;
 
+    final AppLocalizations loc = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -111,7 +112,7 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             /// Título de la pantalla
-            Text(AppLocalizations.of(context)!.edit_event, style: AppStyles.appBarTitle),
+            Text(loc.edit_event, style: AppStyles.appBarTitle),
 
             /// Contenedor de título del evento y descripción
             Container(
@@ -127,30 +128,26 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                     /// Campo título
                     TextField(
                       controller: _titleController,
+                      style: AppStyles.eventTextFields,
                       decoration: InputDecoration(
                           filled: true,
                           fillColor: AppColors.calendarSecondary,
-                          labelStyle: const TextStyle(color: AppColors.calendarPrimary),
-                          labelText: AppLocalizations.of(context)!.title,
-                          enabledBorder: UnderlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(15)
-                          )
+                          labelStyle: const TextStyle(color: Colors.black),
+                          labelText: loc.title,
+                          enabledBorder: AppStyles.outlineInputBorderRounded
                       ),
                     ),
                     /// Campo descripción
                     TextField(
                       controller: _descController,
+                      style: AppStyles.eventTextFields,
                       maxLines: 3,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: AppColors.calendarSecondary,
-                        labelStyle: const TextStyle(color: AppColors.calendarPrimary),
-                        labelText: AppLocalizations.of(context)!.description,
-                        enabledBorder: UnderlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.white),
-                            borderRadius: BorderRadius.circular(15)
-                        ),
+                        labelStyle: const TextStyle(color: Colors.black),
+                        labelText: loc.description,
+                        enabledBorder: AppStyles.outlineInputBorderRounded,
                       ),
                     ),
                   ],
@@ -164,7 +161,7 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                 selectedDate: _date,
                 labelStyle: const TextStyle(fontSize: 20),
                 buttonColor: AppColors.calendarPrimary,
-                label: AppLocalizations.of(context)!.event_date,
+                label: loc.event_date,
                 firstDate: DateTime(1900),
                 lastDate: DateTime(DateTime.now().year + 50),
                 onDateSelected: (date) => _date = date,
@@ -184,22 +181,20 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                     /// Campo localización
                     TextField(
                       controller: _locController,
+                      style: AppStyles.eventTextFields,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: AppColors.calendarSecondary,
-                        labelStyle: const TextStyle(color: AppColors.calendarPrimary),
-                        labelText: AppLocalizations.of(context)!.location,
-                        enabledBorder: UnderlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.white),
-                            borderRadius: BorderRadius.circular(15)
-                        ),
+                        labelStyle: const TextStyle(color: Colors.black),
+                        labelText: loc.location,
+                        enabledBorder: AppStyles.outlineInputBorderRounded,
                       ),
                     ),
                     /// Selector de recurrencia
                     Row(
                       spacing: 15,
                       children: [
-                        Text("${AppLocalizations.of(context)!.recurrence}: ", style: const TextStyle(fontSize: 20),),
+                        Text("${loc.recurrence}: ", style: AppStyles.buttonTextStyle),
                         /// Botón que abre diálogo de selección
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(backgroundColor: AppColors.calendarSecondary),
@@ -207,7 +202,7 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                             showDialog(
                               context: context,
                               builder: (context) => AlertDialog( //Diálogo de selección de recurrencia con lista
-                                title: Text(AppLocalizations.of(context)!.recurrence_dialog_title),
+                                title: Text(loc.recurrence_dialog_title),
                                 content: Container(
                                   width: double.maxFinite,
                                   constraints: const BoxConstraints(maxHeight: 300),
@@ -274,8 +269,8 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      AppLocalizations.of(context)!.discard,
-                      style: const TextStyle(color: AppColors.calendarSecondary, fontSize: 20),
+                      loc.discard,
+                      style: AppStyles.buttonTextStyle,
                     ),
                   ),
                 ),
@@ -283,7 +278,7 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                 ElevatedButton(
                   onPressed: () {
                     if(_titleController.text==""){ //Comprobamos que haya introducido un título
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.error_title_required)));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_title_required)));
                     }else {
                       try {
                         setState(() {
@@ -298,7 +293,8 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                               _date);
                         });
                       } catch (e) {
-                        debugPrint("Error editando evento: $e");
+                        debugPrint("Error al editar evento: $e");
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_try_again)));
                       }
                       Navigator.pop(context);
                     }
@@ -306,8 +302,8 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      AppLocalizations.of(context)!.save,
-                      style: const TextStyle(color: AppColors.calendarSecondary, fontSize: 20),
+                      loc.save,
+                      style: AppStyles.buttonTextStyle,
                     ),
                   ),
                 ),

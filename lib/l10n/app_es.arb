@@ -159,5 +159,7 @@
     "sort_by" : "Ordenar",
     "by" : "por",
     "app_info" : "Aplicación desarrollada por Consuelo López Prieto para Proyecto Intermodular de DAM.",
-    "version" : "Versión"
+    "version" : "Versión",
+
+    "error_try_again" : "Ha ocurrido un error. Vuelva a intentarlo en unos segundos."
 }

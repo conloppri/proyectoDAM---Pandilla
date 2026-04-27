@@ -42,6 +42,7 @@ class _ListviewScreenState extends State<ListviewScreen> {
   /// Construye la interfaz de la pantalla de lista.
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations loc = AppLocalizations.of(context)!;
     ///Datos del grupo desde provider
     String? groupName = context.read<GroupProvider>().groupName;
     String? groupUID = context.read<GroupProvider>().groupUID;
@@ -56,7 +57,7 @@ class _ListviewScreenState extends State<ListviewScreen> {
           child: Column(
             children: [
               /// Título de la list
-              Text(widget.title, style: AppStyles.appBarTitle,),
+              Text(widget.title, style: AppStyles.title,),
               Expanded(
                 /// Lista de elementos en tiempo real desde Firestore
                 child: StreamBuilder(
@@ -69,7 +70,7 @@ class _ListviewScreenState extends State<ListviewScreen> {
                       return Center(child: Text("Error: ${snapshot.error}")); //Error
                     }
                     if (!snapshot.hasData || snapshot.data!.isEmpty) { //Sin datos
-                      return Text(AppLocalizations.of(context)!.no_lists);
+                      return Text(loc.no_lists);
                     }
                     //Carga de datos
                     List<ItemComponent> items = snapshot.data!;
@@ -102,11 +103,11 @@ class _ListviewScreenState extends State<ListviewScreen> {
                       controller: _controller,
                       maxLength: 30,
                       decoration: InputDecoration(
-                        focusedBorder: OutlineInputBorder(
+                        focusedBorder: const OutlineInputBorder(
                           borderSide: BorderSide(color: AppColors.listsPrimary),
                         ),
                         border: const OutlineInputBorder(),
-                        labelText: AppLocalizations.of(context)!.new_item,
+                        labelText: loc.new_item,
                       ),
                     ),
                   ),
@@ -121,20 +122,26 @@ class _ListviewScreenState extends State<ListviewScreen> {
                       backgroundColor: AppColors.listsSecondary,
                       foregroundColor: Colors.white,
                       onPressed: () async {
+                        final messenger = ScaffoldMessenger.of(context);
                         if (_controller.text == "") { //Comprueba que el campo no este vacío
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          messenger.showSnackBar(
                             SnackBar(
-                              content: Text(AppLocalizations.of(context)!.warning_empty_item),
+                              content: Text(loc.warning_empty_item),
                             ),
                           );
                         } else { //Añade el elementos a la lista desde Firestore
-                          await addItem(groupUID, widget.uid, _controller.text);
+                          try {
+                            await addItem(groupUID, widget.uid, _controller.text);
+                          } catch (e) {
+                            debugPrint("Error al añadir elemento a lista: $e");
+                            messenger.showSnackBar(SnackBar(content: Text(loc.error_try_again)));
+                          }
                           setState(() {
                             _controller.clear(); //Limpia el campo para añadir nuevos elementos
                           });
                         }
                       },
-                      child: const Icon(Icons.add, size: 30,),
+                      child: const Icon(Icons.add, size: 30),
                     ),
                   ),
                 ],

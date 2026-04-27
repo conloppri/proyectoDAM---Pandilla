@@ -102,13 +102,14 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   /// Construye la interfaz del perfil
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.my_profile),
+        title: Text(loc.my_profile),
         backgroundColor: AppColors.primary,
         actions: [
           /// Botón para guardar cambios del perfil
-          TextButton(onPressed: ()=>saveInfo(), child: Text(AppLocalizations.of(context)!.save))
+          TextButton(onPressed: ()=>saveInfo(), child: Text(loc.save))
         ],
       ),
       body: SafeArea(
@@ -138,7 +139,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                       color: AppColors.primary,
                       child: ListTile(
                           leading: const Icon(Icons.person),
-                          title: Text(AppLocalizations.of(context)!.username),
+                          title: Text(loc.username),
                           subtitle: TextField(
                             decoration: InputDecoration(
                                 filled: true,
@@ -154,7 +155,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                       color: AppColors.pinkNote,
                       child: ListTile(
                         leading: const Icon(Icons.work),
-                        title: Text(AppLocalizations.of(context)!.job),
+                        title: Text(loc.job),
                         subtitle: TextField(
                           decoration: InputDecoration(
                             filled: true,
@@ -170,7 +171,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                       color: AppColors.notesPrimary,
                       child: ListTile(
                         leading: const Icon(Icons.palette),
-                        title: Text(AppLocalizations.of(context)!.fav_colors),
+                        title: Text(loc.fav_colors),
                         subtitle: TextField(
                           decoration: InputDecoration(
                               filled: true,
@@ -186,7 +187,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                       color: AppColors.secondary,
                       child: ListTile(
                         leading: const Icon(Icons.pets),
-                        title: Text(AppLocalizations.of(context)!.fav_animal),
+                        title: Text(loc.fav_animal),
                         subtitle: TextField(
                           decoration: InputDecoration(
                               filled: true,
@@ -202,7 +203,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                       color: AppColors.calendarPrimary,
                       child: ListTile(
                         leading: const Icon(Icons.sports_basketball),
-                        title: Text(AppLocalizations.of(context)!.hobbies),
+                        title: Text(loc.hobbies),
                         subtitle: TextField(
                           controller: _hobbiesController,
                           minLines: 2,
@@ -220,7 +221,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                       color: AppColors.listsPrimary,
                       child: ListTile(
                         leading: const Icon(Icons.star),
-                        title: Text(AppLocalizations.of(context)!.more_info),
+                        title: Text(loc.more_info),
                         subtitle: TextField(
                           controller: _moreController,
                           minLines: 3,
@@ -250,19 +251,26 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   /// - Navega al ProfileScreen
   saveInfo() async {
     UserProvider userProvider = context.read<UserProvider>();
+    final AppLocalizations loc = AppLocalizations.of(context)!;
     final navigator = Navigator.of(context);
     if(_nameController.text.length<4){ //COmprobamos que el nombre sea válido
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.error_username_too_short)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_username_too_short)));
     }else { //Intentamos guardar perfil
-      bool saved = await saveProfile(
-          _nameController.text,
-          _colorsController.text,
-          _jobController.text,
-          _hobbiesController.text,
-          _moreController.text,
-          _selectedAvatar,
-          _animalsController.text
-      );
+      bool saved = false;
+      try {
+        saved = await saveProfile(
+            _nameController.text,
+            _colorsController.text,
+            _jobController.text,
+            _hobbiesController.text,
+            _moreController.text,
+            _selectedAvatar,
+            _animalsController.text
+        );
+      }catch (e) {
+        debugPrint("Error al actualizar prtfil: $e");
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_try_again)));
+      }
       if (saved) { //hacemos cambios en el UserProvider
         userProvider.setUser(userUID!, _nameController.text, _selectedAvatar,
             _userInfo["email"]);

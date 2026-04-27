@@ -65,11 +65,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final LocaleProvider localeProvider = context.watch<LocaleProvider>();
+    final AppLocalizations loc = AppLocalizations.of(context)!;
 
     /// Texto del idioma seleccionado actualmente.
     String selectedLang = localeProvider.locale == const Locale("en")
-        ? AppLocalizations.of(context)!.english
-        : AppLocalizations.of(context)!.spanish;
+        ? loc.english
+        : loc.spanish;
 
     final ThemeProvider themeProvider = context.watch<ThemeProvider>();
 
@@ -77,7 +78,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     darkMode = (themeProvider.themeMode == ThemeMode.dark);
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.settings),
+        title: Text(loc.settings),
         backgroundColor: AppColors.primary,
       ),
       body: SafeArea(
@@ -87,7 +88,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ///Selector de idiomas
             ListTile(
               title: Text(
-                AppLocalizations.of(context)!.language,
+                loc.language,
                 style: AppStyles.settingTitleStyle,
               ),
               subtitle: Text(selectedLang),
@@ -97,7 +98,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   builder: (context) {
                     return AlertDialog(
                       //Solicitamos el idioma por lista en AlertDialog
-                      title: Text(AppLocalizations.of(context)!.language),
+                      title: Text(loc.language),
                       content: SizedBox(
                         height: MediaQuery.of(context).size.height * 0.8,
                         width: double.maxFinite,
@@ -106,7 +107,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             /// Opción: Español
                             ListTile(
                               title: Text(
-                                AppLocalizations.of(context)!.spanish,
+                                loc.spanish,
                               ),
                               onTap: () {
                                 localeProvider.setLocale(const Locale("es"));
@@ -121,7 +122,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             /// Opción: Inglés
                             ListTile(
                               title: Text(
-                                AppLocalizations.of(context)!.english,
+                                loc.english,
                               ),
                               onTap: () {
                                 localeProvider.setLocale(const Locale("en"));
@@ -146,7 +147,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             CheckboxListTile(
               value: automaticMode,
               title: Text(
-                AppLocalizations.of(context)!.automatic_mode,
+                loc.automatic_mode,
                 style: AppStyles.settingTitleStyle,
               ),
               onChanged: (bool? value) async {
@@ -168,7 +169,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: SwitchListTile(
                 value: darkMode,
                 title: Text(
-                  AppLocalizations.of(context)!.dark_mode,
+                  loc.dark_mode,
                   style: automaticMode
                       ? const TextStyle( //Si esta desactivado, se verá gris
                           color: Colors.black12,
@@ -197,7 +198,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             SwitchListTile(
               value: notif,
               title: Text(
-                AppLocalizations.of(context)!.notifications,
+                loc.notifications,
                 style: AppStyles.settingTitleStyle,
               ),
               onChanged: (value) {

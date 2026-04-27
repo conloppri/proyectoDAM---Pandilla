@@ -37,6 +37,7 @@ class _ListsSubscreenState extends State<ListsSubscreen> {
   /// Construye la interfaz de la subpantalla de listas.
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations loc = AppLocalizations.of(context)!;
     /// Identificador del grupo actual obtenido desde el provider.
     String? groupUID = context.watch<GroupProvider>().groupUID;
     return Padding(
@@ -47,7 +48,7 @@ class _ListsSubscreenState extends State<ListsSubscreen> {
           /// Fila superior con opciones de ordenación
           Row(
             children: [
-              Text(AppLocalizations.of(context)!.sort_by, style: TextStyle(color: AppColors.listsPrimary, fontSize: 15),),
+              Text(loc.sort_by, style: const TextStyle(color: AppColors.listsPrimary, fontSize: 15)),
               IconButton(onPressed: (){
                 setState(() {
                   sortedBy=="ABC"
@@ -60,7 +61,7 @@ class _ListsSubscreenState extends State<ListsSubscreen> {
               ),
             ],
           ),
-          Divider(color: AppColors.listsPrimary),
+          const Divider(color: AppColors.listsPrimary),
           Expanded(
             /// Lista de listas obtenidas desde Firestore en tiempo real
             child: StreamBuilder(
@@ -74,7 +75,7 @@ class _ListsSubscreenState extends State<ListsSubscreen> {
                     return Center(child: Text("Error: ${snapshot.error}"));
                   }
                   if(!snapshot.hasData||snapshot.data!.isEmpty) { //Sin datos
-                    return Center(child: Text(AppLocalizations.of(context)!.no_lists));
+                    return Center(child: Text(loc.no_lists));
                   }
 
                   //cargamos datos

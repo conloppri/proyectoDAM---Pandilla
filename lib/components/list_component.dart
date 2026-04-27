@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 //Estilos y colores
 import 'package:pandilla/core/app_colors.dart';
+import 'package:pandilla/core/app_styles.dart';
 //Firebase
 import 'package:pandilla/core/services/firebase_service.dart';
 //Servicios y providers
@@ -81,7 +82,7 @@ class _ListComponentState extends State<ListComponent> {
     loadNumItems();
   }
 
-  /// Construye la interfaz visual del componente de lista.
+  /// Construye la interfaz visual del [ListComponent].
   ///
   /// Muestra una tarjeta con información de la lista, incluyendo:
   /// - Autor de la lista
@@ -94,6 +95,8 @@ class _ListComponentState extends State<ListComponent> {
   /// - Eliminar la lista si el usuario es administrador o creador.
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations loc = AppLocalizations.of(context)!;
+
     bool? isAdmin = context.read<GroupProvider>().isAdmin;
 
     ///Contenedor del componente
@@ -112,8 +115,8 @@ class _ListComponentState extends State<ListComponent> {
             Row(
               ///Línea para indicar el autor de la lista
               children: [
-                Text("${AppLocalizations.of(context)!.created_by} ",style: const TextStyle(color: Colors.black)),
-                Text(widget.author, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
+                Text("${loc.created_by} ",style:AppStyles.blackFont),
+                Text(widget.author, style: AppStyles.blackBoldStyle),
 
                 const Spacer(),
 
@@ -123,9 +126,9 @@ class _ListComponentState extends State<ListComponent> {
                     context: context,
                     builder: (context) {
                       return AlertDialog( //warning de eliminación
-                        title: Text(AppLocalizations.of(context)!.delete_list),
+                        title: Text(loc.delete_list),
                         content: Text(
-                          AppLocalizations.of(context)!.warning_delete_list,
+                          loc.warning_delete_list,
                         ),
                         actions: [
                           TextButton( //Eliminar
@@ -137,11 +140,11 @@ class _ListComponentState extends State<ListComponent> {
                                 debugPrint("Error eliminando lista: $e");
                               }
                             },
-                            child: Text(AppLocalizations.of(context)!.remove),
+                            child: Text(loc.remove),
                           ),
                           TextButton( //Cancelar
                             onPressed: () => Navigator.pop(context),
-                            child: Text(AppLocalizations.of(context)!.cancel),
+                            child: Text(loc.cancel),
                           ),
                         ],
                       );
@@ -158,7 +161,7 @@ class _ListComponentState extends State<ListComponent> {
                 title: Text(widget.title, style: const TextStyle(color: AppColors.listsPrimary, fontWeight: FontWeight.bold, fontSize: 20),),
                 ///Número de elementos de la lista
                 subtitle: Text(
-                  "$numItems ${AppLocalizations.of(context)!.items}", style: const TextStyle(color: Colors.black, fontSize: 15)
+                  "$numItems ${loc.items}", style: const TextStyle(color: Colors.black, fontSize: 15)
                 ),
                 /// Navega al detalle de la lista y refresca al volver.
                 onTap: () async {
@@ -175,8 +178,8 @@ class _ListComponentState extends State<ListComponent> {
             ),
             /// Fecha de última actualización.
             Text(
-              "${AppLocalizations.of(context)!.last_update} ${DateFormat("HH:mm dd/MM/yyyy", "es_ES").format(widget.lastUpdate)}",
-              style: const TextStyle(color: Colors.black),
+              "${loc.last_update} ${DateFormat("HH:mm dd/MM/yyyy", "es_ES").format(widget.lastUpdate)}",
+              style: AppStyles.blackFont,
             ),
           ],
         ),

@@ -1,6 +1,7 @@
 //Básicos
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pandilla/core/app_styles.dart';
 //Estilos y colores
 import '../core/app_colors.dart';
 //Servicios y providers
@@ -93,7 +94,7 @@ class _NoteComponentState extends State<NoteComponent> {
             padding: const EdgeInsets.all(10),
             child: Text(
               "${AppLocalizations.of(context)!.created_by} ${widget.author}",
-              style: const TextStyle(color: Colors.black),
+              style: AppStyles.blackFont,
             ),
           ),
 

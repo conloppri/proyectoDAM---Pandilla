@@ -16,7 +16,6 @@ import '../../core/services/firebase_service.dart';
 import '../../core/app_colors.dart';
 import '../../core/app_styles.dart';
 
-
 /// Pantalla de edición de una nota existente.
 ///
 /// Permite:
@@ -27,6 +26,7 @@ import '../../core/app_styles.dart';
 class NoteEditorScreen extends StatefulWidget {
   /// ID de la nota a editar.
   final String noteID;
+
   /// UID del grupo al que pertenece la nota.
   final String groupUID;
 
@@ -62,6 +62,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   /// Información completa de la nota cargada desde la base de datos.
   Map noteInfo = {};
+
   /// Controladores del campos.
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _bodyController = TextEditingController();
@@ -70,10 +71,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   String _lastUpdate = "";
 
   /// Estilo de texto utilizado en el contenido de la nota.
-  final TextStyle textStyle = const TextStyle(
-      fontSize: 18,
-      height: 1.5
-  );
+  final TextStyle textStyle = const TextStyle(fontSize: 18, height: 1.5);
 
   /// Carga la información de la nota desde Firestore.
   ///
@@ -113,6 +111,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   /// - Botón de guardado en la AppBar
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations loc = AppLocalizations.of(context)!;
     String? groupUID = context.watch<GroupProvider>().groupUID;
     String? groupName = context.watch<GroupProvider>().groupName;
     return Scaffold(
@@ -124,22 +123,35 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           /// Botón para guardar los cambios de la nota en Firestore
           TextButton(
             onPressed: () {
-              if (_titleController.text == "" || _bodyController.text == "") { //comprueba que los campos no estén vacíos
+              if (_titleController.text == "" || _bodyController.text == "") {
+                //comprueba que los campos no estén vacíos
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      AppLocalizations.of(context)!.all_fields_required,
+                      loc.all_fields_required,
                     ),
                   ),
                 );
-              }else { //Si está bien, actualiza la nota en la base de datos
-                updateNote(
-                  groupUID!,
-                  widget.noteID,
-                  _titleController.text,
-                  _bodyController.text,
-                  _selectedColor,
-                );
+              } else {
+                //Si está bien, actualiza la nota en la base de datos
+                try {
+                  updateNote(
+                    groupUID!,
+                    widget.noteID,
+                    _titleController.text,
+                    _bodyController.text,
+                    _selectedColor,
+                  );
+                } catch (e) {
+                  debugPrint("Error al actualizar nota: $e");
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        loc.error_try_again,
+                      ),
+                    ),
+                  );
+                }
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -148,7 +160,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 );
               }
             },
-            child: Text(AppLocalizations.of(context)!.save),
+            child: Text(loc.save),
           ),
         ],
       ),
@@ -168,88 +180,110 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 children: [
                   /// Fondo estilo papel rayado
                   Positioned.fill(
-                      child: PaperBackground(
-                        lineColor: Colors.black,
-                        lineSpacing: textStyle.fontSize! * textStyle.height!,
-                      )),
+                    child: PaperBackground(
+                      lineColor: Colors.black,
+                      lineSpacing: textStyle.fontSize! * textStyle.height!,
+                    ),
+                  ),
+
                   /// Contenido de la nota
                   Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      /// Autor de la nota
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          "${AppLocalizations.of(context)!.created_by} ${noteInfo["authorName"]}",
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        /// Autor de la nota
+                        Row(
+                          children: [
+                            Text(
+                              "${loc.created_by} ",
+                              style: AppStyles.notesCreatedByStyle,
+                            ),
+                            Text(
+                              noteInfo["authorName"],
+                              style: AppStyles.notesAuthorStyle,
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        /// Campo de título
+                        TextField(
+                          controller: _titleController,
+                          style: const TextStyle(color: Colors.black),
+                          decoration: const InputDecoration(
+                            filled: false,
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: AppColors.notesSecondary,
+                              ),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: AppColors.notesPrimary,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        /// Campo de contenido
+                        TextField(
+                          controller: _bodyController,
+                          style: const TextStyle(color: Colors.black),
+                          minLines: 5,
+                          maxLines: 10,
+                          decoration: InputDecoration(
+                            filled: false,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: AppColors.notesSecondary,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: AppColors.notesPrimary,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        /// Selector de color
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Text(
+                            loc.note_color,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                        ColorPicker(
+                          onColorSelected: (color) {
+                            setState(() {
+                              _selectedColor = color;
+                            });
+                          },
+                          selectedColor: _selectedColor,
+                        ),
+
+                        const Spacer(),
+
+                        /// Fecha de última actualización
+                        Text(
+                          "${loc.last_update} $_lastUpdate",
                           style: const TextStyle(color: Colors.black),
                         ),
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      /// Campo de título
-                      TextField(
-                        controller: _titleController,
-                        style: const TextStyle(color: Colors.black),
-                        decoration: const InputDecoration(filled: false,
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.notesSecondary),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.notesPrimary)
-                        )),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-
-                      /// Campo de contenido
-                      TextField(
-                        controller: _bodyController,
-                        style: const TextStyle(color: Colors.black),
-                        minLines: 5,
-                        maxLines: 10,
-                        decoration: InputDecoration(
-                          filled: false,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: AppColors.notesSecondary),
-                            borderRadius: BorderRadius.circular(20)
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: AppColors.notesPrimary),
-                            borderRadius: BorderRadius.circular(20)
-                          )
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      /// Selector de color
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Text(AppLocalizations.of(context)!.note_color, style: const TextStyle(color: Colors.black, fontSize: 15),),
-                      ),
-                      ColorPicker(
-                        onColorSelected: (color) {
-                          setState(() {
-                            _selectedColor = color;
-                          });
-                        },
-                        selectedColor: _selectedColor,
-                      ),
-
-                      const Spacer(),
-
-                      /// Fecha de última actualización
-                      Text(
-                        "${AppLocalizations.of(context)!.last_update} $_lastUpdate",
-                        style: const TextStyle(color: Colors.black),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                )],
+                ],
               ),
             ),
           ),

@@ -67,6 +67,7 @@ class GroupProvider extends ChangeNotifier {
     _groupUID = null;
     _groupName = null;
     _admin = null;
+    _code = null;
     notifyListeners();
   }
 

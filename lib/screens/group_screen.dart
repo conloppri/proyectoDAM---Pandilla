@@ -115,7 +115,7 @@ class _GroupScreenState extends State<GroupScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     tutorialCompleted = prefs.getBool("group_tutorial");
     setState(() {});
-    if(!tutorialCompleted!){
+    if(tutorialCompleted==null || !tutorialCompleted!){
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showTutorial();
       });
@@ -132,6 +132,7 @@ class _GroupScreenState extends State<GroupScreen> {
   /// Construye la interfaz del grupo.
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations loc = AppLocalizations.of(context)!;
     //Controlamos si el usuario activo es administrador del grupo
     bool? isAdmin = context.watch<GroupProvider>().isAdmin;
 
@@ -155,19 +156,19 @@ class _GroupScreenState extends State<GroupScreen> {
               if (isAdmin!)
                 PopupMenuItem(
                   value: "edit",
-                  child: Text(AppLocalizations.of(context)!.edit_group_info),
+                  child: Text(loc.edit_group_info),
                 ), //Editar grupo => Solo admins
               if (isAdmin)
                 PopupMenuItem(
                   value: "delete",
                   child: Text(
-                    AppLocalizations.of(context)!.delete_group,
+                    loc.delete_group,
                     style: const TextStyle(color: Colors.red),
                   ),
                 ), //Elimiar grupo => Solo admins
               PopupMenuItem(
                 value: "info",
-                child: Text(AppLocalizations.of(context)!.about),
+                child: Text(loc.about),
               ), //Info sobre la app
             ],
             //Control de elección del popMenu
@@ -178,7 +179,7 @@ class _GroupScreenState extends State<GroupScreen> {
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                      title: Text(AppLocalizations.of(context)!.about),
+                      title: Text(loc.about),
                       content: Column(
                         children: [
                           const Row(
@@ -190,15 +191,15 @@ class _GroupScreenState extends State<GroupScreen> {
                               Text("Pandilla")
                             ],
                           ),
-                          Text("${AppLocalizations.of(context)!.description}:"),
-                          Text(AppLocalizations.of(context)!.app_info),
-                          Text("${AppLocalizations.of(context)!.version}: 1.0.0")
+                          Text("${loc.description}:"),
+                          Text(loc.app_info),
+                          Text("${loc.version}: 1.0.0")
                         ],
                       ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: Text(AppLocalizations.of(context)!.close),
+                          child: Text(loc.close),
                         ),
                       ],
                     );
@@ -212,14 +213,14 @@ class _GroupScreenState extends State<GroupScreen> {
                   builder: (context) {
                     return AlertDialog(
                       //Advertencia de si está seguro de eliminar
-                      title: Text(AppLocalizations.of(context)!.delete_group),
+                      title: Text(loc.delete_group),
                       content: Text(
-                        AppLocalizations.of(context)!.warning_group_removal,
+                        loc.warning_group_removal,
                       ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: Text(AppLocalizations.of(context)!.cancel),
+                          child: Text(loc.cancel),
                         ),
                         TextButton(
                           onPressed: () {
@@ -228,7 +229,7 @@ class _GroupScreenState extends State<GroupScreen> {
                             Navigator.pushReplacementNamed(context, "/home");
                           },
                           child: Text(
-                            AppLocalizations.of(context)!.remove,
+                            loc.remove,
                             style: const TextStyle(color: Colors.redAccent),
                           ),
                         ),
@@ -268,25 +269,25 @@ class _GroupScreenState extends State<GroupScreen> {
             //CALENDARIO
             key: calendarKey,
             icon: const Icon(Icons.calendar_month_outlined, size: 40),
-            label: AppLocalizations.of(context)!.calendar,
+            label: loc.calendar,
           ),
           BottomNavigationBarItem(
             //NOTAS
             key: notesKey,
             icon: const Icon(Icons.note, size: 40),
-            label: AppLocalizations.of(context)!.notes,
+            label: loc.notes,
           ),
           BottomNavigationBarItem(
             //LISTAS
             key: listsKey,
             icon: const Icon(Icons.list, size: 40),
-            label: AppLocalizations.of(context)!.lists,
+            label: loc.lists,
           ),
           BottomNavigationBarItem(
             //INFO DEL GRUPO
             key: infoKey,
             icon: const Icon(Icons.group, size: 40),
-            label: AppLocalizations.of(context)!.group_info,
+            label: loc.group_info,
           ),
         ],
         //Control de selección de sección
@@ -327,7 +328,7 @@ class _GroupScreenState extends State<GroupScreen> {
           ///SpeedDial para añadir eventos
           SpeedDialChild(
             child: const Icon(Icons.event),
-            label: AppLocalizations.of(context)!.add_event,
+            label: loc.add_event,
             backgroundColor: AppColors.calendarPrimary,
             onTap: () {
               Navigator.push(
@@ -342,7 +343,7 @@ class _GroupScreenState extends State<GroupScreen> {
           ///SpeedDial para añadir notas
           SpeedDialChild(
             child: const Icon(Icons.note_add),
-            label: AppLocalizations.of(context)!.add_note,
+            label: loc.add_note,
             backgroundColor: AppColors.notesPrimary,
             onTap: () {
               Navigator.push(
@@ -360,7 +361,7 @@ class _GroupScreenState extends State<GroupScreen> {
           ///SpeedDial para añadir listas
           SpeedDialChild(
             child: const Icon(Icons.list_alt),
-            label: AppLocalizations.of(context)!.add_list,
+            label: loc.add_list,
             backgroundColor: AppColors.listsPrimary,
             onTap: () {
               showDialog(
@@ -369,18 +370,18 @@ class _GroupScreenState extends State<GroupScreen> {
                   ///Formulario creación listas
                   return AlertDialog(
                     //Diálogo de creación de lista (Solo nombre)
-                    title: Text(AppLocalizations.of(context)!.new_list),
+                    title: Text(loc.new_list),
 
                     ///Título de la lista
                     content: TextField(
                       decoration: InputDecoration(
-                        focusedBorder: UnderlineInputBorder(
+                        focusedBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(
                             color: AppColors.listsPrimary,
                           ),
                         ),
                         border: const UnderlineInputBorder(),
-                        labelText: AppLocalizations.of(context)!.title,
+                        labelText: loc.title,
                       ),
                       onChanged: (value) => _listTitle = value,
                     ),
@@ -388,7 +389,7 @@ class _GroupScreenState extends State<GroupScreen> {
                       ///Botón "Descartar"
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: Text(AppLocalizations.of(context)!.discard),
+                        child: Text(loc.discard),
                       ),
 
                       ///Botón "Guardar"
@@ -406,12 +407,17 @@ class _GroupScreenState extends State<GroupScreen> {
                               ),
                             );
                           } else {
-                            //Creamos la lista
-                            newList(widget.groupUID, _listTitle);
+                            //Intentamos crear la lista
+                            try {
+                              newList(widget.groupUID, _listTitle);
+                            } catch (e) {
+                              debugPrint("Error al guardar la lista: $e");
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_try_again)));
+                            }
                             Navigator.pop(context);
                           }
                         },
-                        child: Text(AppLocalizations.of(context)!.save),
+                        child: Text(loc.save),
                       ),
                     ],
                   );
@@ -431,6 +437,7 @@ class _GroupScreenState extends State<GroupScreen> {
   /// - Muestra aviso informativo
   void _handleKick() {
     final GroupProvider provider = context.read<GroupProvider>();
+    final AppLocalizations loc = AppLocalizations.of(context)!;
     if (!provider.isMember) {
       //Si ha sido expulsado, lo devolvemos al MainScreen
       navigatorKey.currentState?.pushNamedAndRemoveUntil(
@@ -445,15 +452,15 @@ class _GroupScreenState extends State<GroupScreen> {
           builder: (_) {
             return AlertDialog(
               title: Text(
-                AppLocalizations.of(context)!.notif_group_removal_title,
+                loc.notif_group_removal_title,
               ),
               content: Text(
-                AppLocalizations.of(context)!.notif_group_removal_content,
+                loc.notif_group_removal_content,
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(navigatorKey.currentContext!),
-                  child: Text(AppLocalizations.of(context)!.accept),
+                  child: Text(loc.accept),
                 ),
               ],
             );
@@ -465,11 +472,12 @@ class _GroupScreenState extends State<GroupScreen> {
 
   /// Muestra la guía interactiva del grupo (solo primera vez).
   Future<void> showTutorial() async {
+    final AppLocalizations loc = AppLocalizations.of(context)!;
     int counter = 0;
     TutorialCoachMark(
       alignSkip: Alignment.topRight,
-      textSkip: AppLocalizations.of(context)!.skip,
-      textStyleSkip: TextStyle(color: AppColors.primary, fontSize: 20),
+      textSkip: loc.skip,
+      textStyleSkip: const TextStyle(color: AppColors.primary, fontSize: 20),
       onClickTarget: (target) {
         setState(() {
           //Control de las subpantallas conforme pase el tutorial
@@ -495,9 +503,10 @@ class _GroupScreenState extends State<GroupScreen> {
                 top: MediaQuery.of(context).size.height * 0.5,
               ),
               child: Container(
+                padding: const EdgeInsetsGeometry.all(12),
                 decoration: AppStyles.tutorialBox,
                 child: Text(
-                  AppLocalizations.of(context)!.tutorial_calendar,
+                  loc.tutorial_calendar,
                   style: AppStyles.tutorialTextStyle,
                 ),
               ),
@@ -517,9 +526,10 @@ class _GroupScreenState extends State<GroupScreen> {
                 top: MediaQuery.of(context).size.height * 0.5,
               ),
               child: Container(
+                padding: const EdgeInsetsGeometry.all(12),
                 decoration: AppStyles.tutorialBox,
                 child: Text(
-                  AppLocalizations.of(context)!.tutorial_notes,
+                  loc.tutorial_notes,
                   style: AppStyles.tutorialTextStyle,
                 ),
               ),
@@ -539,9 +549,10 @@ class _GroupScreenState extends State<GroupScreen> {
                 top: MediaQuery.of(context).size.height * 0.5,
               ),
               child: Container(
+                padding: const EdgeInsetsGeometry.all(12),
                 decoration: AppStyles.tutorialBox,
                 child: Text(
-                  AppLocalizations.of(context)!.tutorial_lists,
+                  loc.tutorial_lists,
                   style: AppStyles.tutorialTextStyle,
                 ),
               ),
@@ -561,9 +572,10 @@ class _GroupScreenState extends State<GroupScreen> {
                 top: MediaQuery.of(context).size.height * 0.5,
               ),
               child: Container(
+                padding: const EdgeInsetsGeometry.all(12),
                 decoration: AppStyles.tutorialBox,
                 child: Text(
-                  AppLocalizations.of(context)!.tutorial_info,
+                  loc.tutorial_info,
                   style: AppStyles.tutorialTextStyle,
                 ),
               ),
@@ -586,7 +598,7 @@ class _GroupScreenState extends State<GroupScreen> {
                 padding: const EdgeInsetsGeometry.all(12),
                 decoration: AppStyles.tutorialBox,
                 child: Text(
-                  AppLocalizations.of(context)!.tutorial_last,
+                  loc.tutorial_last,
                   style: AppStyles.tutorialTextStyle,
                 ),
               ),

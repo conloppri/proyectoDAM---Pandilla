@@ -78,7 +78,7 @@ class NotificationServices {
           .subtract(const Duration(days: 1));
 
       if (notifDate.isAfter(DateTime.now()) &&
-          notifDate.isBefore(DateTime.now().add(Duration(days: 365)))) {
+          notifDate.isBefore(DateTime.now().add(const Duration(days: 365)))) {
         //1º Borramos las programaciones anteriores
         await plugin.cancel(id: notifID);
 

@@ -49,6 +49,7 @@ class _NotesSubscreenState extends State<NotesSubscreen> {
   @override
   Widget build(BuildContext context) {
     String? groupUID = context.watch<GroupProvider>().groupUID;
+    final AppLocalizations loc = AppLocalizations.of(context)!;
     return Padding(
         padding: const EdgeInsets.all(10),
         child: Column(
@@ -57,7 +58,7 @@ class _NotesSubscreenState extends State<NotesSubscreen> {
             Row(
               children: [
                 ///Control de ordenación
-                Text(AppLocalizations.of(context)!.sort_by, style: AppStyles.notesToolBar),
+                Text(loc.sort_by, style: AppStyles.notesToolBar),
                 IconButton(onPressed: (){
                   setState(() {
                     sortedBy=="ABC"
@@ -73,7 +74,7 @@ class _NotesSubscreenState extends State<NotesSubscreen> {
                   children: [
                     /// Control de vista (lista/grid)
                     Text(
-                      AppLocalizations.of(context)!.view,
+                      loc.view,
                       style: AppStyles.notesToolBar
                     ),
                     IconButton(
@@ -103,7 +104,7 @@ class _NotesSubscreenState extends State<NotesSubscreen> {
                     return Center(child: Text("Error: ${snapshot.error}"));
                   }
                   if(!snapshot.hasData||snapshot.data!.isEmpty) { //Sin datos
-                    return Center(child: Text(AppLocalizations.of(context)!.no_notes));
+                    return Center(child: Text(loc.no_notes));
                   }
 
                   //Cargamos los datos

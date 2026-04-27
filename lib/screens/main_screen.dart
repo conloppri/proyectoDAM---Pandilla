@@ -102,7 +102,7 @@ class _MainScreenState extends State<MainScreen> {
     tutorialCompleted = prefs.getBool("main_tutorial");
     setState(() {});
 
-    if(!tutorialCompleted!) {
+    if(tutorialCompleted == null || !tutorialCompleted!) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showTutorial(); //Guía interactiva
       });
@@ -123,6 +123,7 @@ class _MainScreenState extends State<MainScreen> {
   /// Construye la interfaz principal de la pantalla.
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Pandilla", style: AppStyles.appBarTitle),
@@ -137,7 +138,7 @@ class _MainScreenState extends State<MainScreen> {
           child: Column(
             children: [
               /// Sección de próximos eventos
-              Text(AppLocalizations.of(context)!.next_events, style: AppStyles.title),
+              Text(loc.next_events, style: AppStyles.title),
               /// Contenedor de eventos próximos
               SizedBox(
                 width: double.infinity,
@@ -154,10 +155,7 @@ class _MainScreenState extends State<MainScreen> {
                         vertical: 20,
                         horizontal: 10,
                       ),
-                      decoration: BoxDecoration(
-                        color: AppColors.secondary,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                      decoration: AppStyles.mainScreenBox,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: FutureBuilder(
@@ -172,7 +170,7 @@ class _MainScreenState extends State<MainScreen> {
                               return Center(child: Text("Error: ${snapshot.error}"));
                             }
                             if (!snapshot.hasData || snapshot.data!.isEmpty) { //Si el future no devuelve datos
-                              return Text(AppLocalizations.of(context)!.no_next_events);
+                              return Center(child: Text(loc.no_next_events, style: const TextStyle(color: AppColors.primary),));
                             }
                             //Carga de datos
                             List<Map<String, dynamic>> events = snapshot.data!;
@@ -184,7 +182,7 @@ class _MainScreenState extends State<MainScreen> {
                                 return Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text("${dateFormat.format(dateEvent)}: ", style: const TextStyle(fontWeight: FontWeight.bold),),
+                                    Text("${dateFormat.format(dateEvent)}: ", style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary),),
                                     Expanded(
                                       child: Text(events[index]["title"],
                                         overflow: TextOverflow.ellipsis, //Si no cabe en el container, lo indicará con "..."
@@ -205,8 +203,8 @@ class _MainScreenState extends State<MainScreen> {
 
               /// Título de la sección de grupos
               Text(
-                AppLocalizations.of(context)!.my_groups,
-                style: TextStyle(color: AppColors.primary, fontSize: 20),
+                loc.my_groups,
+                style: const TextStyle(color: AppColors.primary, fontSize: 25, fontWeight: FontWeight.bold),
               ),
               /// Lista de grupos del usuario
               Expanded(
@@ -222,7 +220,7 @@ class _MainScreenState extends State<MainScreen> {
                       return Center(child: Text("Error: ${snapshot.error}"));
                     }
                     if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Text(AppLocalizations.of(context)!.no_groups);
+                      return Text(loc.no_groups);
                     }
                     //Muestra la info en un grid de 2 columnas
                     return GridView.count(
@@ -253,9 +251,9 @@ class _MainScreenState extends State<MainScreen> {
                             return StatefulBuilder(
                               builder: (context, setStateDialog) {
                                 return AlertDialog(
-                                  title: Text(AppLocalizations.of(context)!.new_group),
+                                  title: Text(loc.new_group),
                                   /// Formulario de creación de grupo
-                                  content: Container(
+                                  content: SizedBox(
                                     width: MediaQuery.of(context).size.width * 0.8,
                                     height: MediaQuery.of(context).size.height * 0.5,
                                     child: Column(
@@ -276,7 +274,7 @@ class _MainScreenState extends State<MainScreen> {
                                           onChanged: (value) =>
                                               _groupName = value,
                                           decoration: InputDecoration(
-                                            labelText: AppLocalizations.of(context)!.group_name,
+                                            labelText: loc.group_name,
                                           ),
                                         ),
                                         /// Campo descripción
@@ -287,8 +285,7 @@ class _MainScreenState extends State<MainScreen> {
                                           onChanged: (value) =>
                                               _groupDescription = value,
                                           decoration: InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: AppLocalizations.of(context)!.description,
+                                            labelText: loc.description,
                                           ),
                                         ),
                                       ],
@@ -302,25 +299,30 @@ class _MainScreenState extends State<MainScreen> {
                                           String? userName = context
                                               .read<UserProvider>()
                                               .name; //Tomamos el nombre para guardar autor
-                                          createGroup(
-                                              _groupName,
-                                              _groupDescription,
-                                              _selectedAvatar,
-                                              userName!
-                                          );
+                                          try {
+                                            createGroup(
+                                                _groupName,
+                                                _groupDescription,
+                                                _selectedAvatar,
+                                                userName!
+                                            );
+                                          }catch (e) {
+                                            debugPrint("Error al crear grupo: $e");
+                                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_try_again)));
+                                          }
                                           Navigator.pop(context);
                                         }else{
                                           ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text(AppLocalizations.of(context)!.error_group_name))
+                                            SnackBar(content: Text(loc.error_group_name))
                                           );
                                         }
                                       },
-                                      child: Text(AppLocalizations.of(context)!.create),
+                                      child: Text(loc.create),
                                     ),
                                     /// Cancelar
                                     TextButton(
                                       onPressed: () => Navigator.pop(context), //Cierra el diálogo
-                                      child: Text(AppLocalizations.of(context)!.cancel),
+                                      child: Text(loc.cancel),
                                     ),
                                   ],
                                 );
@@ -338,7 +340,7 @@ class _MainScreenState extends State<MainScreen> {
                           children: [
                             const Icon(Icons.add, size: 25, color: Colors.white),
                             Text(
-                              AppLocalizations.of(context)!.create,
+                              loc.create,
                               style: const TextStyle(
                                 fontSize: 25,
                                 color: Colors.white,
@@ -356,11 +358,11 @@ class _MainScreenState extends State<MainScreen> {
                           context: context,
                           builder: (context) {
                             return AlertDialog(
-                              title: Text(AppLocalizations.of(context)!.join_group),
+                              title: Text(loc.join_group),
                               content: TextField(
                                 maxLength: 6,
                                 decoration: InputDecoration(
-                                  labelText: AppLocalizations.of(context)!.code,
+                                  labelText: loc.code,
                                 ),
                                 onChanged: (value) => _code = value,
                               ),
@@ -370,23 +372,27 @@ class _MainScreenState extends State<MainScreen> {
                                     //Elementos que necesitan context, los iniciamos antes del await para evitar problemas de sincronización
                                     final messenger = ScaffoldMessenger.of(context);
                                     final navigator = Navigator.of(context);
-                                    final loc = AppLocalizations.of(context)!;
-                                    bool joined = await joinGroup(_code.toUpperCase()); //Compruba código y trata de unirse
+                                    try {
+                                      bool joined = await joinGroup(_code.toUpperCase()); //Compruba código y trata de unirse
 
-                                    if (joined) { //si lo ha conseguido, cierra el diálogo y aparece el grupo en la lista
-                                      setState(() {});
-                                      navigator.pop;
-                                    } else { //Si no, le notifica al usuario
-                                      messenger.showSnackBar(
-                                          SnackBar(content: Text(loc.error_invalid_code))
-                                      );
+                                      if (joined) { //si lo ha conseguido, cierra el diálogo y aparece el grupo en la lista
+                                        setState(() {});
+                                        navigator.pop;
+                                      } else { //Si no, le notifica al usuario
+                                        messenger.showSnackBar(
+                                            SnackBar(content: Text(loc.error_invalid_code))
+                                        );
+                                      }
+                                    } catch (e) {
+                                      debugPrint("Error al intentar unirse a grupo: $e");
+                                      messenger.showSnackBar(SnackBar(content: Text(loc.error_try_again)));
                                     }
                                   },
-                                  child: Text(AppLocalizations.of(context)!.join),
+                                  child: Text(loc.join),
                                 ),
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
-                                  child: Text(AppLocalizations.of(context)!.cancel),
+                                  child: Text(loc.cancel),
                                 ),
                               ],
                             );
@@ -405,7 +411,7 @@ class _MainScreenState extends State<MainScreen> {
                           children: [
                             const Icon(Icons.link, size: 25, color: Colors.white),
                             Text(
-                              AppLocalizations.of(context)!.join,
+                              loc.join,
                               style: const TextStyle(
                                 fontSize: 25,
                                 color: Colors.white,
@@ -429,10 +435,10 @@ class _MainScreenState extends State<MainScreen> {
   ///
   /// Solo se muestra una vez, guardando su estado en `SharedPreferences`.
   Future<void> showTutorial() async {
-
+    final AppLocalizations loc = AppLocalizations.of(context)!;
     TutorialCoachMark(
         alignSkip: Alignment.topRight,
-        textSkip: AppLocalizations.of(context)!.skip,
+        textSkip: loc.skip,
         textStyleSkip: const TextStyle(color: AppColors.primary, fontSize: 20),
         targets: [
       /// Paso: eventos próximos
@@ -447,9 +453,10 @@ class _MainScreenState extends State<MainScreen> {
                     .size
                     .height * 0.35),
                 child: Container(
+                  padding: const EdgeInsetsGeometry.all(12),
                   decoration: AppStyles.tutorialBox,
                   child: Text(
-                      AppLocalizations.of(context)!.tutorial_next_events,
+                      loc.tutorial_next_events,
                       style: AppStyles.tutorialTextStyle),
                 )
             )
@@ -465,8 +472,9 @@ class _MainScreenState extends State<MainScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
+                    padding: const EdgeInsetsGeometry.all(12),
                     decoration: AppStyles.tutorialBox,
-                    child: Text(AppLocalizations.of(context)!.tutorial_create,
+                    child: Text(loc.tutorial_create,
                         style: AppStyles.tutorialTextStyle),
                   ),
                 )
@@ -483,8 +491,9 @@ class _MainScreenState extends State<MainScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
+                    padding: const EdgeInsetsGeometry.all(12),
                     decoration: AppStyles.tutorialBox,
-                    child: Text(AppLocalizations.of(context)!.tutorial_join,
+                    child: Text(loc.tutorial_join,
                         style: AppStyles.tutorialTextStyle),
                   ),
                 )
@@ -501,9 +510,10 @@ class _MainScreenState extends State<MainScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
+                    padding: const EdgeInsetsGeometry.all(12),
                     decoration: AppStyles.tutorialBox,
                     child: Text(
-                        AppLocalizations.of(context)!.tutorial_listGroups,
+                        loc.tutorial_listGroups,
                         style: AppStyles.tutorialTextStyle),
                   ),
                 )

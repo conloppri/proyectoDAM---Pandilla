@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pandilla/components/avatar_picker.dart';
 //Estilos y colores
 import 'package:pandilla/core/app_colors.dart';
+import 'package:pandilla/core/app_styles.dart';
 //Firebase
 import 'package:pandilla/core/services/firebase_service.dart';
 //Servicios y providers
@@ -109,9 +110,10 @@ class _InfoEditorState extends State<InfoEditor> {
   /// - Botones de guardar y descartar
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.edit_group_info),
+        title: Text(loc.edit_group_info),
         backgroundColor: AppColors.infoPrimary,
       ),
       body: SafeArea(
@@ -140,7 +142,7 @@ class _InfoEditorState extends State<InfoEditor> {
                       children: [
                         /// Título del campo nombre
                         Text(
-                          AppLocalizations.of(context)!.group_name,
+                          loc.group_name,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -150,6 +152,8 @@ class _InfoEditorState extends State<InfoEditor> {
                         /// Campo de edición del nombre
                         TextField(
                           controller: _nameController,
+                          maxLength: 15,
+                          style: AppStyles.infoTextFields,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: AppColors.infoSecondary,
@@ -160,7 +164,7 @@ class _InfoEditorState extends State<InfoEditor> {
                         ),
                         /// Título del campo descripción
                         Text(
-                          AppLocalizations.of(context)!.description,
+                          loc.description,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -170,8 +174,10 @@ class _InfoEditorState extends State<InfoEditor> {
                         /// Campo de edición de la descripción
                         TextField(
                           controller: _descController,
+                          maxLength: 100,
                           minLines: 5,
                           maxLines: 10,
+                          style: AppStyles.infoTextFields,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: AppColors.infoSecondary,
@@ -196,7 +202,7 @@ class _InfoEditorState extends State<InfoEditor> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         /// Muestra el código actual
-                        Text("${AppLocalizations.of(context)!.code}: $_code"),
+                        Text("${loc.code}: $_code", style: AppStyles.infoTextFields),
 
                         /// Botón para regenerar el código
                         TextButton(
@@ -204,7 +210,7 @@ class _InfoEditorState extends State<InfoEditor> {
                             _code = await generateCode();
                             setState(() {});
                           },
-                          child: Text(AppLocalizations.of(context)!.regenerate_code),
+                          child: Text(loc.regenerate_code, style: AppStyles.infoTextFields,),
                         ),
                       ],
                     ),
@@ -224,7 +230,7 @@ class _InfoEditorState extends State<InfoEditor> {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(10),
-                      child: Text(AppLocalizations.of(context)!.discard, style: const TextStyle(color: Colors.white, fontSize: 20),),
+                      child: Text(loc.discard, style: const TextStyle(color: Colors.white, fontSize: 20),),
                     ),
                   ),
 
@@ -232,21 +238,26 @@ class _InfoEditorState extends State<InfoEditor> {
                   ElevatedButton(
                     onPressed: () {
                       if(_nameController.text==""){ //Comprueba que haya introducido el nombre
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.error_title_required)));
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_title_required)));
                       }else {
-                        editGroup( //Actualiza la información del grupo en la base de datos
-                          widget.groupUID,
-                          _nameController.text,
-                          _descController.text,
-                          _code,
-                          _selectedAvatar,
-                        );
-                        context.read<GroupProvider>().setGroup( //Actualiza el provider
-                          widget.groupUID,
-                          _nameController.text,
-                          true,
-                          _code,
-                        );
+                        try {
+                          editGroup( //Actualiza la información del grupo en la base de datos
+                            widget.groupUID,
+                            _nameController.text,
+                            _descController.text,
+                            _code,
+                            _selectedAvatar,
+                          );
+                          context.read<GroupProvider>().setGroup( //Actualiza el provider
+                            widget.groupUID,
+                            _nameController.text,
+                            true,
+                            _code,
+                          );
+                        } catch (e) {
+                          debugPrint("Error al actualizar grupo: $e");
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_try_again)));
+                        }
                         Navigator.pushReplacement( //regreso a la pantalla del grupo
                           context,
                           MaterialPageRoute(
@@ -264,7 +275,7 @@ class _InfoEditorState extends State<InfoEditor> {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(10),
-                      child: Text(AppLocalizations.of(context)!.save, style: const TextStyle(color: Colors.white, fontSize: 20)),
+                      child: Text(loc.save, style: const TextStyle(color: Colors.white, fontSize: 20)),
                     ),
                   ),
                 ],

@@ -33,6 +33,7 @@ class _LogScreenState extends State<LogScreen> {
   /// Construye la interfaz de autenticación.
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations loc = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.secondary,
       body: Padding(
@@ -57,10 +58,10 @@ class _LogScreenState extends State<LogScreen> {
                 ? Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(AppLocalizations.of(context)!.no_account_yet),
+                      Text(loc.no_account_yet),
                       GestureDetector(
                         child: Text(
-                          AppLocalizations.of(context)!.signup,
+                          loc.signup,
                           style: AppStyles.underlinedLogIn,
                         ),
                         onTap: () {
@@ -74,10 +75,10 @@ class _LogScreenState extends State<LogScreen> {
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(AppLocalizations.of(context)!.with_account),
+                      Text(loc.with_account),
                       GestureDetector(
                         child: Text(
-                          AppLocalizations.of(context)!.login,
+                          loc.login,
                           style: AppStyles.underlinedLogIn
                         ),
                         onTap: () {
@@ -114,11 +115,12 @@ class _LogInState extends State<LogIn> {
   /// Construye el formulario de inicio de sesión.
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations loc = AppLocalizations.of(context)!;
     return Column(
       children: [
         ///Titulo: INICIO SESION
         Text(
-          AppLocalizations.of(context)!.login,
+          loc.login,
           style: const TextStyle(fontSize: 30, color: Colors.white),
         ),
 
@@ -129,7 +131,7 @@ class _LogInState extends State<LogIn> {
           decoration: InputDecoration(
             labelStyle: const TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            labelText: AppLocalizations.of(context)!.email,
+            labelText: loc.email,
           ),
           onChanged: (value) {
             setState(() {
@@ -145,7 +147,7 @@ class _LogInState extends State<LogIn> {
           decoration: InputDecoration(
             labelStyle: const TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            labelText: AppLocalizations.of(context)!.password,
+            labelText: loc.password,
           ),
           obscureText: true,
           onChanged: (value) {
@@ -168,7 +170,7 @@ class _LogInState extends State<LogIn> {
               }
           },
           child: Text(
-            AppLocalizations.of(context)!.submit,
+            loc.submit,
             style: AppStyles.buttonTextStyle,
           ),
         ),
@@ -235,12 +237,13 @@ class _SignInState extends State<SignIn> {
   /// Construye el formulario de registro.
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations loc = AppLocalizations.of(context)!;
     return Column(
       spacing: 15,
       children: [
         /// Título: REGISTRARSE
         Text(
-          AppLocalizations.of(context)!.signup,
+          loc.signup,
           style: const TextStyle(fontSize: 30, color: Colors.white),
         ),
 
@@ -250,7 +253,7 @@ class _SignInState extends State<SignIn> {
           decoration: InputDecoration(
             labelStyle: const TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            labelText: AppLocalizations.of(context)!.username,
+            labelText: loc.username,
           ),
           onChanged: (value) {
             setState(() {
@@ -263,7 +266,7 @@ class _SignInState extends State<SignIn> {
           buttonColor: AppColors.primary,
           labelStyle: const TextStyle(fontSize: 16),
           selectedDate: DateTime.now(),
-          label: '${AppLocalizations.of(context)!.birthdate}: ',
+          label: '${loc.birthdate}: ',
           firstDate: DateTime(1900),
           lastDate: DateTime.now(),
           onDateSelected: (date) => _birthDate = date,
@@ -273,7 +276,7 @@ class _SignInState extends State<SignIn> {
           decoration: InputDecoration(
             labelStyle: const TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            labelText: AppLocalizations.of(context)!.email,
+            labelText: loc.email,
           ),
           onChanged: (value) {
             setState(() {
@@ -287,7 +290,7 @@ class _SignInState extends State<SignIn> {
           decoration: InputDecoration(
             labelStyle: const TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            labelText: AppLocalizations.of(context)!.password,
+            labelText: loc.password,
           ),
           obscureText: true,
           onChanged: (value) {
@@ -301,7 +304,7 @@ class _SignInState extends State<SignIn> {
           decoration: InputDecoration(
             labelStyle: const TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            labelText: AppLocalizations.of(context)!.repeat,
+            labelText: loc.repeat,
           ),
           obscureText: true,
           onChanged: (value) {
@@ -312,12 +315,12 @@ class _SignInState extends State<SignIn> {
         ),
         ///Tooltip con indicaciones pra contraseña
         Tooltip(
-          message: AppLocalizations.of(context)!.psw_indications,
+          message: loc.psw_indications,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const Icon(Icons.help_outline, color: AppColors.primary,),
-              Text(AppLocalizations.of(context)!.hold),
+              Text(loc.hold),
             ],
           ),
         ),
@@ -326,7 +329,7 @@ class _SignInState extends State<SignIn> {
           onPressed: () async {
             final navigator = Navigator.of(context);
             if(_name.length<4){
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.error_username_too_short)));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_username_too_short)));
             }else {
               if (await registerUser(_signEmail, _signPsw1, _signPsw2)) { //Intentamos registrar. En caso positivo => Editar Perfil
                 navigator.pushReplacement(MaterialPageRoute(
@@ -335,7 +338,7 @@ class _SignInState extends State<SignIn> {
             }
           },
           child: Text(
-            AppLocalizations.of(context)!.submit,
+            loc.submit,
             style: AppStyles.buttonTextStyle
           ),
         ),
@@ -388,7 +391,7 @@ class _SignInState extends State<SignIn> {
     } else { //contraseñas no coinciden
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.error_psw_not_match),
+          content: Text(loc.error_psw_not_match),
         ),
       );
     }

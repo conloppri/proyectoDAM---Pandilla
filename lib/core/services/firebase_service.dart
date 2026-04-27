@@ -1,9 +1,7 @@
-
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 
 import 'package:pandilla/components/group_selector.dart';
 import 'package:pandilla/components/item_component.dart';
@@ -33,8 +31,8 @@ String? userUID = "";
 /// [birthdate] fecha de nacimiento.
 /// [email] correo electrónico.
 newUser(String name, DateTime birthdate, String email) async {
-  String? _userUID = FirebaseAuth.instance.currentUser?.uid; //Usuario actual
-  await db.collection("users").doc(_userUID).set({
+  String? userUID = FirebaseAuth.instance.currentUser?.uid; //Usuario actual
+  await db.collection("users").doc(userUID).set({
     "name": name,
     "bithdate": birthdate,
     "email": email,
@@ -47,6 +45,7 @@ newUser(String name, DateTime birthdate, String email) async {
     'description': "Vacío",
   });
 }
+
 /// Guarda o actualiza el perfil del usuario.
 ///
 /// Retorna 'true' si la operación fue correcta, 'false' en caso de error.
@@ -58,10 +57,18 @@ newUser(String name, DateTime birthdate, String email) async {
 /// [description] descripción personal.
 /// [avatar] avatar seleccionado.
 /// [animal] animal favorito.
-Future<bool> saveProfile(String name, String colors, String job, String hobbies, String description, String avatar, String animal) async {
-  String? _userUID = FirebaseAuth.instance.currentUser?.uid; //Usuario actual
+Future<bool> saveProfile(
+  String name,
+  String colors,
+  String job,
+  String hobbies,
+  String description,
+  String avatar,
+  String animal,
+) async {
+  String? userUID = FirebaseAuth.instance.currentUser?.uid; //Usuario actual
   try {
-    await db.collection("users").doc(_userUID).update({
+    await db.collection("users").doc(userUID).update({
       'name': name,
       'avatar': avatar,
       'fav_colors': colors,
@@ -72,14 +79,15 @@ Future<bool> saveProfile(String name, String colors, String job, String hobbies,
     });
     return true;
   } on Exception catch (e) {
-    print("ERROR: Error al guardar en BD");
+    print("ERROR: Error al guardar en BD: $e");
     return false;
   }
 }
+
 /// Obtiene el nombre del usuario actual desde Firestore.
 Future<String> getUserName() async {
-  String? _userUID = FirebaseAuth.instance.currentUser?.uid;
-  DocumentSnapshot doc = await db.collection("users").doc(_userUID).get();
+  String? userUID = FirebaseAuth.instance.currentUser?.uid;
+  DocumentSnapshot doc = await db.collection("users").doc(userUID).get();
   return doc["name"];
 }
 
@@ -97,14 +105,14 @@ Future<Map<String, dynamic>> getUser(String uid) async {
 /// [userUID] UID del usuario.
 Future<bool> isAdmin(String groupUID, String userUID) async {
   DocumentSnapshot doc = await db.collection("groups").doc(groupUID).get();
-  List _admins = doc["admins"];
-  return _admins.contains(userUID);
+  List admins = doc["admins"];
+  return admins.contains(userUID);
 }
 
 /// Obtiene la fecha de nacimiento del usuario actual.
 Future<DateTime> getBirthday() async {
-  String? _userUID = FirebaseAuth.instance.currentUser?.uid;
-  DocumentSnapshot doc = await db.collection("users").doc(_userUID).get();
+  String? userUID = FirebaseAuth.instance.currentUser?.uid;
+  DocumentSnapshot doc = await db.collection("users").doc(userUID).get();
   return doc["bithdate"].toDate();
 }
 
@@ -112,10 +120,10 @@ Future<DateTime> getBirthday() async {
 
 /// Devuelve un stream con los grupos a los que pertenece el usuario actual.
 Stream<List<GroupSelector>> getGroups() {
-  String? _uid = FirebaseAuth.instance.currentUser?.uid;
+  String? uid = FirebaseAuth.instance.currentUser?.uid;
   return db
       .collection("groups")
-      .where("members", arrayContains: _uid)
+      .where("members", arrayContains: uid)
       .snapshots()
       .map((snapshot) {
         List<GroupSelector> list = [];
@@ -133,6 +141,7 @@ Stream<List<GroupSelector>> getGroups() {
         return list;
       });
 }
+
 /// Crea un nuevo grupo en Firestore.
 ///
 /// También genera un evento automático de cumpleaños para el usuario.
@@ -141,9 +150,14 @@ Stream<List<GroupSelector>> getGroups() {
 /// [description] descripción.
 /// [avatar] imagen.
 /// [authorName] nombre del creador.
-createGroup(String name, String description, String avatar, String authorName) async {
+createGroup(
+  String name,
+  String description,
+  String avatar,
+  String authorName,
+) async {
   //Usuario actual
-  String? _uid = FirebaseAuth.instance.currentUser?.uid;
+  String? uid = FirebaseAuth.instance.currentUser?.uid;
   //Generamos el código para unirse al grupo
   String groupCode = await generateCode();
   //Creamos el documento para el grupo y obtenemos su referencia
@@ -156,16 +170,16 @@ createGroup(String name, String description, String avatar, String authorName) a
     "avatar": avatar,
     "description": description,
     "createAt": DateTime.now(),
-    "author": _uid,
-    "members": [_uid],
-    "admins": [_uid],
-    "authorName" : authorName
+    "author": uid,
+    "members": [uid],
+    "admins": [uid],
+    "authorName": authorName,
   });
   //Obtenemos nombre de usuario y cumpleaños del usuario actual
   String userName = await getUserName();
   DateTime userBirthday = await getBirthday();
   //Guardamos su compleaños como evento del grupo
-  saveBirthday(docRef, userName, userBirthday, _uid!);
+  saveBirthday(docRef, userName, userBirthday, uid!);
 }
 
 /// Crea un evento de cumpleaños automático en un grupo.
@@ -174,14 +188,21 @@ createGroup(String name, String description, String avatar, String authorName) a
 /// [userName] nombre del usuario.
 /// [birthday] fecha de cumpleaños del usuario.
 /// [userUID] UID del usuario.
-saveBirthday(DocumentReference docRef, String userName, DateTime birthday, String userUID){
+saveBirthday(
+  DocumentReference docRef,
+  String userName,
+  DateTime birthday,
+  String userUID,
+) {
   docRef.collection("events").doc().set({
-    "title": "${AppLocalizations.of(navigatorKey.currentContext!)!.birthday_event} $userName",
-    "year" : birthday.year,
-    "month" : birthday.month,
+    "title":
+        "${AppLocalizations.of(navigatorKey.currentContext!)!.birthday_event} $userName",
+    "year": birthday.year,
+    "month": birthday.month,
     "day": birthday.day,
     "recurrence": "yearly",
-    "description": "${AppLocalizations.of(navigatorKey.currentContext!)!.happy_birthday} $userName!",
+    "description":
+        "${AppLocalizations.of(navigatorKey.currentContext!)!.happy_birthday} $userName!",
     "location": "",
     "authorID": userUID,
     "authorName": "sistema",
@@ -224,18 +245,19 @@ Future<bool> joinGroup(String code) async {
       .where("code", isEqualTo: code)
       .limit(1)
       .get();
-  QueryDocumentSnapshot doc = snapshot.docs.first;
-  if (doc.exists) { //Si el código coincide, añadimos al usuario al grupo
-    doc.reference.update({
-      "members": FieldValue.arrayUnion([uid]),
-    });
-    //Guardamos el cumpleaños del nuevo miembro en el calendario del grupo
-    String userName = await getUserName();
-    DateTime userBirthday = await getBirthday();
-    saveBirthday(doc.reference, userName, userBirthday, uid!);
-    return true; //devolvemos 'true'
+  if (snapshot.docs.isEmpty) {
+    return false; //Si el código no coincide, devolvemos 'false';
   }
-  return false; //Si el código no coincide, devolvemos 'false'
+  QueryDocumentSnapshot doc = snapshot.docs.first;
+  //Si el código coincide, añadimos al usuario al grupo
+  doc.reference.update({
+    "members": FieldValue.arrayUnion([uid]),
+  });
+  //Guardamos el cumpleaños del nuevo miembro en el calendario del grupo
+  String userName = await getUserName();
+  DateTime userBirthday = await getBirthday();
+  saveBirthday(doc.reference, userName, userBirthday, uid!);
+  return true; //devolvemos 'true'
 }
 
 //----------------------------------NOTAS-----------------------------
@@ -252,7 +274,8 @@ void createNote(
   String color,
 ) async {
   String? userUID = FirebaseAuth.instance.currentUser?.uid; //Usuario actual
-  String authorName = await getUserName(); //Obtenemos su nombre para guardarlo de autor
+  String authorName =
+      await getUserName(); //Obtenemos su nombre para guardarlo de autor
   //Creamos la nota en la base de datos
   await db.collection("groups").doc(groupUID).collection("notes").doc().set({
     "title": title,
@@ -264,6 +287,7 @@ void createNote(
     "lastUpdate": DateTime.now(),
   });
 }
+
 /// Obtiene todas las notas del grupo y las guarda en un Stream.
 ///
 /// [groupUID] UID del grupo del que se quiere obtener las notas.
@@ -295,7 +319,8 @@ Stream<List<NoteComponent>> getNotes(String groupUID) {
 /// [groupUID] UID del grupo al que pertenece la nota.
 /// [noteID] ID de la nota.
 Future<Map<String, dynamic>> getNote(String groupUID, String noteID) async {
-  Map<String, dynamic>? noteData = {}; //Inicializamos el mapa que contendrá la información
+  Map<String, dynamic>? noteData =
+      {}; //Inicializamos el mapa que contendrá la información
   DocumentSnapshot doc = await db
       .collection("groups")
       .doc(groupUID)
@@ -348,12 +373,12 @@ removeNote(String groupUID, String noteID) {
 /// [groupUID] UID del grupo en el que quiere guardar la lista.
 /// [title] título de la lista.
 Future<void> newList(String groupUID, String title) async {
-  String? _userUID = FirebaseAuth.instance.currentUser?.uid; //Usuario actual
-  String _authorName = await getUserName(); //Nombre del usuario para autorName
+  String? userUID = FirebaseAuth.instance.currentUser?.uid; //Usuario actual
+  String authorName = await getUserName(); //Nombre del usuario para autorName
   db.collection("groups").doc(groupUID).collection("lists").doc().set({
     "title": title,
-    "authorUID": _userUID,
-    "authorName": _authorName,
+    "authorUID": userUID,
+    "authorName": authorName,
     "createAt": DateTime.now(),
     "last_update": DateTime.now(),
   });
@@ -410,8 +435,11 @@ addItem(String groupUID, String listID, String item) {
       .doc(listID)
       .collection("items")
       .doc()
-      .set({"text": item, "isCompleted": false, "createAt":Timestamp.now()});
-  newListUpdate(listID, groupUID); //Actualizamos la fecha de última actualización
+      .set({"text": item, "isCompleted": false, "createAt": Timestamp.now()});
+  newListUpdate(
+    listID,
+    groupUID,
+  ); //Actualizamos la fecha de última actualización
 }
 
 ///Cambia el estado de un elemento de la lista entre completado y no completado
@@ -429,7 +457,10 @@ changeItemStatus(
       .collection("items")
       .doc(itemID)
       .update({"isCompleted": isCompleted});
-  newListUpdate(listID, groupUID);//Actualizamos la fecha de última actualización
+  newListUpdate(
+    listID,
+    groupUID,
+  ); //Actualizamos la fecha de última actualización
 }
 
 ///Obtiene los elementos de una lista y los devuelve en un Stream
@@ -459,6 +490,7 @@ Stream<List<ItemComponent>> getItems(String groupUID, String listID) {
         }).toList();
       });
 }
+
 ///Obtiene el número de elementos de la lista.
 ///
 /// [groupUID] UID del grupo al que pertenece la lista.
@@ -489,7 +521,10 @@ removeItem(String groupUID, String listID, String itemID) {
       .collection("items")
       .doc(itemID)
       .delete();
-  newListUpdate(listID, groupUID);//Actualizamos la fecha de última actualización
+  newListUpdate(
+    listID,
+    groupUID,
+  ); //Actualizamos la fecha de última actualización
 }
 
 ///Elimina una lista de la base de datos
@@ -499,10 +534,13 @@ removeItem(String groupUID, String listID, String itemID) {
 /// [groupUID] UID del grupo al que pertenece la lista.
 /// [listID] ID de la lista.
 removeList(String groupUID, String listID) {
-  db.collection("groups").doc(groupUID).collection("lists").get().then((lists) async {
+  db.collection("groups").doc(groupUID).collection("lists").get().then((
+    lists,
+  ) async {
     for (var list in lists.docs) {
       list.reference.collection("items").get().then((items) async {
-        for (var item in items.docs) { //Debemos eleminar  los items
+        for (var item in items.docs) {
+          //Debemos eleminar  los items
           await item.reference.delete();
         }
       });
@@ -525,21 +563,38 @@ removeList(String groupUID, String listID) {
 /// [date] fecha del evento.
 /// [location] ubicación del evento.
 /// [recurrence] tipo de repetición del evento.
-saveEvent(String groupUID, String groupName, String title, String description, DateTime date, String location, String recurrence,) async {
-  String? _userUID = FirebaseAuth.instance.currentUser?.uid; //Usuario actual
-  String _authorName = await getUserName(); //Nombre del usuario para autorName
-  final DocumentReference docRef = await db.collection("groups").doc(groupUID).collection("events").add({
-    "title": title,
-    "day" : date.day,
-    "month" : date.month,
-    "year" : date.year,
-    "recurrence": recurrence,
-    "description": description,
-    "location": location,
-    "authorID": _userUID,
-    "authorName": _authorName,
-  });
-  NotificationServices.scheduleEvents(docRef.id, title, groupName, date); //Programamos notificaciones
+saveEvent(
+  String groupUID,
+  String groupName,
+  String title,
+  String description,
+  DateTime date,
+  String location,
+  String recurrence,
+) async {
+  String? userUID = FirebaseAuth.instance.currentUser?.uid; //Usuario actual
+  String authorName = await getUserName(); //Nombre del usuario para autorName
+  final DocumentReference docRef = await db
+      .collection("groups")
+      .doc(groupUID)
+      .collection("events")
+      .add({
+        "title": title,
+        "day": date.day,
+        "month": date.month,
+        "year": date.year,
+        "recurrence": recurrence,
+        "description": description,
+        "location": location,
+        "authorID": userUID,
+        "authorName": authorName,
+      });
+  NotificationServices.scheduleEvents(
+    docRef.id,
+    title,
+    groupName,
+    date,
+  ); //Programamos notificaciones
 }
 
 /// Devuelve un stream con todos los eventos de un grupo.
@@ -561,7 +616,12 @@ Stream<List<Event>> getEventsStream(String groupUID, String groupName) {
         return snapshot.docs.map((doc) {
           final data = doc.data();
           DateTime date = DateTime(data["year"], data["month"], data["day"]);
-          NotificationServices.scheduleEvents(doc.id, data["title"], groupName, date); //Programamos eventos mientras se van cargando.
+          NotificationServices.scheduleEvents(
+            doc.id,
+            data["title"],
+            groupName,
+            date,
+          ); //Programamos eventos mientras se van cargando.
           return Event(
             id: doc.id,
             title: data["title"],
@@ -586,18 +646,29 @@ scheduleAllEvents() async {
   //1º Cancela todos los eventos
   NotificationServices.plugin.cancelAll();
 
-  List<Map<String,String>> groups = [];
   String? userUID = FirebaseAuth.instance.currentUser?.uid;
 
   // 2º Obtiene lista de grupos
-  final groupsSnap = await db.collection("groups").where("members", arrayContains: userUID).get();
-  for(var groupDoc in groupsSnap.docs){
+  final groupsSnap = await db
+      .collection("groups")
+      .where("members", arrayContains: userUID)
+      .get();
+  for (var groupDoc in groupsSnap.docs) {
     final groupData = groupDoc.data();
     //3º Obtiene los eventos de los grupos y los reprograma
-    final eventSnap = await db.collection("groups").doc(groupDoc.id).collection("events").get();
-    for(var eventDoc in eventSnap.docs){
+    final eventSnap = await db
+        .collection("groups")
+        .doc(groupDoc.id)
+        .collection("events")
+        .get();
+    for (var eventDoc in eventSnap.docs) {
       final eventData = eventDoc.data();
-      NotificationServices.scheduleEvents(eventDoc.id, eventData["title"], groupData["name"]!, DateTime(eventData["year"], eventData["month"], eventData["day"]));
+      NotificationServices.scheduleEvents(
+        eventDoc.id,
+        eventData["title"],
+        groupData["name"]!,
+        DateTime(eventData["year"], eventData["month"], eventData["day"]),
+      );
     }
   }
 }
@@ -609,8 +680,16 @@ scheduleAllEvents() async {
 ///
 /// [groupUID] identificador del grupo.
 /// [eventID] identificador del evento.
-Future<Map<String, dynamic>> getEventInfo(String groupUID, String eventID) async {
-  DocumentSnapshot doc = await db.collection("groups").doc(groupUID).collection("events").doc(eventID).get();
+Future<Map<String, dynamic>> getEventInfo(
+  String groupUID,
+  String eventID,
+) async {
+  DocumentSnapshot doc = await db
+      .collection("groups")
+      .doc(groupUID)
+      .collection("events")
+      .doc(eventID)
+      .get();
   return doc.data() as Map<String, dynamic>;
 }
 
@@ -626,19 +705,37 @@ Future<Map<String, dynamic>> getEventInfo(String groupUID, String eventID) async
 /// [location] ubicación.
 /// [recurrence] tipo de repetición.
 /// [date] nueva fecha del evento.
-editEvent(String groupUID, String groupName, String eventID, String title, String description, String location, String recurrence, DateTime date) async {
-   await db.collection("groups").doc(groupUID).collection("events").doc(eventID).update({
-    "title": title,
-    "day" : date.day,
-    "month" : date.month,
-    "year" : date.year,
-    "recurrence": recurrence,
-    "description": description,
-    "location": location,
-  });
-  NotificationServices.scheduleEvents(eventID, title, groupName, date); //Cancela la notificación anterior y programamos con la info nueva
+editEvent(
+  String groupUID,
+  String groupName,
+  String eventID,
+  String title,
+  String description,
+  String location,
+  String recurrence,
+  DateTime date,
+) async {
+  await db
+      .collection("groups")
+      .doc(groupUID)
+      .collection("events")
+      .doc(eventID)
+      .update({
+        "title": title,
+        "day": date.day,
+        "month": date.month,
+        "year": date.year,
+        "recurrence": recurrence,
+        "description": description,
+        "location": location,
+      });
+  NotificationServices.scheduleEvents(
+    eventID,
+    title,
+    groupName,
+    date,
+  ); //Cancela la notificación anterior y programamos con la info nueva
 }
-
 
 /// Elimina un evento de un grupo.
 ///
@@ -688,17 +785,18 @@ Future<List<Map<String, dynamic>>> getMembersList(String groupUID) async {
       .get()
       .then((snapshot) async {
         for (var doc in snapshot.docs) {
-          bool _admin = await isAdmin(groupUID, doc.id);
+          bool admin = await isAdmin(groupUID, doc.id);
           result.add({
             "uid": doc.id,
             "name": doc["name"],
             "avatar": doc["avatar"],
-            "admin": _admin,
+            "admin": admin,
           });
         }
       });
   return result;
 }
+
 /// Devuelve el número total de administradores de un grupo.
 ///
 /// [groupUID] UID del grupo.
@@ -730,21 +828,24 @@ kickMember(String groupUID, String memberID) async {
     adminsList = data["admins"];
   });
   membersList.remove(memberID);
-  db.collection("groups").doc(groupUID).update({
-    "members": membersList,
-  });
+  db.collection("groups").doc(groupUID).update({"members": membersList});
 
   //Comprobamos si está en la lista de admins, y se elimina de esa lista si está
   if (adminsList.contains(memberID)) {
     adminsList.remove(memberID);
     db.collection("groups").doc(groupUID).update({"admins": adminsList});
   }
-  final snapshot  = await db.collection("groups").doc(groupUID).collection("events").where("authorID", isEqualTo: memberID).get();
+  final snapshot = await db
+      .collection("groups")
+      .doc(groupUID)
+      .collection("events")
+      .where("authorID", isEqualTo: memberID)
+      .get();
 
   //Eliminamos los eventos creados por ese miembro. Las notas y listas se quedarán guardadas, será decisión del admin borrarlas.
   WriteBatch batch = db.batch();
   int counter = 0;
-  for(var doc in snapshot.docs) {
+  for (var doc in snapshot.docs) {
     batch.delete(doc.reference);
     counter++;
 
@@ -758,10 +859,9 @@ kickMember(String groupUID, String memberID) async {
       counter = 0;
     }
   }
-    if (counter > 0) {
-      await batch.commit();
-    }
-
+  if (counter > 0) {
+    await batch.commit();
+  }
 }
 
 /// Añade un usuario como administrador dentro de un grupo.
@@ -846,17 +946,17 @@ deleteGroup(String groupUID) async {
 ///
 /// El resultado se ordena por fecha ascendente.
 
-Future<List<Map<String,dynamic>>> getNextEvents() async {
-  String? _userUID = FirebaseAuth.instance.currentUser?.uid;
+Future<List<Map<String, dynamic>>> getNextEvents() async {
+  String? userUID = FirebaseAuth.instance.currentUser?.uid;
   //Inicializamos la lista que recogerá los próximos eventos
-  List<Map<String,dynamic>> eventsList = [];
+  List<Map<String, dynamic>> eventsList = [];
 
   //Establecemos la ficha límite de los eventos a recoger (en los próximos 7 días)
-  DateTime limitDate = DateTime.now().add(Duration(days: 7));
+
   //Obtenemos todos los grupos a los que pertenece el usuario
   List<String> groupsID = await db
       .collection("groups")
-      .where("members", arrayContains: _userUID)
+      .where("members", arrayContains: userUID)
       .get()
       .then((snapshot) {
         List<String> list = [];
@@ -867,22 +967,22 @@ Future<List<Map<String,dynamic>>> getNextEvents() async {
       });
   //Por cada grupo, revisamos los eventos
   for (String group in groupsID) {
-    await db
-        .collection("groups")
-        .doc(group)
-        .collection("events")
-        .get()
-        .then((snapshot) {
-          for (var doc in snapshot.docs) {
-            Map<String, dynamic> event = doc.data();
-            DateTime date = DateTime(event["year"], event["month"], event["day"]);
-            //Recogemos los eventos que se encuentren dentro del intervalo de tiempo
-            if(date.isAfter(DateTime.now()) && date.isBefore(DateTime.now().add(Duration(days: 7)))) {
-              eventsList.add({"date": date, "title": event["title"]});
-            }
-          }
-        });
+    await db.collection("groups").doc(group).collection("events").get().then((
+      snapshot,
+    ) {
+      for (var doc in snapshot.docs) {
+        Map<String, dynamic> event = doc.data();
+        DateTime date = DateTime(event["year"], event["month"], event["day"]);
+        //Recogemos los eventos que se encuentren dentro del intervalo de tiempo
+        if (date.isAfter(DateTime.now()) &&
+            date.isBefore(DateTime.now().add(const Duration(days: 7)))) {
+          eventsList.add({"date": date, "title": event["title"]});
+        }
+      }
+    });
   }
-  eventsList.sort((a,b)=>a["date"].compareTo(b["date"])); //Ordenamos por fecha
+  eventsList.sort(
+    (a, b) => a["date"].compareTo(b["date"]),
+  ); //Ordenamos por fecha
   return eventsList;
 }

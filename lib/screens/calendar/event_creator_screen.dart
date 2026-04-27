@@ -63,12 +63,13 @@ class _EventCreatorScreenState extends State<EventCreatorScreen> {
   /// - Botones de guardar y cancelar
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations loc = AppLocalizations.of(context)!;
     /// Textos traducidos para la recurrencia
     final List recurrenceButton = [
-      AppLocalizations.of(context)!.one_time,
-      AppLocalizations.of(context)!.weekly,
-      AppLocalizations.of(context)!.monthly,
-      AppLocalizations.of(context)!.yearly,
+      loc.one_time,
+      loc.weekly,
+      loc.monthly,
+      loc.yearly,
     ];
     /// Datos del grupo actual desde el provider
     String? groupUID = context.watch<GroupProvider>().groupUID;
@@ -86,7 +87,7 @@ class _EventCreatorScreenState extends State<EventCreatorScreen> {
           children: [
 
             /// Título de la pantalla
-            Text(AppLocalizations.of(context)!.new_event, style: AppStyles.appBarTitle,),
+            Text(loc.new_event, style: AppStyles.appBarTitle,),
 
             /// Contenedor con campos de título y descripción
             Container(
@@ -106,7 +107,7 @@ class _EventCreatorScreenState extends State<EventCreatorScreen> {
                         filled: true,
                         fillColor: AppColors.calendarSecondary,
                         labelStyle: const TextStyle(color: AppColors.calendarPrimary),
-                        labelText: AppLocalizations.of(context)!.title,
+                        labelText: loc.title,
                         enabledBorder: UnderlineInputBorder(
                           borderSide: const BorderSide(color: Colors.white),
                           borderRadius: BorderRadius.circular(15)
@@ -122,7 +123,7 @@ class _EventCreatorScreenState extends State<EventCreatorScreen> {
                         filled: true,
                         fillColor: AppColors.calendarSecondary,
                         labelStyle: const TextStyle(color: AppColors.calendarPrimary),
-                        labelText: AppLocalizations.of(context)!.description,
+                        labelText: loc.description,
                         enabledBorder: UnderlineInputBorder(
                             borderSide: const BorderSide(color: Colors.white),
                             borderRadius: BorderRadius.circular(15)
@@ -142,7 +143,7 @@ class _EventCreatorScreenState extends State<EventCreatorScreen> {
                 selectedDate: DateTime.now(),
                 labelStyle: const TextStyle(fontSize: 20),
                 buttonColor: AppColors.calendarPrimary,
-                label: AppLocalizations.of(context)!.event_date,
+                label: loc.event_date,
                 firstDate: DateTime(1900),
                 lastDate: DateTime(DateTime.now().year + 50),
                 onDateSelected: (date) {
@@ -171,7 +172,7 @@ class _EventCreatorScreenState extends State<EventCreatorScreen> {
                         filled: true,
                         fillColor: AppColors.calendarSecondary,
                         labelStyle: const TextStyle(color: AppColors.calendarPrimary),
-                        labelText: AppLocalizations.of(context)!.location,
+                        labelText: loc.location,
                         enabledBorder: UnderlineInputBorder(
                             borderSide: const BorderSide(color: Colors.white),
                             borderRadius: BorderRadius.circular(15)
@@ -184,7 +185,7 @@ class _EventCreatorScreenState extends State<EventCreatorScreen> {
                     Row(
                       spacing: 15,
                       children: [
-                        Text("${AppLocalizations.of(context)!.recurrence}: ", style: const TextStyle(fontSize: 20),),
+                        Text("${loc.recurrence}: ", style: const TextStyle(fontSize: 20),),
 
                         /// Botón que abre el diálogo de selección
                         ElevatedButton(
@@ -193,7 +194,7 @@ class _EventCreatorScreenState extends State<EventCreatorScreen> {
                             showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
-                                title: Text(AppLocalizations.of(context)!.recurrence_dialog_title),
+                                title: Text(loc.recurrence_dialog_title),
                                 content: Container(
                                   width: double.maxFinite,
                                   constraints: const BoxConstraints(maxHeight: 300),
@@ -265,7 +266,7 @@ class _EventCreatorScreenState extends State<EventCreatorScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      AppLocalizations.of(context)!.discard,
+                      loc.discard,
                       style: const TextStyle(color: AppColors.calendarSecondary, fontSize: 20),
                     ),
                   ),
@@ -274,7 +275,7 @@ class _EventCreatorScreenState extends State<EventCreatorScreen> {
                 ElevatedButton(
                   onPressed: () {
                     if(_title==""){ //Comprobamos que no haya dejado el título en blanco
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.error_title_required)));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_title_required)));
                     }else { //Si está correcto, guarda el evento en la base de datos
                       try {
                         setState(() {
@@ -290,6 +291,7 @@ class _EventCreatorScreenState extends State<EventCreatorScreen> {
                         });
                       } catch (e) {
                         debugPrint("Error guardando evento: $e");
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_try_again)));
                       }
                       Navigator.pop(context);
                     }
@@ -297,7 +299,7 @@ class _EventCreatorScreenState extends State<EventCreatorScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      AppLocalizations.of(context)!.save,
+                      loc.save,
                       style: const TextStyle(color: AppColors.calendarSecondary, fontSize: 20),
                     ),
                   ),

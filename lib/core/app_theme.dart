@@ -9,46 +9,52 @@ class AppTheme {
 
     scaffoldBackgroundColor: Colors.white,
 
-    colorScheme: ColorScheme.light(
+    colorScheme: const ColorScheme.light(
       primary: Colors.black,
-      secondary: AppColors.lightmodeSecondary
+      secondary: AppColors.lightmodeSecondary,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary,
+        backgroundColor: AppColors.secondary,
         foregroundColor: Colors.white,
-        padding: const EdgeInsetsGeometry.all(12)
+        padding: const EdgeInsetsGeometry.all(12),
       ),
     ),
-    textTheme: TextTheme(
-
-    ),
-    inputDecorationTheme: InputDecorationTheme(
+    textTheme: const TextTheme(),
+    inputDecorationTheme: const InputDecorationTheme(
       filled: true,
       fillColor: AppColors.whiteNoAlpha,
-      border: const UnderlineInputBorder(
-        borderSide: BorderSide(color: Colors.black)
+      border: UnderlineInputBorder(
+        borderSide: BorderSide(color: Colors.black),
       ),
-    )
+    ),
   );
   static final darkTheme = ThemeData(
     useMaterial3: true,
-      brightness: Brightness.dark,
-      primaryColor: Colors.black,
+    brightness: Brightness.dark,
+    primaryColor: Colors.black,
 
-      scaffoldBackgroundColor: AppColors.darkmodeBG,
+    scaffoldBackgroundColor: AppColors.darkmodeBG,
 
-      colorScheme: ColorScheme.dark(
-          primary: Colors.white,
-          secondary: AppColors.lightmodeSecondary
+    colorScheme: const ColorScheme.dark(
+      primary: Colors.white,
+      secondary: AppColors.lightmodeSecondary,
+    ),
+
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        padding: const EdgeInsetsGeometry.all(12),
       ),
+    ),
 
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: AppColors.lightmodeSecondary,
-        border: const UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.white)
-        ),
-      )
+    inputDecorationTheme: const InputDecorationTheme(
+      filled: true,
+      fillColor: AppColors.lightmodeSecondary,
+      border: UnderlineInputBorder(
+        borderSide: BorderSide(color: Colors.white),
+      ),
+    ),
   );
 }

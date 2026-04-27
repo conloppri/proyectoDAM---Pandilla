@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pandilla/core/app_colors.dart';
 //Firebase
 import 'package:pandilla/core/services/firebase_service.dart';
+import 'package:pandilla/l10n/app_localizations.dart';
 //Providers
 import 'package:provider/provider.dart';
 import '../core/providers/group_provider.dart';
@@ -58,11 +59,12 @@ class _ItemComponentState extends State<ItemComponent> {
                 : Icons.check_box_outline_blank,
             color: AppColors.listsPrimary,
           ),
-
+          const SizedBox(width: 10,),
           /// Texto del ítem (tachado si está completado)
           Text(
             widget.item,
             style: TextStyle(
+              fontFamily: "Astroph",
               decoration: widget.isCompleted
                   ? TextDecoration.lineThrough
                   : TextDecoration.none,
@@ -77,6 +79,13 @@ class _ItemComponentState extends State<ItemComponent> {
                 removeItem(groupUID!, widget.listID, widget.itemId);
               } catch (e) {
                 debugPrint("Error eliminando el item: $e");
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      AppLocalizations.of(context)!.error_try_again,
+                    ),
+                  ),
+                );
               }
             },
             icon: const Icon(Icons.close, color: Colors.red),
@@ -95,6 +104,13 @@ class _ItemComponentState extends State<ItemComponent> {
           );
         }  catch (e) {
           debugPrint("Error cambiando el estado el item: $e");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                AppLocalizations.of(context)!.error_try_again,
+              ),
+            ),
+          );
         }
       }
     );

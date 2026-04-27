@@ -159,5 +159,7 @@
     "sort_by" : "Sort by",
     "by" : "por",
     "app_info" : "App developed by Consuelo López Prieto for \"Proyecto Intermodular\" of DAM.",
-    "version" : "Version"
+    "version" : "Version",
+
+    "error_try_again": "An error occurred. Please try again in a few seconds."
 }

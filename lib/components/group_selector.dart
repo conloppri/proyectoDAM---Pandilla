@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 //Estilos y colores
 import 'package:pandilla/core/app_colors.dart';
+import 'package:pandilla/core/app_styles.dart';
+import 'package:pandilla/l10n/app_localizations.dart';
 //Firebase
 import '../core/services/firebase_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -53,11 +55,13 @@ class _GroupSelectorState extends State<GroupSelector> {
       /// Tarjeta seleccionable del grupo
       child: GestureDetector(
         onTap: () async {
+          //Iniciamos los elementos que precisan de context antes de entrar en zona async(después del await)
+          final GroupProvider groupProvider = context.read<GroupProvider>();
+          final navigator = Navigator.of(context);
+          final messenger = ScaffoldMessenger.of(context);
+          final AppLocalizations loc = AppLocalizations.of(context)!;
           try {
-            final GroupProvider groupProvider = context.read<GroupProvider>();
-            final navigator = Navigator.of(context);
             String? userUID = FirebaseAuth.instance.currentUser?.uid;
-
             /// Comprueba si el usuario es administrador del grupo
             bool admin = await isAdmin(widget.groupUID, userUID!);
 
@@ -80,20 +84,23 @@ class _GroupSelectorState extends State<GroupSelector> {
             );
           } catch (e) {
             debugPrint("Error al cargar grupo: $e");
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text(
+                  loc.error_try_again,
+                ),
+              ),
+            );
           }
-//linea 24
         },
-
         /// Contenedor visual del grupo
         child: Container(
           height: 100,
           width: 100,
-          decoration: BoxDecoration(
-            color: AppColors.secondary,
-            borderRadius: BorderRadius.circular(10),
-          ),
+          decoration: AppStyles.mainScreenBox,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               /// Avatar del grupo
               CircleAvatar(
@@ -104,7 +111,8 @@ class _GroupSelectorState extends State<GroupSelector> {
               /// Nombre del grupo
               Text(
                 widget.groupName,
-                style: const TextStyle(color: Colors.white, fontSize: 20),
+                style: const TextStyle(color: AppColors.primary, fontSize: 20),
+                textAlign: TextAlign.center,
               ),
             ],
           ),

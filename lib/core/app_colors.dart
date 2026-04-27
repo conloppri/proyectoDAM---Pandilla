@@ -43,10 +43,10 @@ class AppColors{
   static const Color listsSecondary = Color(0xffefdb7e);
 
   /// Color principal del módulo de información/grupos.
-  static const Color infoPrimary = Color(0xff5a123e);
+  static const Color infoPrimary = Color(0xff02aaaf);
 
   /// Color secundario del módulo de información/grupos.
-  static const Color infoSecondary = Color(0xff8e426f);
+  static const Color infoSecondary = Color(0xff89eadd);
 
   ///Color rosa muy claro, para TextFields en ProfileScreens
   static const Color profileLowerPink = Color(0xffe8c4db);
