@@ -56,6 +56,10 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
   /// Índice de la recurrencia seleccionada.
   int _recSelected = 0;
 
+
+  ///Variable que controla si la información ha llegado antes de mostrarla
+  bool loading = true;
+
   /// Carga la información del evento desde Firestore.
   ///
   /// Rellena los campos del formulario con los datos actuales.
@@ -68,6 +72,7 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
         _locController.text = data["location"];
         _date = DateTime(data["year"], data["month"], data["day"]);
         _recSelected = _recurrence.indexOf(data["recurrence"]);
+        loading = false;
       });
     } catch (e) {
       debugPrint("Error cargando información del evento: $e");
@@ -105,7 +110,8 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
         title: Text(groupName!),
         backgroundColor: AppColors.calendarPrimary,
       ),
-      body: Padding(
+      body: loading?const Center(child: CircularProgressIndicator())
+          :Padding(
         padding: const EdgeInsets.all(15),
         child: Column(
           spacing: 20,

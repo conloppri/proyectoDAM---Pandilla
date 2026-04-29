@@ -29,6 +29,12 @@ class AppStyles {
     color: Colors.blueAccent,
   );
 
+  static const InputDecoration loginTextFields = InputDecoration(
+    filled: true,
+    fillColor: AppColors.secondary,
+    labelStyle: TextStyle(color: Colors.black87)
+  );
+
   static final BoxDecoration mainScreenBox = BoxDecoration(
       color: AppColors.secondary,
       borderRadius: BorderRadius.circular(10),

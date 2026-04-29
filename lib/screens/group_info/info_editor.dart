@@ -76,6 +76,9 @@ class _InfoEditorState extends State<InfoEditor> {
   /// Información completa del grupo.
   Map<String, dynamic> info = {};
 
+  ///Variable que controla si la información ha llegado antes de mostrarla
+  bool loading = true;
+
   /// Carga la información del grupo desde Firestore
   /// y la asigna a los controladores y variables locales.
   loadInfo() async {
@@ -85,6 +88,7 @@ class _InfoEditorState extends State<InfoEditor> {
       _descController.text = info["description"];
       _code = info["code"];
       _selectedAvatar = info["avatar"];
+      loading = false;
       setState(() {});
     }catch (e) {
       debugPrint("Error cargando información: $e");
@@ -117,7 +121,8 @@ class _InfoEditorState extends State<InfoEditor> {
         backgroundColor: AppColors.infoPrimary,
       ),
       body: SafeArea(
-        child: Center(
+        child:loading?const Center(child: CircularProgressIndicator())
+            :Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [

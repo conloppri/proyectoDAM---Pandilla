@@ -129,6 +129,7 @@ class _LogInState extends State<LogIn> {
         /// Campo email
         TextField(
           decoration: InputDecoration(
+            fillColor: AppColors.profileLowerSecondary,
             labelStyle: const TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             labelText: loc.email,
@@ -145,6 +146,7 @@ class _LogInState extends State<LogIn> {
         /// Campo contraseña
         TextField(
           decoration: InputDecoration(
+            fillColor: AppColors.profileLowerSecondary,
             labelStyle: const TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             labelText: loc.password,
@@ -156,7 +158,54 @@ class _LogInState extends State<LogIn> {
             });
           },
         ),
+        ///Recuperación de contraseña
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: TextButton(onPressed: (){
+            showDialog(context: context, builder: (context){
+              TextEditingController emailController = TextEditingController();
+              return AlertDialog( //Diálogo para introducir correo para recuperar contraseña
+                title: Text(loc.reset_psw),
+                content: Column(
+                  children: [
+                    Text(loc.email_to_reset_psw),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        labelText: loc.email
+                      ),
+                    )
+                  ],
+                ),
+                actions: [
+                  ///Botón cancelar
+                  TextButton(onPressed: ()=>Navigator.pop(context), child: Text(loc.cancel)),
+                  ///Botón restablecer
+                  TextButton(onPressed: () async {
+                    final navigator = Navigator.of(context);
+                    final messenger = ScaffoldMessenger.of(context);
+                    try{
+                      //Intentamos enviar correo de reseteo de contraseña
+                      await resetPassword(emailController.text);
 
+                      //Comunica al usuario que se envió el correo, en caso de que el correo existiera en la base de datos
+                      messenger.showSnackBar(SnackBar(content: Text(loc.reset_email_ready)));
+
+                      navigator.pop();
+
+                    }on FirebaseAuthException catch(e){ //email no válido
+                      debugPrint("Error al restablecer contraseña: $e");
+                      messenger.showSnackBar(SnackBar(content: Text(loc.error_invalid_email)));
+                    } catch(e){ //Otros errores
+                      messenger.showSnackBar(SnackBar(content: Text(loc.error_try_again)));
+                    }
+                  }, child: Text(loc.reset))
+                ],
+              );
+            });
+          }, child: Text(loc.forgot_psw, style: const TextStyle(decoration: TextDecoration.underline),)),
+        ),
         const SizedBox(height: 15),
         /// Botón de inicio de sesión
         ElevatedButton(
@@ -181,6 +230,13 @@ class _LogInState extends State<LogIn> {
   /// Autentica al usuario en Firebase Authentication.
   ///
   /// Retorna `true` si el login es correcto, `false` en caso contrario.
+  ///
+  /// Parámetros:
+  /// - [logEmail] Email de inicio de sesión.
+  /// - [logPsw] Contraseña para iniciar sesión
+  ///
+  /// Lanza:
+  /// - [FirebaseAuthException] en caso de credenciales incorrectos
   Future<bool> authUser(String logEmail, String logPsw) async {
     final messenger = ScaffoldMessenger.of(context);
     final loc = AppLocalizations.of(context)!;
@@ -205,6 +261,30 @@ class _LogInState extends State<LogIn> {
         );
       }
       return false;
+    }
+  }
+
+  /// Envía un correo para restablecer la contraseña del usuario.
+  ///
+  /// Utiliza Firebase Authentication para generar un enlace de
+  /// restablecimiento de contraseña y enviarlo al email proporcionado.
+  ///
+  /// Si ocurre un error durante el proceso (por ejemplo, email inválido
+  /// o usuario no registrado), se captura la excepción de Firebase,
+  /// se registra en consola y se vuelve a lanzar.
+  ///
+  /// Parámetros:
+  /// - [email]: Dirección de correo electrónico del usuario.
+  ///
+  /// Lanza:
+  /// - [FirebaseAuthException]: si Firebase devuelve un error al enviar
+  ///   el correo de restablecimiento.
+  Future<void> resetPassword(String email) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      debugPrint("Error al restablecer contraseña: ${e.message}");
+      rethrow;
     }
   }
 }
@@ -251,6 +331,7 @@ class _SignInState extends State<SignIn> {
         TextField(
           maxLength: 20,
           decoration: InputDecoration(
+            fillColor: AppColors.profileLowerSecondary,
             labelStyle: const TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             labelText: loc.username,
@@ -274,6 +355,7 @@ class _SignInState extends State<SignIn> {
         ///Email
         TextField(
           decoration: InputDecoration(
+            fillColor: AppColors.profileLowerSecondary,
             labelStyle: const TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             labelText: loc.email,
@@ -288,6 +370,7 @@ class _SignInState extends State<SignIn> {
         /// Contraseña
         TextField(
           decoration: InputDecoration(
+            fillColor: AppColors.profileLowerSecondary,
             labelStyle: const TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             labelText: loc.password,
@@ -302,6 +385,7 @@ class _SignInState extends State<SignIn> {
         /// Repetir contraseña
         TextField(
           decoration: InputDecoration(
+            fillColor: AppColors.profileLowerSecondary,
             labelStyle: const TextStyle(color: Colors.black),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             labelText: loc.repeat,
@@ -348,7 +432,16 @@ class _SignInState extends State<SignIn> {
   /// Registra un nuevo usuario en Firebase Authentication.
   ///
   /// También crea el documento inicial del usuario en Firestore.
-  Future<bool> registerUser(String signEmail, String signPsw1, String signPsw2,) async {
+  ///
+  /// Parámetros:
+  /// - [signEmail] Email para registro
+  /// - [signPsw1] Contraseña para crear cuenta
+  /// - [signPsw2] Repetición de contraseña para verificar
+  ///
+  /// Lanza:
+  /// - [FirebaseAuthException] Si las credenciales son incorrectas, el usuario
+  /// ya esta registrado o la contraseña es muy débil.
+  Future<bool> registerUser(String signEmail, String signPsw1, String signPsw2) async {
     final messenger = ScaffoldMessenger.of(context);
     final loc = AppLocalizations.of(context)!;
 

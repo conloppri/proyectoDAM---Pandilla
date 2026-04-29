@@ -13,6 +13,12 @@
     "no_account_yet" : "Don't have an account yet?",
     "with_account" : "Already have an account?",
 
+    "reset_psw": "Reset password",
+    "forgot_psw": "I forgot my password.",
+    "email_to_reset_psw": "Enter the email you used to register and we will send you an email to reset your password:",
+    "reset": "Reset",
+    "reset_email_ready": "If the email is registered, you will receive a link to reset your password.",
+
     "error_user_not_found": "No user is registered with that email.",
     "error_incorrect_psw": "Incorrect password.",
     "error_invalid_email": "Invalid email.",

@@ -15,8 +15,8 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.secondary,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black87,
         padding: const EdgeInsetsGeometry.all(12),
       ),
     ),
@@ -43,8 +43,8 @@ class AppTheme {
 
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Colors.black87,
+        foregroundColor: Colors.white,
         padding: const EdgeInsetsGeometry.all(12),
       ),
     ),
@@ -52,6 +52,7 @@ class AppTheme {
     inputDecorationTheme: const InputDecorationTheme(
       filled: true,
       fillColor: AppColors.lightmodeSecondary,
+      labelStyle: TextStyle(color: Colors.white),
       border: UnderlineInputBorder(
         borderSide: BorderSide(color: Colors.white),
       ),

@@ -73,6 +73,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   /// Estilo de texto utilizado en el contenido de la nota.
   final TextStyle textStyle = const TextStyle(fontSize: 18, height: 1.5);
 
+  ///Variable que controla si la información ha llegado antes de mostrarla
+  bool loading = true;
+
   /// Carga la información de la nota desde Firestore.
   ///
   /// - Obtiene los datos del documento
@@ -87,6 +90,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       _titleController.text = noteInfo["title"];
       _bodyController.text = noteInfo["body"];
       _selectedColor = noteInfo["color"];
+      loading = false;
       setState(() {});
     } catch (e) {
       debugPrint("Error cargando información: $e");
@@ -167,7 +171,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       body: SafeArea(
         child: Center(
           ///Contenedor de la nota
-          child: SizedBox(
+          child: loading?const Center(child: CircularProgressIndicator()) //Mientras carga la info
+          :SizedBox(
             width: MediaQuery.of(context).size.width * 0.9,
             height: MediaQuery.of(context).size.height * 0.75,
             child: Card.filled(

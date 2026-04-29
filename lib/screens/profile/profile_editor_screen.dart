@@ -21,10 +21,9 @@ import '../../core/app_styles.dart';
 /// Pantalla de edición del perfil del usuario [ProfileEditorScreen]
 ///
 /// Permite al usuario modificar su información personal como:
-/// - Nombre
 /// - Trabajo
 /// - Colores favoritos
-/// - Animal favorito
+/// - Animales favorito
 /// - Hobbies
 /// - Información adicional
 /// - Avatar
@@ -46,8 +45,9 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   /// Información del usuario obtenida desde Firestore
   Map _userInfo = {};
 
+  String userName = "";
+
   /// Controladores de texto para edición de perfil
-  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _jobController = TextEditingController();
   final TextEditingController _colorsController = TextEditingController();
   final TextEditingController _animalsController = TextEditingController();
@@ -70,6 +70,9 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
     fontWeight: FontWeight.bold,
   );
 
+  ///Variable que controla si la información ha llegado antes de mostrarla
+  bool loading = true;
+
   /// Carga la información del usuario desde Firestore
   ///
   /// Rellena los controladores con los datos actuales del perfil
@@ -77,7 +80,6 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   loadProfile() async {
     try {
       _userInfo = await getUser(userUID!);
-      _nameController.text = _userInfo["name"];
       _jobController.text = _userInfo["job"];
       _colorsController.text = _userInfo["fav_colors"];
       _animalsController.text = _userInfo["fav_animal"];
@@ -86,6 +88,8 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
       DateTime date = _userInfo["bithdate"].toDate();
       birthdate = DateFormat("dd/MM/yyyy", "es_ES").format(date);
       _selectedAvatar = _userInfo["avatar"];
+      userName = _userInfo["name"];
+      loading = false;
       setState(() {});
     } catch (e) {
       debugPrint("Error cargando información: $e");
@@ -113,7 +117,8 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
         ],
       ),
       body: SafeArea(
-        child: Container(
+        child: loading?const Center(child: CircularProgressIndicator())
+        :Container(
           padding: const EdgeInsets.all(8.0),
           /// Contenido principal de edición de perfil
           child: Column(
@@ -134,22 +139,6 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
               Expanded(
                 child: ListView(
                   children: [
-                    /// Nombre de usuario
-                    Card.filled(
-                      color: AppColors.primary,
-                      child: ListTile(
-                          leading: const Icon(Icons.person),
-                          title: Text(loc.username),
-                          subtitle: TextField(
-                            decoration: InputDecoration(
-                                filled: true,
-                                fillColor: AppColors.secondary,
-                                enabledBorder: AppStyles.outlineInputBorderRounded
-                            ),
-                            maxLength: 20,
-                            controller: _nameController,
-                          )),
-                    ),
                     /// Trabajo
                     Card.filled(
                       color: AppColors.pinkNote,
@@ -253,13 +242,12 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
     UserProvider userProvider = context.read<UserProvider>();
     final AppLocalizations loc = AppLocalizations.of(context)!;
     final navigator = Navigator.of(context);
-    if(_nameController.text.length<4){ //COmprobamos que el nombre sea válido
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_username_too_short)));
-    }else { //Intentamos guardar perfil
+    final messenger = ScaffoldMessenger.of(context);
+    //Intentamos guardar perfil
       bool saved = false;
       try {
         saved = await saveProfile(
-            _nameController.text,
+            userName,
             _colorsController.text,
             _jobController.text,
             _hobbiesController.text,
@@ -268,15 +256,15 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
             _animalsController.text
         );
       }catch (e) {
-        debugPrint("Error al actualizar prtfil: $e");
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_try_again)));
+        debugPrint("Error al actualizar perfil: $e");
+        messenger.showSnackBar(SnackBar(content: Text(loc.error_try_again)));
       }
       if (saved) { //hacemos cambios en el UserProvider
-        userProvider.setUser(userUID!, _nameController.text, _selectedAvatar,
+        userProvider.setUser(userUID!,userName, _selectedAvatar,
             _userInfo["email"]);
         navigator.push(MaterialPageRoute( //vamos a la pantalla de visualización de perfil
             builder: (context) => ProfileScreen(userProfileUID: userUID!)));
       }
-    }
+
   }
 }

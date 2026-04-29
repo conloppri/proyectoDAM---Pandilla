@@ -13,6 +13,12 @@
     "no_account_yet" : "¿Aún no tienes cuenta?",
     "with_account" : "Si ya tienes tu cuenta ",
 
+    "reset_psw" : "Restablecer contraseña",
+    "forgot_psw" : "He olvidado mi contraseña.",
+    "email_to_reset_psw" : "Introduce el correo con el que está registrado y se le enviará un correo para restablcer su contraseña:",
+    "reset" : "Restablecer",
+    "reset_email_ready" : "Si el email está registrado, recibirás un enlace para restablecer la contraseña.",
+
     "error_user_not_found": "Usuario no registrado.",
     "error_incorrect_psw": "Contraseña incorrecta.",
     "error_invalid_email": "Email no válido.",

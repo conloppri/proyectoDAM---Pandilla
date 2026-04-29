@@ -30,11 +30,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// Indica si el tema está en modo automático (según sistema).
   bool automaticMode = true;
 
-  /// Indica si el modo oscuro está activo.
-  bool darkMode = false;
 
   /// Indica si las notificaciones están activadas.
   bool notif = true;
+
+  String themeMode = "";
 
   /// Carga las preferencias guardadas en almacenamiento local.
   ///
@@ -46,7 +46,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     notif = prefs.getBool("notifications_state") ?? true;
     automaticMode = prefs.getString("theme_mode") == "system";
-
     setState(() {});
   }
 
@@ -74,8 +73,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     final ThemeProvider themeProvider = context.watch<ThemeProvider>();
 
-    /// Determina si el modo oscuro está activo según el provider.
-    darkMode = (themeProvider.themeMode == ThemeMode.dark);
     return Scaffold(
       appBar: AppBar(
         title: Text(loc.settings),
@@ -151,12 +148,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 style: AppStyles.settingTitleStyle,
               ),
               onChanged: (bool? value) async {
-                context.read<ThemeProvider>().setTheme(ThemeMode.system);
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                prefs.setString("theme_mode", "system");
                 setState(() {
-                  //Variable que permite activar el Switch de modo oscuro
                   automaticMode = value!;
+                  if(value){
+                    themeProvider.setTheme(ThemeMode.system);
+                  }else{
+                    themeProvider.setTheme(Theme.of(context).brightness == Brightness.dark
+                        ?ThemeMode.dark
+                        :ThemeMode.light);
+                  }
                 });
               },
             ),
@@ -164,13 +164,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             /// Selector de modo oscuro (deshabilitado si automático está activo)
             IgnorePointer(
-              ignoring:
-                  automaticMode, //Si está activado el modo automático, este Widget ignorará las interacciones
+              ignoring: automaticMode, //Si está activado el modo automático, este Widget ignorará las interacciones
               child: SwitchListTile(
-                value: darkMode,
+                value: Theme.of(context).brightness == Brightness.dark,
                 title: Text(
                   loc.dark_mode,
-                  style: automaticMode
+                  style:automaticMode
                       ? const TextStyle( //Si esta desactivado, se verá gris
                           color: Colors.black12,
                           fontSize: 20,
@@ -181,14 +180,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onChanged: (value) {
                   if (value) {
                     //Si el switch está encedido => Modo oscuro
-                    context.read<ThemeProvider>().setTheme(ThemeMode.dark);
+                    themeProvider.setTheme(ThemeMode.dark);
                   } else {
                     //Si el switch está apagado => Modo claro
-                    context.read<ThemeProvider>().setTheme(ThemeMode.light);
+                    themeProvider.setTheme(ThemeMode.light);
                   }
-                  setState(() {
-                    darkMode = value;
-                  });
+                  setState(() {});
                 },
               ),
             ),

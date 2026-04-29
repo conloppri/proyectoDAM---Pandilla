@@ -55,6 +55,7 @@ class _ColorPickerState extends State<ColorPicker> {
       children: [
         /// Botón de selección de color rosa
         FloatingActionButton(
+          heroTag: "fab-pink",
           onPressed: () {
             setState(() {
               _selectedColorIndex = 0;
@@ -69,6 +70,7 @@ class _ColorPickerState extends State<ColorPicker> {
         ),
         /// Botón de selección de color morado
         FloatingActionButton(
+          heroTag: "fab-purple",
           onPressed: () {
             setState(() {
               _selectedColorIndex = 1;
@@ -83,6 +85,7 @@ class _ColorPickerState extends State<ColorPicker> {
         ),
         /// Botón de selección de color azul
         FloatingActionButton(
+          heroTag: "fab-blue",
           onPressed: () {
             setState(() {
               _selectedColorIndex = 2;
@@ -97,6 +100,7 @@ class _ColorPickerState extends State<ColorPicker> {
         ),
         /// Botón de selección de color verde
         FloatingActionButton(
+          heroTag: "fab-green",
           onPressed: () {
             setState(() {
               _selectedColorIndex = 3;
@@ -112,6 +116,7 @@ class _ColorPickerState extends State<ColorPicker> {
 
         /// Botón de selección de color amarillo
         FloatingActionButton(
+          heroTag: "fab-yellow",
           onPressed: () {
             setState(() {
               _selectedColorIndex = 4;
