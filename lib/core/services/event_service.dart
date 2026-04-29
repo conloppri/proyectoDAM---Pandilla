@@ -1,7 +1,10 @@
 import 'package:table_calendar/table_calendar.dart';
 
 import '../event.dart';
-
+///Clase encargada de gestionar la creación de eventos según su recurrencia
+///
+/// Solo incluye un metodo extraído de CalendarSubscreen para poder
+/// testear su funcionamiento en test unitarios
 class EventService {
   /// Obtiene los eventos correspondientes a un día concreto.
   ///

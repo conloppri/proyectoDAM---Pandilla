@@ -44,5 +44,44 @@ void main(){
       expect(result1.length, 1);
       expect(result2.length, 1);
     });
+
+    test('getEventsForDay returns monthly events', (){
+      final Event event = Event(
+          recurrence: 'monthly',
+          id: '1',
+          title: 'Evento',
+          date: DateTime(2026, 4, 30),
+          description: 'Evento de prueba',
+          location: '',
+          authorName: 'Consuelo',
+          authorID: '1');
+
+      //Vamos a probar que crea el evento para ese día
+      final result1 = EventService.getEventsForDay(DateTime(2026, 4, 30), [event]);
+      //Y para el año siguiente
+      final result2 = EventService.getEventsForDay(DateTime(2026, 5, 30), [event]);
+
+      expect(result1.length, 1);
+      expect(result2.length, 1);
+    });
+    test('getEventsForDay returns weekly events', (){
+      final Event event = Event(
+          recurrence: 'weekly',
+          id: '1',
+          title: 'Evento',
+          date: DateTime(2026, 4, 30),
+          description: 'Evento de prueba',
+          location: '',
+          authorName: 'Consuelo',
+          authorID: '1');
+
+      //Vamos a probar que crea el evento para ese día
+      final result1 = EventService.getEventsForDay(DateTime(2026, 4, 30), [event]);
+      //Y para el año siguiente
+      final result2 = EventService.getEventsForDay(DateTime(2026, 5, 7), [event]);
+
+      expect(result1.length, 1);
+      expect(result2.length, 1);
+    });
   });
 }
