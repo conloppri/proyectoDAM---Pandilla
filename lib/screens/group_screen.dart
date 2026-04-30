@@ -130,6 +130,16 @@ class _GroupScreenState extends State<GroupScreen> {
   }
 
   /// Construye la interfaz del grupo.
+  ///
+  /// La subpantalla a mostrar se selecciona mediante
+  /// la barra de navegación baja, cuyo index selecciona
+  /// la pantalla de la lista.
+  ///
+  /// Tiene un FloatingActionButton para añadir elementos al grupo,
+  /// común a todas las subpantallas.
+  ///
+  /// Tiene menú en la AppBar para gestionar el grupo, solo para
+  /// administradores.
   @override
   Widget build(BuildContext context) {
     final AppLocalizations loc = AppLocalizations.of(context)!;
@@ -150,15 +160,14 @@ class _GroupScreenState extends State<GroupScreen> {
         backgroundColor: primaryColors[_selectedIndexBottom],
         foregroundColor: Colors.white,
         actions: [
-          /// Menú de opciones del grupo
+          /// Menú de opciones de gestión del grupo, solo para administradores
+          if (isAdmin!)
           PopupMenuButton<String>(
             itemBuilder: (BuildContext context) => [
-              if (isAdmin!)
                 PopupMenuItem(
                   value: "edit",
                   child: Text(loc.edit_group_info),
                 ), //Editar grupo => Solo admins
-              if (isAdmin)
                 PopupMenuItem(
                   value: "delete",
                   child: Text(
@@ -166,46 +175,9 @@ class _GroupScreenState extends State<GroupScreen> {
                     style: const TextStyle(color: Colors.red),
                   ),
                 ), //Elimiar grupo => Solo admins
-              PopupMenuItem(
-                value: "info",
-                child: Text(loc.about),
-              ), //Info sobre la app
             ],
             //Control de elección del popMenu
             onSelected: (value) {
-              if (value == "info") {
-                //info
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text(loc.about),
-                      content: Column(
-                        children: [
-                          const Row(
-                            children: [
-                              CircleAvatar(
-                                backgroundImage: AssetImage("assets/icon.pg"),
-                                radius: 20,
-                              ),
-                              Text("Pandilla")
-                            ],
-                          ),
-                          Text("${loc.description}:"),
-                          Text(loc.app_info),
-                          Text("${loc.version}: 1.0.0")
-                        ],
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text(loc.close),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              }
               if (value == "delete") {
                 //eliminar grupo
                 showDialog(

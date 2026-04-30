@@ -122,6 +122,9 @@ class GroupProvider extends ChangeNotifier {
     _membershipSub = null;
   }
 
+  /// Libera los recursos utilizados por el widget.
+  ///
+  /// En este caso, se detiene la escucha activa llamando a `stopListening()`.
   @override
   void dispose() {
     stopListening();

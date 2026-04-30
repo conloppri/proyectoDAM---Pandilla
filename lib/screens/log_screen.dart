@@ -36,60 +36,62 @@ class _LogScreenState extends State<LogScreen> {
     final AppLocalizations loc = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.secondary,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 75),
-        child: Column(
-          children: [
-            /// Logo de la aplicación
-            SizedBox(
-              height: 200,
-              width: 200,
-              child: Image.asset("assets/icon.png", fit: BoxFit.contain),
-            ),
-            /// Alternancia entre login y registro
-            _activeAction == "login"
-                ? const LogIn()
-                : const SignIn(),
-
-            const SizedBox(height: 15),
-
-            /// Texto inferior para cambiar entre formularios
-            _activeAction == "login"
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(loc.no_account_yet),
-                      GestureDetector(
-                        child: Text(
-                          loc.signup,
-                          style: AppStyles.underlinedLogIn,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 75),
+          child: Column(
+            children: [
+              /// Logo de la aplicación
+              SizedBox(
+                height: 200,
+                width: 200,
+                child: Image.asset("assets/icon.png", fit: BoxFit.contain),
+              ),
+              /// Alternancia entre login y registro
+              _activeAction == "login"
+                  ? const LogIn()
+                  : const SignIn(),
+        
+              const SizedBox(height: 15),
+        
+              /// Texto inferior para cambiar entre formularios
+              _activeAction == "login"
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(loc.no_account_yet),
+                        GestureDetector(
+                          child: Text(
+                            loc.signup,
+                            style: AppStyles.underlinedLogIn,
+                          ),
+                          onTap: () {
+                            setState(() {
+                              _activeAction = "signin";
+                            });
+                          },
                         ),
-                        onTap: () {
-                          setState(() {
-                            _activeAction = "signin";
-                          });
-                        },
-                      ),
-                    ],
-                  )
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(loc.with_account),
-                      GestureDetector(
-                        child: Text(
-                          loc.login,
-                          style: AppStyles.underlinedLogIn
+                      ],
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(loc.with_account),
+                        GestureDetector(
+                          child: Text(
+                            loc.login,
+                            style: AppStyles.underlinedLogIn
+                          ),
+                          onTap: () {
+                            setState(() {
+                              _activeAction = "login";
+                            });
+                          },
                         ),
-                        onTap: () {
-                          setState(() {
-                            _activeAction = "login";
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-          ],
+                      ],
+                    ),
+            ],
+          ),
         ),
       ),
     );
@@ -447,39 +449,48 @@ class _SignInState extends State<SignIn> {
 
     //Si las dos contraseñas coinciden
     if (signPsw1 == signPsw2) {
-      try {
-        //Intenta crear usuario en FirebaseAuth
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: signEmail,
-          password: signPsw1,
-        );
-        String? userUID = FirebaseAuth.instance.currentUser?.uid;
-        if (userUID != null) { //Y creamos el usuario en Firestore
-          newUser(_name, _birthDate, signEmail);
-        }
-        return true;
-      } on FirebaseAuthException catch (e) { //Capturamos errores
-        if (e.code == 'invalid-email') { //Email no válido
-          messenger.showSnackBar(
-            SnackBar(
-              content: Text(loc.error_invalid_email),
-            ),
+      if(validatePsw(signPsw1)) { //validamos que la contraseña cumpla los requisitos mínimos
+        try {
+          //Intenta crear usuario en FirebaseAuth
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+            email: signEmail,
+            password: signPsw1,
           );
-        } else if (e.code == 'weak-password') { //Contraseña débil
-          messenger.showSnackBar(
-            SnackBar(
-              content: Text(loc.error_week_psw),
-            ),
-          );
-        } else if (e.code == "email-already-in-use") { //Email ya registrado
-          messenger.showSnackBar(
-            SnackBar(
-              content: Text(
-                loc.error_email_registered,
+          String? userUID = FirebaseAuth.instance.currentUser?.uid;
+          if (userUID != null) { //Y creamos el usuario en Firestore
+            newUser(_name, _birthDate, signEmail);
+          }
+          return true;
+        } on FirebaseAuthException catch (e) { //Capturamos errores
+          if (e.code == 'invalid-email') { //Email no válido
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text(loc.error_invalid_email),
               ),
-            ),
-          );
+            );
+          } else if (e.code ==
+              'PASSWORD_DOES_NOT_MEET_REQUIREMENTS') { //Contraseña débil
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text(loc.error_week_psw),
+              ),
+            );
+          } else if (e.code == "email-already-in-use") { //Email ya registrado
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text(
+                  loc.error_email_registered,
+                ),
+              ),
+            );
+          }
         }
+      }else{
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(loc.error_week_psw),
+          ),
+        );
       }
     } else { //contraseñas no coinciden
       ScaffoldMessenger.of(context).showSnackBar(
@@ -489,5 +500,25 @@ class _SignInState extends State<SignIn> {
       );
     }
     return false;
+  }
+  /// Valida si una contraseña cumple con los requisitos de seguridad.
+  ///
+  /// La contraseña debe cumplir las siguientes condiciones:
+  /// - Al menos 8 caracteres de longitud.
+  /// - Al menos una letra minúscula.
+  /// - Al menos una letra mayúscula.
+  /// - Al menos un número.
+  /// - Al menos un carácter especial permitido (@$!%*?&.,-_).
+  ///
+  /// Parámetros:
+  /// - [psw]: Contraseña a validar.
+  ///
+  /// Retorna:
+  /// - `true` si la contraseña cumple el patrón de seguridad.
+  /// - `false` si no cumple los requisitos.
+  bool validatePsw(String psw){
+    String pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.,-_])[A-Za-z\d@$!%*?&.,-_]{8,}$';
+    final RegExp regex = RegExp(pattern);
+    return regex.hasMatch(psw);
   }
 }

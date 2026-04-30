@@ -6,8 +6,6 @@ import 'dart:ui';
 /// separando colores por módulos (tema general, calendario,
 /// notas, listas, información, etc.).
 class AppColors{
-  /// Color de fondo en modo claro.
-  static const Color lightmodeBG = Color(0xffd8eeff);
 
   /// Color de fondo en modo oscuro.
   static const Color darkmodeBG = Color(0xff273957);
@@ -22,7 +20,7 @@ class AppColors{
   static const Color primary = Color(0xFF1F6C9F);
 
   /// Color secundario de la aplicación.
-  static const Color secondary = Color(0xff7ac6f8);
+  static const Color secondary = Color(0xFF82CDEC);
 
   /// Color principal del módulo de calendario.
   static const Color calendarPrimary = Color(0xff77aa2c);

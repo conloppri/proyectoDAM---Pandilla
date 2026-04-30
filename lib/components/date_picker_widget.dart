@@ -74,7 +74,7 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
   /// Muestra una etiqueta y un botón que abre el selector de fecha nativo.
   /// Al seleccionar una fecha:
   /// - Se actualiza el estado interno.
-  /// - Se notifica al widget padre mediante [onDateSelected].
+  /// - Se notifica al widget padre mediante [widget.onDateSelected].
   @override
   Widget build(BuildContext context) {
     return Row(

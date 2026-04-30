@@ -16,7 +16,10 @@ void main(){
 
     final SharedPreferences prefs =await SharedPreferences.getInstance();
     final bool? value = prefs.getBool("notifications_state");
-    //El test pasará porque sí guarda en SharedPreferences. Dará error por problemas de inicialización de plugin, que se hace en tiempo de ejecución de la app.
+    //El test pasará porque sí guarda en SharedPreferences.
+    // Dará error por problemas de inicialización de plugin, que se hace en tiempo de ejecución de la app.
+    //Pero podemos comprobar que el valor se guarda.
+
     expect(value, false);
   });
 }

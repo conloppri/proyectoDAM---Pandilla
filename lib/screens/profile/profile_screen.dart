@@ -54,7 +54,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     loadProfile();
   }
 
-  /// Construye la interfaz del perfil.
+  /// Construye la interfaz del perfil a partir de
+  /// la información precargada.
   @override
   Widget build(BuildContext context) {
     final AppLocalizations loc = AppLocalizations.of(context)!;

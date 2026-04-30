@@ -103,7 +103,11 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
     loadProfile();
   }
 
-  /// Construye la interfaz del perfil
+  /// Construye la interfaz del perfil a partir de la
+  /// información precargada.
+  ///
+  /// Permite guardar los cambios realizados en la base
+  /// de datos mediante el ElevatedButton.
   @override
   Widget build(BuildContext context) {
     final AppLocalizations loc = AppLocalizations.of(context)!;

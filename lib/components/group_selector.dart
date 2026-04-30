@@ -47,6 +47,14 @@ class GroupSelector extends StatefulWidget {
 /// Gestiona la interacción del usuario al seleccionar un grupo
 /// y realiza la navegación a la pantalla principal del grupo.
 class _GroupSelectorState extends State<GroupSelector> {
+
+  /// Construye la interfaz del selector de grupo.
+  ///
+  /// Muestra un contenedor que contiene el avatar del grupo
+  /// y el nombre del grupo.
+  ///
+  /// Al interaccionar con el componente, te dirige a la
+  /// pantalla del grupo.
   @override
   Widget build(BuildContext context) {
     return Padding(

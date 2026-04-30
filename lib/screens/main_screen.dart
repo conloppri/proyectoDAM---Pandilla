@@ -102,6 +102,7 @@ class _MainScreenState extends State<MainScreen> {
     tutorialCompleted = prefs.getBool("main_tutorial");
     setState(() {});
 
+    //Comprobación previa tutorial
     if(tutorialCompleted == null || !tutorialCompleted!) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showTutorial(); //Guía interactiva
@@ -174,23 +175,26 @@ class _MainScreenState extends State<MainScreen> {
                             }
                             //Carga de datos
                             List<Map<String, dynamic>> events = snapshot.data!;
-                            return ListView.builder(
-                              itemCount: events.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                DateFormat dateFormat = DateFormat("dd - MMM", "es_ES");
-                                DateTime dateEvent = events[index]["date"];
-                                return Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text("${dateFormat.format(dateEvent)}: ", style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary),),
-                                    Expanded(
-                                      child: Text(events[index]["title"],
-                                        overflow: TextOverflow.ellipsis, //Si no cabe en el container, lo indicará con "..."
-                                      ),
-                                    )
-                                  ],
-                                );
-                              },
+                            return Center(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: events.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  DateFormat dateFormat = DateFormat("dd - MMM", "es_ES");
+                                  DateTime dateEvent = events[index]["date"];
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text("${dateFormat.format(dateEvent)}: ", style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary),),
+                                      Expanded(
+                                        child: Text(events[index]["title"],
+                                          overflow: TextOverflow.ellipsis, //Si no cabe en el container, lo indicará con "..."
+                                        ),
+                                      )
+                                    ],
+                                  );
+                                },
+                              ),
                             );
                           },
                         ),

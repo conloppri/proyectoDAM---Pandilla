@@ -238,6 +238,9 @@ class _CalendarSubscreenState extends State<CalendarSubscreen> {
   /// - Información del evento
   /// - Opciones de edición/eliminación si el usuario tiene permisos
   /// - Mensaje si no hay eventos
+  ///
+  /// Parámetros:
+  /// - [events] lista de eventos para añadir a la vista
   List<Widget> _getDayEventList(List<Event> events) {
     final AppLocalizations loc = AppLocalizations.of(context)!;
     /// Identificador del grupo
@@ -315,12 +318,14 @@ class _CalendarSubscreenState extends State<CalendarSubscreen> {
                                 ),
                                 actions: [
                                   TextButton(
-                                    onPressed: () {
+                                    onPressed: () async {
+                                      final messenger =ScaffoldMessenger.of(context);
+                                      final navigator = Navigator.of(context);
                                       try {
-                                        removeNote(groupUID!, event.id);
+                                        await removeEvent(groupUID!, event.id);
                                       } catch (e) {
                                         debugPrint("Error al eliminar evento: $e");
-                                        ScaffoldMessenger.of(context).showSnackBar(
+                                        messenger.showSnackBar(
                                           SnackBar(
                                             content: Text(
                                               loc.error_try_again,
@@ -328,7 +333,7 @@ class _CalendarSubscreenState extends State<CalendarSubscreen> {
                                           ),
                                         );
                                       }
-                                      Navigator.pop(context);
+                                      navigator.pop();
                                     },
                                     child: Text(
                                       loc.remove,
@@ -414,6 +419,10 @@ class _CalendarSubscreenState extends State<CalendarSubscreen> {
   /// - Tipo de recurrencia
   ///
   /// Devuelve una lista de widgets con los eventos ordenados.
+  ///
+  /// Parámetros:
+  /// - [day] día seleccionado en el calendario.
+  /// - [events] lista de eventos.
   List<Widget> _getEventsForWeek(DateTime day, List<Event> events) {
     final AppLocalizations loc = AppLocalizations.of(context)!;
     /// Filtrado de eventos de la semana
@@ -507,12 +516,14 @@ class _CalendarSubscreenState extends State<CalendarSubscreen> {
                             actions: [
                               ///Botón Eliminar
                               TextButton(
-                                onPressed: () {
+                                onPressed: () async {
+                                  final messenger =ScaffoldMessenger.of(context);
+                                  final navigator = Navigator.of(context);
                                   try {
-                                    removeNote(groupUID!, event.id);
+                                    await removeEvent(groupUID!, event.id);
                                   }catch (e) {
                                     debugPrint("Error al eliminar nota: $e");
-                                    ScaffoldMessenger.of(context).showSnackBar(
+                                    messenger.showSnackBar(
                                       SnackBar(
                                         content: Text(
                                           loc.error_try_again,
@@ -520,7 +531,7 @@ class _CalendarSubscreenState extends State<CalendarSubscreen> {
                                       ),
                                     );
                                   }
-                                  Navigator.pop(context);
+                                  navigator.pop();
                                 },
                                 child: Text(
                                   loc.remove,

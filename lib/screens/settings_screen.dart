@@ -202,6 +202,64 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 NotificationServices.setNotificationState(value);
               },
             ),
+            const Divider(),
+            ///Información acerca de la aplicación
+            ListTile(
+              title: Text(loc.about, style: AppStyles.settingTitleStyle),
+              onTap: (){
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    ///Diálogo que muestra la informaicón de la aplicación
+                    return AlertDialog(
+                      title: Text(loc.about),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ///Logo de la app
+                              CircleAvatar(
+                                backgroundImage: AssetImage("assets/icon_foreground.png"),
+                                backgroundColor: AppColors.secondary,
+                                radius: 30,
+                              ),
+                              ///Nombre de la app
+                              Text("Pandilla", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),)
+                            ],
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          ///Descripción
+                          Text("${loc.description}:", style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20)),
+                          Text(loc.app_info),
+
+                          const SizedBox(height: 10,),
+
+                          ///Versión
+                          Row(
+                            children: [
+                              Text("${loc.version}:  ", style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20)),
+                              const Text("1.0.0",style: TextStyle(fontSize: 20)),
+                            ],
+                          )
+                        ],
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(loc.close),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+            const Divider()
           ],
         ),
       ),

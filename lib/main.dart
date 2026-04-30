@@ -39,6 +39,10 @@ Future<void> main() async {
   NotificationServices.setupTimezone();
   await NotificationServices.init();
 
+  ///Inicializamos ThemeProvider
+  final ThemeProvider themeProvider = ThemeProvider();
+  await themeProvider.init();
+
   runApp(
     //Configuración de providers utilizados
     MultiProvider(
@@ -98,7 +102,7 @@ class MyApp extends StatelessWidget {
         '/splash': (context) => const SplashScreen(),
         '/login': (context) => const LogScreen(),
         '/home': (context) => const MainScreen(),
-        '/profileEditor': (context) => ProfileEditorScreen(),
+        '/profileEditor': (context) => const ProfileEditorScreen(),
         '/settings': (context) => const SettingsScreen(),
       },
     );

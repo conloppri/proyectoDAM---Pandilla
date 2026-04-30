@@ -18,11 +18,17 @@ void main(){
 
       //Vemos cuantos eventos nos da por ese evento
       final result1 = EventService.getEventsForDay(DateTime(2026, 4, 30), [event]);
-      //Vemos que no crea ningun evento en la lista
-      final result2 = EventService.getEventsForDay(DateTime(2026, 4, 20), [event]);
+      //Probamos que no lo crea semanal:
+      final result2 = EventService.getEventsForDay(DateTime(2026, 5, 7), [event]);
+      //Ni mensual
+      final result3 = EventService.getEventsForDay(DateTime(2026, 5, 30), [event]);
+      //ni anual
+      final result4 =EventService.getEventsForDay(DateTime(2027, 4, 30), [event]);
 
       expect(result1.length, 1);
       expect(result2, isEmpty);
+      expect(result3, isEmpty);
+      expect(result4, isEmpty);
     });
 
     test('getEventsForDay returns yearly event', (){
@@ -36,13 +42,19 @@ void main(){
           authorName: 'Consuelo',
           authorID: '1');
 
-      //Vamos a probar que crea el evento para ese día
+      //Vemos cuantos eventos nos da por ese evento
       final result1 = EventService.getEventsForDay(DateTime(2026, 4, 30), [event]);
-      //Y para el año siguiente
-      final result2 = EventService.getEventsForDay(DateTime(2027, 4, 30), [event]);
+      //Probamos que no lo crea semanal:
+      final result2 = EventService.getEventsForDay(DateTime(2026, 5, 7), [event]);
+      //Ni mensual
+      final result3 = EventService.getEventsForDay(DateTime(2026, 5, 30), [event]);
+      //Pero si lo crea anual
+      final result4 =EventService.getEventsForDay(DateTime(2027, 4, 30), [event]);
 
-      expect(result1.length, 1);
-      expect(result2.length, 1);
+      expect(result1.length, 1); //Evento creado
+      expect(result2, isEmpty); //Sin evento semanal
+      expect(result3, isEmpty); //Sin evento mensual
+      expect(result4.length, 1); //Evento anual
     });
 
     test('getEventsForDay returns monthly events', (){
@@ -56,14 +68,21 @@ void main(){
           authorName: 'Consuelo',
           authorID: '1');
 
-      //Vamos a probar que crea el evento para ese día
+      //Vemos cuantos eventos nos da por ese evento
       final result1 = EventService.getEventsForDay(DateTime(2026, 4, 30), [event]);
-      //Y para el año siguiente
+      //Si lo crea mensual
       final result2 = EventService.getEventsForDay(DateTime(2026, 5, 30), [event]);
+      //Probamos que no lo crea semanal:
+      final result3 = EventService.getEventsForDay(DateTime(2026, 5, 7), [event]);
+      //Si nos aparecerá evento anual, porque lo creará durante 12 meses seguidos
+      final result4 =EventService.getEventsForDay(DateTime(2027, 4, 30), [event]);
 
-      expect(result1.length, 1);
-      expect(result2.length, 1);
+      expect(result1.length, 1); //Evento creado
+      expect(result2.length, 1); //Evento mensual
+      expect(result3, isEmpty); //Sin evento semanal
+      expect(result4.length, 1); //Con evento anual
     });
+
     test('getEventsForDay returns weekly events', (){
       final Event event = Event(
           recurrence: 'weekly',
@@ -75,13 +94,19 @@ void main(){
           authorName: 'Consuelo',
           authorID: '1');
 
-      //Vamos a probar que crea el evento para ese día
+      //Vemos cuantos eventos nos da por ese evento
       final result1 = EventService.getEventsForDay(DateTime(2026, 4, 30), [event]);
-      //Y para el año siguiente
+      //Probamos que lo crea semanal:
       final result2 = EventService.getEventsForDay(DateTime(2026, 5, 7), [event]);
+      //Pero no lo crea mensual
+      final result3 = EventService.getEventsForDay(DateTime(2026, 5, 30), [event]);
+      //ni anual
+      final result4 =EventService.getEventsForDay(DateTime(2027, 4, 30), [event]);
 
-      expect(result1.length, 1);
-      expect(result2.length, 1);
+      expect(result1.length, 1); //Evento creado
+      expect(result2.length, 1); //Evento semanal
+      expect(result3, isEmpty); //Sin evento mensual
+      expect(result4, isEmpty); //Sin evento anual
     });
   });
 }

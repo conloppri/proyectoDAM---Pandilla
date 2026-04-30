@@ -26,6 +26,10 @@ class AvatarPicker extends StatefulWidget {
 /// para elegir otro avatar desde una lista.
 class _AvatarPickerState extends State<AvatarPicker> {
 
+  /// Construye la interfaz del selector de avatar.
+  ///
+  /// Muestra en pantalla el avatar actualmente seleccionado junto con un
+  /// botón que permite abrir un diálogo para elegir otro avatar.
   @override
   Widget build(BuildContext context) {
     return Row(

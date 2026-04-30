@@ -123,169 +123,171 @@ class _InfoEditorState extends State<InfoEditor> {
       body: SafeArea(
         child:loading?const Center(child: CircularProgressIndicator())
             :Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              /// Selector de avatar del grupo
-              AvatarPicker(
-                selectedAvatar: _selectedAvatar,
-                onSelectedAvatar: (avatar) {
-                  _selectedAvatar = avatar;
-                  setState(() {});
-                },
-                avatarList: _avatarList,
-              ),
-              /// Tarjeta con campos de nombre y descripción
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Card.filled(
-                  color: AppColors.infoPrimary,
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      spacing: 10,
-                      children: [
-                        /// Título del campo nombre
-                        Text(
-                          loc.group_name,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        /// Campo de edición del nombre
-                        TextField(
-                          controller: _nameController,
-                          maxLength: 15,
-                          style: AppStyles.infoTextFields,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: AppColors.infoSecondary,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                        ),
-                        /// Título del campo descripción
-                        Text(
-                          loc.description,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        /// Campo de edición de la descripción
-                        TextField(
-                          controller: _descController,
-                          maxLength: 100,
-                          minLines: 5,
-                          maxLines: 10,
-                          style: AppStyles.infoTextFields,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: AppColors.infoSecondary,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                /// Selector de avatar del grupo
+                AvatarPicker(
+                  selectedAvatar: _selectedAvatar,
+                  onSelectedAvatar: (avatar) {
+                    _selectedAvatar = avatar;
+                    setState(() {});
+                  },
+                  avatarList: _avatarList,
                 ),
-              ),
-              /// Tarjeta con el código de invitación
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Card.filled(
-                  color: AppColors.infoSecondary,
-                  child: Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        /// Muestra el código actual
-                        Text("${loc.code}: $_code", style: AppStyles.infoTextFields),
-
-                        /// Botón para regenerar el código
-                        TextButton(
-                          onPressed: () async {
-                            _code = await generateCode();
-                            setState(() {});
-                          },
-                          child: Text(loc.regenerate_code, style: AppStyles.infoTextFields,),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              /// Botones de acción: descartar / guardar
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-
-                  /// Botón para cancelar cambios
-                  ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.infoPrimary,
-                    ),
+                /// Tarjeta con campos de nombre y descripción
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Card.filled(
+                    color: AppColors.infoPrimary,
                     child: Padding(
                       padding: const EdgeInsets.all(10),
-                      child: Text(loc.discard, style: const TextStyle(color: Colors.white, fontSize: 20),),
+                      child: Column(
+                        spacing: 10,
+                        children: [
+                          /// Título del campo nombre
+                          Text(
+                            loc.group_name,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          /// Campo de edición del nombre
+                          TextField(
+                            controller: _nameController,
+                            maxLength: 15,
+                            style: AppStyles.infoTextFields,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: AppColors.infoSecondary,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                          ),
+                          /// Título del campo descripción
+                          Text(
+                            loc.description,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          /// Campo de edición de la descripción
+                          TextField(
+                            controller: _descController,
+                            maxLength: 100,
+                            minLines: 5,
+                            maxLines: 10,
+                            style: AppStyles.infoTextFields,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: AppColors.infoSecondary,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-
-                  /// Botón para guardar cambios
-                  ElevatedButton(
-                    onPressed: () {
-                      if(_nameController.text==""){ //Comprueba que haya introducido el nombre
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_title_required)));
-                      }else {
-                        try {
-                          editGroup( //Actualiza la información del grupo en la base de datos
-                            widget.groupUID,
-                            _nameController.text,
-                            _descController.text,
-                            _code,
-                            _selectedAvatar,
+                ),
+                /// Tarjeta con el código de invitación
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Card.filled(
+                    color: AppColors.infoSecondary,
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          /// Muestra el código actual
+                          Text("${loc.code}: $_code", style: AppStyles.infoTextFields),
+            
+                          /// Botón para regenerar el código
+                          TextButton(
+                            onPressed: () async {
+                              _code = await generateCode();
+                              setState(() {});
+                            },
+                            child: Text(loc.regenerate_code, style: AppStyles.infoTextFields,),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                /// Botones de acción: descartar / guardar
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+            
+                    /// Botón para cancelar cambios
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.infoPrimary,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Text(loc.discard, style: const TextStyle(color: Colors.white, fontSize: 20),),
+                      ),
+                    ),
+            
+                    /// Botón para guardar cambios
+                    ElevatedButton(
+                      onPressed: () {
+                        if(_nameController.text==""){ //Comprueba que haya introducido el nombre
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_title_required)));
+                        }else {
+                          try {
+                            editGroup( //Actualiza la información del grupo en la base de datos
+                              widget.groupUID,
+                              _nameController.text,
+                              _descController.text,
+                              _code,
+                              _selectedAvatar,
+                            );
+                            context.read<GroupProvider>().setGroup( //Actualiza el provider
+                              widget.groupUID,
+                              _nameController.text,
+                              true,
+                              _code,
+                            );
+                          } catch (e) {
+                            debugPrint("Error al actualizar grupo: $e");
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_try_again)));
+                          }
+                          Navigator.pushReplacement( //regreso a la pantalla del grupo
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  GroupScreen(
+                                    groupUID: widget.groupUID,
+                                    groupName: _nameController.text,
+                                  ),
+                            ),
                           );
-                          context.read<GroupProvider>().setGroup( //Actualiza el provider
-                            widget.groupUID,
-                            _nameController.text,
-                            true,
-                            _code,
-                          );
-                        } catch (e) {
-                          debugPrint("Error al actualizar grupo: $e");
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_try_again)));
                         }
-                        Navigator.pushReplacement( //regreso a la pantalla del grupo
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                GroupScreen(
-                                  groupUID: widget.groupUID,
-                                  groupName: _nameController.text,
-                                ),
-                          ),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.infoPrimary,
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.infoPrimary,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Text(loc.save, style: const TextStyle(color: Colors.white, fontSize: 20)),
+                      ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Text(loc.save, style: const TextStyle(color: Colors.white, fontSize: 20)),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

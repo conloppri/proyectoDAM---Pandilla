@@ -111,213 +111,215 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
         backgroundColor: AppColors.calendarPrimary,
       ),
       body: loading?const Center(child: CircularProgressIndicator())
-          :Padding(
-        padding: const EdgeInsets.all(15),
-        child: Column(
-          spacing: 20,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            /// Título de la pantalla
-            Text(loc.edit_event, style: AppStyles.appBarTitle),
-
-            /// Contenedor de título del evento y descripción
-            Container(
-              decoration: BoxDecoration(
-                  color: AppColors.calendarPrimary,
-                  borderRadius: BorderRadius.circular(10)
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  spacing: 15,
-                  children: [
-                    /// Campo título
-                    TextField(
-                      controller: _titleController,
-                      style: AppStyles.eventTextFields,
-                      decoration: InputDecoration(
+          :SingleChildScrollView(
+            child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+            spacing: 20,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              /// Título de la pantalla
+              Text(loc.edit_event, style: AppStyles.appBarTitle),
+            
+              /// Contenedor de título del evento y descripción
+              Container(
+                decoration: BoxDecoration(
+                    color: AppColors.calendarPrimary,
+                    borderRadius: BorderRadius.circular(10)
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: Column(
+                    spacing: 15,
+                    children: [
+                      /// Campo título
+                      TextField(
+                        controller: _titleController,
+                        style: AppStyles.eventTextFields,
+                        decoration: InputDecoration(
+                            filled: true,
+                            fillColor: AppColors.calendarSecondary,
+                            labelStyle: const TextStyle(color: Colors.black),
+                            labelText: loc.title,
+                            enabledBorder: AppStyles.outlineInputBorderRounded
+                        ),
+                      ),
+                      /// Campo descripción
+                      TextField(
+                        controller: _descController,
+                        style: AppStyles.eventTextFields,
+                        maxLines: 3,
+                        decoration: InputDecoration(
                           filled: true,
                           fillColor: AppColors.calendarSecondary,
                           labelStyle: const TextStyle(color: Colors.black),
-                          labelText: loc.title,
-                          enabledBorder: AppStyles.outlineInputBorderRounded
+                          labelText: loc.description,
+                          enabledBorder: AppStyles.outlineInputBorderRounded,
+                        ),
                       ),
-                    ),
-                    /// Campo descripción
-                    TextField(
-                      controller: _descController,
-                      style: AppStyles.eventTextFields,
-                      maxLines: 3,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: AppColors.calendarSecondary,
-                        labelStyle: const TextStyle(color: Colors.black),
-                        labelText: loc.description,
-                        enabledBorder: AppStyles.outlineInputBorderRounded,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              /// Selector de fecha del evento
-              child: DatePickerWidget(
-                selectedDate: _date,
-                labelStyle: const TextStyle(fontSize: 20),
-                buttonColor: AppColors.calendarPrimary,
-                label: loc.event_date,
-                firstDate: DateTime(1900),
-                lastDate: DateTime(DateTime.now().year + 50),
-                onDateSelected: (date) => _date = date,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                /// Selector de fecha del evento
+                child: DatePickerWidget(
+                  selectedDate: _date,
+                  labelStyle: const TextStyle(fontSize: 20),
+                  buttonColor: AppColors.calendarPrimary,
+                  label: loc.event_date,
+                  firstDate: DateTime(1900),
+                  lastDate: DateTime(DateTime.now().year + 50),
+                  onDateSelected: (date) => _date = date,
+                ),
               ),
-            ),
-            /// Contenedor de localización y recurrencia
-            Container(
-              decoration: BoxDecoration(
-                  color: AppColors.calendarPrimary,
-                  borderRadius: BorderRadius.circular(10)
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  spacing: 15,
-                  children: [
-                    /// Campo localización
-                    TextField(
-                      controller: _locController,
-                      style: AppStyles.eventTextFields,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: AppColors.calendarSecondary,
-                        labelStyle: const TextStyle(color: Colors.black),
-                        labelText: loc.location,
-                        enabledBorder: AppStyles.outlineInputBorderRounded,
+              /// Contenedor de localización y recurrencia
+              Container(
+                decoration: BoxDecoration(
+                    color: AppColors.calendarPrimary,
+                    borderRadius: BorderRadius.circular(10)
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: Column(
+                    spacing: 15,
+                    children: [
+                      /// Campo localización
+                      TextField(
+                        controller: _locController,
+                        style: AppStyles.eventTextFields,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: AppColors.calendarSecondary,
+                          labelStyle: const TextStyle(color: Colors.black),
+                          labelText: loc.location,
+                          enabledBorder: AppStyles.outlineInputBorderRounded,
+                        ),
                       ),
-                    ),
-                    /// Selector de recurrencia
-                    Row(
-                      spacing: 15,
-                      children: [
-                        Text("${loc.recurrence}: ", style: AppStyles.buttonTextStyle),
-                        /// Botón que abre diálogo de selección
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(backgroundColor: AppColors.calendarSecondary),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog( //Diálogo de selección de recurrencia con lista
-                                title: Text(loc.recurrence_dialog_title),
-                                content: Container(
-                                  width: double.maxFinite,
-                                  constraints: const BoxConstraints(maxHeight: 300),
-                                  child: ListView(
-                                    shrinkWrap: true,
-                                    children: [
-                                      ListTile(
-                                        title: Text(recurrenceButton[0]),
-                                        onTap: () {
-                                          setState(() {
-                                            _recSelected = 0;
-                                          });
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                      ListTile(
-                                        title: Text(recurrenceButton[1]),
-                                        onTap: () {
-                                          setState(() {
-                                            _recSelected = 1;
-                                          });
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                      ListTile(
-                                        title: Text(recurrenceButton[2]),
-                                        onTap: () {
-                                          setState(() {
-                                            _recSelected = 2;
-                                          });
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                      ListTile(
-                                        title: Text(recurrenceButton[3]),
-                                        onTap: () {
-                                          setState(() {
-                                            _recSelected = 3;
-                                          });
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                    ],
+                      /// Selector de recurrencia
+                      Row(
+                        spacing: 15,
+                        children: [
+                          Text("${loc.recurrence}: ", style: AppStyles.buttonTextStyle),
+                          /// Botón que abre diálogo de selección
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(backgroundColor: AppColors.calendarSecondary),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog( //Diálogo de selección de recurrencia con lista
+                                  title: Text(loc.recurrence_dialog_title),
+                                  content: Container(
+                                    width: double.maxFinite,
+                                    constraints: const BoxConstraints(maxHeight: 300),
+                                    child: ListView(
+                                      shrinkWrap: true,
+                                      children: [
+                                        ListTile(
+                                          title: Text(recurrenceButton[0]),
+                                          onTap: () {
+                                            setState(() {
+                                              _recSelected = 0;
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                        ListTile(
+                                          title: Text(recurrenceButton[1]),
+                                          onTap: () {
+                                            setState(() {
+                                              _recSelected = 1;
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                        ListTile(
+                                          title: Text(recurrenceButton[2]),
+                                          onTap: () {
+                                            setState(() {
+                                              _recSelected = 2;
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                        ListTile(
+                                          title: Text(recurrenceButton[3]),
+                                          onTap: () {
+                                            setState(() {
+                                              _recSelected = 3;
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                          child: Text(recurrenceButton[_recSelected], style: const TextStyle(fontSize: 15, color: AppColors.calendarPrimary)),
-                        ),
-                      ],
-                    ),
-                  ],
+                              );
+                            },
+                            child: Text(recurrenceButton[_recSelected], style: const TextStyle(fontSize: 15, color: AppColors.calendarPrimary)),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            /// Botones de acción (guardar / descartar)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ///Botón cancelar
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      loc.discard,
-                      style: AppStyles.buttonTextStyle,
+              /// Botones de acción (guardar / descartar)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ///Botón cancelar
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        loc.discard,
+                        style: AppStyles.buttonTextStyle,
+                      ),
                     ),
                   ),
-                ),
-                ///Botón guardar
-                ElevatedButton(
-                  onPressed: () {
-                    if(_titleController.text==""){ //Comprobamos que haya introducido un título
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_title_required)));
-                    }else {
-                      try {
-                        setState(() {
-                          editEvent(
-                              groupUID!,
-                              groupName,
-                              widget.eventID,
-                              _titleController.text,
-                              _descController.text,
-                              _locController.text,
-                              _recurrence[_recSelected],
-                              _date);
-                        });
-                      } catch (e) {
-                        debugPrint("Error al editar evento: $e");
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_try_again)));
+                  ///Botón guardar
+                  ElevatedButton(
+                    onPressed: () {
+                      if(_titleController.text==""){ //Comprobamos que haya introducido un título
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_title_required)));
+                      }else {
+                        try {
+                          setState(() {
+                            editEvent(
+                                groupUID!,
+                                groupName,
+                                widget.eventID,
+                                _titleController.text,
+                                _descController.text,
+                                _locController.text,
+                                _recurrence[_recSelected],
+                                _date);
+                          });
+                        } catch (e) {
+                          debugPrint("Error al editar evento: $e");
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_try_again)));
+                        }
+                        Navigator.pop(context);
                       }
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      loc.save,
-                      style: AppStyles.buttonTextStyle,
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        loc.save,
+                        style: AppStyles.buttonTextStyle,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+                ],
+              ),
+            ],
+                    ),
+                  ),
+          ),
     );
   }
 }

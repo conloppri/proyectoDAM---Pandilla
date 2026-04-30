@@ -46,6 +46,12 @@ class ItemComponent extends StatefulWidget {
 /// Gestiona la interacción del usuario con el ítem,
 /// como marcarlo como completado o eliminarlo.
 class _ItemComponentState extends State<ItemComponent> {
+
+  /// Construye la interfaz elemento de una lista..
+  ///
+  /// El elemento es un ListTile con ícono de check
+  /// que varía según si está completo o no. Cuando
+  /// está marcado, el nombre del item esta tachado.
   @override
   Widget build(BuildContext context) {
     String? groupUID = context.read<GroupProvider>().groupUID;

@@ -22,7 +22,7 @@
     "error_user_not_found": "Usuario no registrado.",
     "error_incorrect_psw": "Contraseña incorrecta.",
     "error_invalid_email": "Email no válido.",
-    "error_week_psw": "Contraseña débil",
+    "error_week_psw": "Contraseña débil. Revisa ? para más info.",
     "error_psw_not_match": "Las contraseñas no coinciden.",
     "error_email_registered": "Ese email ya ha sido registrado. Intente iniciar sesión.",
     "error_username_too_short" : "Longitud mínima del nombre: 4 caracteres",
@@ -164,7 +164,7 @@
     "items" : "elementos",
     "sort_by" : "Ordenar",
     "by" : "por",
-    "app_info" : "Aplicación desarrollada por Consuelo López Prieto para Proyecto Intermodular de DAM.",
+    "app_info" : "Aplicación desarrollada por Consuelo López Prieto para Proyecto Intermodular de DAM 2025/2026.",
     "version" : "Versión",
 
     "error_try_again" : "Ha ocurrido un error. Vuelva a intentarlo en unos segundos."

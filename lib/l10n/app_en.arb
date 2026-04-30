@@ -22,7 +22,7 @@
     "error_user_not_found": "No user is registered with that email.",
     "error_incorrect_psw": "Incorrect password.",
     "error_invalid_email": "Invalid email.",
-    "error_week_psw": "Weak password.",
+    "error_week_psw": "Weak password. Check ? for more info.",
     "error_psw_not_match": "The passwords do not match",
     "error_email_registered": "That email is already registered. Try signing in.",
     "error_username_too_short": "Username must be at least 4 characters long.",
@@ -164,7 +164,7 @@
     "items" : "items",
     "sort_by" : "Sort by",
     "by" : "por",
-    "app_info" : "App developed by Consuelo López Prieto for \"Proyecto Intermodular\" of DAM.",
+    "app_info" : "App developed by Consuelo López Prieto for \"Proyecto Intermodular\" of DAM 2025/2026.",
     "version" : "Version",
 
     "error_try_again": "An error occurred. Please try again in a few seconds."

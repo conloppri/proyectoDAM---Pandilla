@@ -73,117 +73,119 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
         backgroundColor: AppColors.notesPrimary,
         foregroundColor: Colors.white,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(12),
-        /// Layout vertical de los elementos
-        child: Column(
-          spacing: 15,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            /// Título de la pantalla
-            Text(
-              loc.new_note,
-              style: const TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                color: AppColors.notesPrimary,
-              ),
-            ),
-            /// Campo de título de la nota
-            Container(
-              padding: const EdgeInsetsGeometry.all(20),
-              decoration: boxDecoration,
-              child: TextField(
-                maxLength: 15,
-                decoration: InputDecoration(
-                  filled: true,
-                 fillColor: AppColors.notesSecondary,
-                 enabledBorder: AppStyles.noteEditorOutlineInput,
-                  labelText: loc.title,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          /// Layout vertical de los elementos
+          child: Column(
+            spacing: 15,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              /// Título de la pantalla
+              Text(
+                loc.new_note,
+                style: const TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.notesPrimary,
                 ),
-                onChanged: (value) => _title = value,
               ),
-            ),
-
-            /// Campo de descripción de la nota
-            Container(
-              padding: const EdgeInsetsGeometry.all(20),
-              decoration: boxDecoration,
-              child: TextField(
-                maxLength: 300,
-                minLines: 8,
-                maxLines: 20,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: AppColors.notesSecondary,
-                  enabledBorder: AppStyles.noteEditorOutlineInput,
-                  labelText: loc.body_note,
+              /// Campo de título de la nota
+              Container(
+                padding: const EdgeInsetsGeometry.all(20),
+                decoration: boxDecoration,
+                child: TextField(
+                  maxLength: 15,
+                  decoration: InputDecoration(
+                    filled: true,
+                   fillColor: AppColors.notesSecondary,
+                   enabledBorder: AppStyles.noteEditorOutlineInput,
+                    labelText: loc.title,
+                  ),
+                  onChanged: (value) => _title = value,
                 ),
-                onChanged: (value) => _description = value,
               ),
-            ),
-            /// Selector de color de la nota
-            Container(
-              padding: const EdgeInsetsGeometry.all(12),
-              decoration: boxDecoration,
-              child: Column(
-                spacing: 10,
+        
+              /// Campo de descripción de la nota
+              Container(
+                padding: const EdgeInsetsGeometry.all(20),
+                decoration: boxDecoration,
+                child: TextField(
+                  maxLength: 300,
+                  minLines: 8,
+                  maxLines: 20,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: AppColors.notesSecondary,
+                    enabledBorder: AppStyles.noteEditorOutlineInput,
+                    labelText: loc.body_note,
+                  ),
+                  onChanged: (value) => _description = value,
+                ),
+              ),
+              /// Selector de color de la nota
+              Container(
+                padding: const EdgeInsetsGeometry.all(12),
+                decoration: boxDecoration,
+                child: Column(
+                  spacing: 10,
+                  children: [
+                    Text(loc.note_color, style: const TextStyle(color: Colors.white, fontSize: 15)),
+                    /// Widget personalizado de selección de color
+                    ColorPicker(
+                      onColorSelected: (color) => _selectedColor = color,
+                      selectedColor: _selectedColor,
+                    ),
+                  ],
+                ),
+              ),
+              /// Botones de acción (guardar / cancelar)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text(loc.note_color, style: const TextStyle(color: Colors.white, fontSize: 15)),
-                  /// Widget personalizado de selección de color
-                  ColorPicker(
-                    onColorSelected: (color) => _selectedColor = color,
-                    selectedColor: _selectedColor,
+                  /// Botón para descartar la nota
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(
+                      loc.discard,
+                      style: AppStyles.buttonTextStyle
+                    ),
+                  ),
+                  /// Botón para guardar la nota
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_title == "" || _description == "") { //comprueba que los campos no estén vacíos
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              loc.all_fields_required,
+                            ),
+                          ),
+                        );
+                      } else {//Crea la nota
+                        try {
+                          createNote(
+                            widget.groupUID,
+                            _title,
+                            _description,
+                            _selectedColor,
+                          );
+                        } catch (e) {
+                          debugPrint("Error al crear la nota: $e");
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_try_again)));
+                        }
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: Text(
+                      loc.save,
+                      style: AppStyles.buttonTextStyle
+                    ),
                   ),
                 ],
               ),
-            ),
-            /// Botones de acción (guardar / cancelar)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                /// Botón para descartar la nota
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(
-                    loc.discard,
-                    style: AppStyles.buttonTextStyle
-                  ),
-                ),
-                /// Botón para guardar la nota
-                ElevatedButton(
-                  onPressed: () {
-                    if (_title == "" || _description == "") { //comprueba que los campos no estén vacíos
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            loc.all_fields_required,
-                          ),
-                        ),
-                      );
-                    } else {//Crea la nota
-                      try {
-                        createNote(
-                          widget.groupUID,
-                          _title,
-                          _description,
-                          _selectedColor,
-                        );
-                      } catch (e) {
-                        debugPrint("Error al crear la nota: $e");
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_try_again)));
-                      }
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: Text(
-                    loc.save,
-                    style: AppStyles.buttonTextStyle
-                  ),
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -23,6 +23,18 @@ class LeftDrawer extends StatefulWidget {
 /// Gestiona la navegación entre pantallas y la interacción del usuario
 /// con las opciones del menú lateral.
 class _LeftDrawerState extends State<LeftDrawer> {
+
+  /// Construye el menú lateral de navegación (NavigationDrawer).
+  ///
+  /// Este widget permite al usuario acceder a las principales secciones de la app,
+  /// así como visualizar su información personal en la cabecera.
+  ///
+  /// La estructura incluye:
+  /// - Información del usuario obtenida desde `UserProvider`.
+  /// - Opciones de navegación (Home, Perfil, Ajustes, Logout).
+  /// - Gestión de sesión mediante FirebaseAuth.
+  ///
+  /// También se utiliza `AppLocalizations` para soportar traducción de textos.
   @override
   Widget build(BuildContext context) {
     final AppLocalizations loc = AppLocalizations.of(context)!;
