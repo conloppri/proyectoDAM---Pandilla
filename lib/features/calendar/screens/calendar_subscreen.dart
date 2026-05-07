@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pandilla/core/app_styles.dart';
-import 'package:pandilla/core/providers/theme_provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 //Componentes personalizados
 import '../../../core/event.dart';

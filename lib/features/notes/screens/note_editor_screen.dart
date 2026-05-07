@@ -1,6 +1,5 @@
 //Básicos
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 //Componentes personalizados
 import 'package:pandilla/components/color_picker.dart';
 import '../../../components/paper_background.dart';
@@ -67,9 +66,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _bodyController = TextEditingController();
 
-  /// Fecha de la última actualización formateada.
-  String _lastUpdate = "";
-
   /// Estilo de texto utilizado en el contenido de la nota.
   final TextStyle textStyle = const TextStyle(fontSize: 18, height: 1.5);
 
@@ -85,8 +81,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   loadNote() async {
     try {
       noteInfo = await getNote(widget.groupUID, widget.noteID);
-      DateTime date = noteInfo["createAt"].toDate();
-      _lastUpdate = DateFormat("HH:mm dd/MM/yyyy", "es_ES").format(date);
       _titleController.text = noteInfo["title"];
       _bodyController.text = noteInfo["body"];
       _selectedColor = noteInfo["color"];

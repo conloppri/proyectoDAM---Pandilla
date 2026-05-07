@@ -125,7 +125,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations loc = AppLocalizations.of(context)!;
-    final TextScaler textScaler = MediaQuery.of(context).textScaler;
     return Stack(
       children: [
         Positioned.fill(child: Image.asset("assets/images/profile_background.png", fit: BoxFit.cover)),
