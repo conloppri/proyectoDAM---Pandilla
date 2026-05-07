@@ -36,7 +36,33 @@ class NotificationServices {
   static Future<void> setupTimezone() async {
     tz.initializeTimeZones();
     final TimezoneInfo timeZoneName =  await FlutterTimezone.getLocalTimezone();
-    tz.setLocalLocation(tz.getLocation(timeZoneName.identifier));
+    //Normalizamos la zona horaria para obtener una reconocida por Timezone
+    String normalizedTz = _normalizeTimezone(timeZoneName.identifier);
+
+    tz.setLocalLocation(tz.getLocation(normalizedTz));
+  }
+
+  /// Normaliza un identificador de zona horaria.
+  ///
+  /// Convierte valores de zona horaria no compatibles o genéricos
+  /// (como "GMT", "UTC" o "CET") en una zona horaria válida del
+  /// sistema IANA, en este caso "Europe/Madrid"
+  ///
+  /// Si la zona horaria recibida no está en la lista de valores
+  /// conocidos, se devuelve sin modificar.
+  ///
+  /// - [tz] Identificador de zona horaria original.
+  ///
+  /// Returns un identificador de zona horaria válido para el paquete
+  /// `timezone`.
+  static String _normalizeTimezone(String tz){
+    const tzAllowed = {
+      'GMT': "Europe/Madrid",
+      'UTC': 'Europe/Madrid',
+      'CET': 'Europe/Madrid'
+    };
+
+    return tzAllowed[tz] ?? tz;
   }
 
   /// Activa o desactiva las notificaciones de la app.
