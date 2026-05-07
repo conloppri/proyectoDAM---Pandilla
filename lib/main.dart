@@ -5,7 +5,7 @@ import 'package:pandilla/core/app_theme.dart';
 import 'package:pandilla/core/services/navigator_key.dart';
 //Firebase
 import 'package:firebase_core/firebase_core.dart';
-import '../firebase_options.dart';
+import 'firebase_options.dart';
 //Servicios y providers
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pandilla/core/providers/group_provider.dart';
@@ -14,7 +14,7 @@ import 'package:pandilla/core/providers/user_provider.dart';
 import 'package:pandilla/core/services/notification_services.dart';
 import 'package:pandilla/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import '../core/providers/theme_provider.dart';
+import 'core/providers/theme_provider.dart';
 //Pantallas
 import 'package:pandilla/features/log_screen.dart';
 import 'package:pandilla/features/home/screens/main_screen.dart';
