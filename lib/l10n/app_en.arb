@@ -19,6 +19,7 @@
     "reset": "Reset",
     "reset_email_ready": "If the email is registered, you will receive a link to reset your password.",
 
+    "error_invalid_credentials" : "Incorrect email or password." ,
     "error_user_not_found": "No user is registered with that email.",
     "error_incorrect_psw": "Incorrect password.",
     "error_invalid_email": "Invalid email.",
@@ -54,6 +55,7 @@
     "automatic_mode" : "Automatic mode",
 
     "my_profile" : "My profile",
+    "user": "User",
     "job" : "Job",
     "fav_colors" : "Favorite colors",
     "fav_animal" : "Favorite animals",
@@ -90,6 +92,7 @@
     "warning_delete_event": "Are you sure you want to delete this event? Once deleted, it cannot be recovered.",
     "edit_event" : "Edit event",
     "no_event_this_day": "There are no events on this day.",
+    "planned_by" : "Planned by ",
 
     "add_note": "Add note",
     "new_note": "New note",
@@ -127,7 +130,7 @@
     "error_title_required" : "Title is required.",
 
     "pick_avatar": "Select an avatar",
-    "pick_another_avatar": "Change avatar",
+    "pick_another_avatar": "Change",
 
     "notif_group_removal_title": "No access to this group",
     "notif_group_removal_content": "You no longer have access to this group. You have been removed or the group has been deleted.",
@@ -149,8 +152,8 @@
     "title" : "Title",
     "description": "Description",
     "no_description": "No description",
-    "created_by" : "Create by",
-    "created_at" : "Create at",
+    "created_by" : "Created by ",
+    "created_at" : "Created at ",
     "last_update" : "Last update: ",
     "create": "Create",
     "accept" : "Accept",

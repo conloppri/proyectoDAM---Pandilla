@@ -19,10 +19,11 @@
     "reset" : "Restablecer",
     "reset_email_ready" : "Si el email está registrado, recibirás un enlace para restablecer la contraseña.",
 
+    "error_invalid_credentials" : "El email o la contraseña no son correctos." ,
     "error_user_not_found": "Usuario no registrado.",
     "error_incorrect_psw": "Contraseña incorrecta.",
     "error_invalid_email": "Email no válido.",
-    "error_week_psw": "Contraseña débil. Revisa ? para más info.",
+    "error_week_psw": "Contraseña débil. Revisa (?) para más info.",
     "error_psw_not_match": "Las contraseñas no coinciden.",
     "error_email_registered": "Ese email ya ha sido registrado. Intente iniciar sesión.",
     "error_username_too_short" : "Longitud mínima del nombre: 4 caracteres",
@@ -53,6 +54,7 @@
     "automatic_mode" : "Modo automático",
 
     "my_profile" : "Mi perfil",
+    "user": "Usuario",
     "job" : "Ocupación",
     "fav_colors" : "Colores favoritos",
     "fav_animal" : "Animales favoritos",
@@ -89,6 +91,7 @@
     "warning_delete_event" : "¿Estás seguro que quieres eliminar este evento? Una vez eliminado no podrá recuperarse.",
     "edit_event" : "Editar evento",
     "no_event_this_day" : "No hay ningún evento este día.",
+    "planned_by" : "Plan de ",
 
     "add_note" : "Añadir nota",
     "new_note" : "Nueva nota",
@@ -127,7 +130,7 @@
     "error_title_required" : "El título es obligatorio.",
 
     "pick_avatar" : "Selecciona un avatar",
-    "pick_another_avatar" : "Cambiar avatar",
+    "pick_another_avatar" : "Cambiar",
 
     "notif_group_removal_title" : "Sin acceso al grupo",
     "notif_group_removal_content" : "Ya no tienes acceso a este grupo. Has sido expulsado o el grupo ha sido eliminado.",
@@ -149,8 +152,8 @@
     "title" : "Título",
     "description" : "Descripción",
     "no_description" : "Sin descripción",
-    "created_by" : "Creado por",
-    "created_at" : "Creado en",
+    "created_by" : "Creado por ",
+    "created_at" : "Creado en ",
     "last_update" : "Última actualización: ",
     "create" : "Crear",
     "accept" : "Aceptar",

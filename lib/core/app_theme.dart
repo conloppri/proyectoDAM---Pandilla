@@ -19,7 +19,7 @@ class AppTheme {
     brightness: Brightness.light,
     primaryColor: Colors.black,
 
-    scaffoldBackgroundColor: Colors.white,
+    scaffoldBackgroundColor: Colors.white.withAlpha(245),
 
     colorScheme: const ColorScheme.light(
       primary: Colors.black,
@@ -32,6 +32,7 @@ class AppTheme {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         padding: const EdgeInsetsGeometry.all(12),
+        elevation: 5
       ),
     ),
 
@@ -55,7 +56,7 @@ class AppTheme {
     brightness: Brightness.dark,
     primaryColor: Colors.black,
 
-    scaffoldBackgroundColor: AppColors.darkmodeBG,
+    scaffoldBackgroundColor: AppColors.darkmodeBG.withAlpha(245),
 
     colorScheme: const ColorScheme.dark(
       primary: Colors.white,
@@ -68,6 +69,7 @@ class AppTheme {
         backgroundColor: Colors.black87,
         foregroundColor: Colors.white,
         padding: const EdgeInsetsGeometry.all(12),
+        elevation: 5
       ),
     ),
 

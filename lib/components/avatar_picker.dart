@@ -37,7 +37,7 @@ class _AvatarPickerState extends State<AvatarPicker> {
       children: [
         /// Avatar actualmente seleccionado, mostrado en grande
         CircleAvatar(
-          radius: 50,
+          radius: MediaQuery.of(context).size.width * 0.15,
           backgroundImage: AssetImage(
             "assets/images/${widget.selectedAvatar}",
           ),
@@ -45,7 +45,9 @@ class _AvatarPickerState extends State<AvatarPicker> {
         /// Botón que abre el selector de avatares
         ElevatedButton(onPressed: () {
           pickAvatar();
-        }, child: Text(AppLocalizations.of(context)!.pick_another_avatar)),
+        }, child: FittedBox(
+          fit: BoxFit.scaleDown,
+            child: Text(AppLocalizations.of(context)!.pick_another_avatar, style: const TextStyle(fontSize: 16)))),
       ],
     );
   }

@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pandilla/core/providers/user_provider.dart';
 import 'package:pandilla/l10n/app_localizations.dart';
-import 'package:pandilla/screens/profile/profile_screen.dart';
+import 'package:pandilla/features/profile/profile_screen.dart';
 import 'package:provider/provider.dart';
 import '../core/app_colors.dart';
 
@@ -52,7 +52,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
         final navigator = Navigator.of(context);
         navigator.pop();
         if (index == 0) {
-          navigator.pushReplacementNamed('/home');
+          navigator.pushNamedAndRemoveUntil('/home', (route)=>false);
         } else if (index == 1) {
           navigator.push(MaterialPageRoute(builder: (context)=>ProfileScreen(userProfileUID: userUID!)));
         } else if (index == 2) {

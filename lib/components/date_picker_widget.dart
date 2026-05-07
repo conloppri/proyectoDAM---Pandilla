@@ -80,29 +80,31 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
     return Row(
       children: [
         /// Etiqueta descriptiva del campo de fecha
-        Text(widget.label, style: widget.labelStyle),
+        Expanded(child: Text(widget.label, style: widget.labelStyle)),
         const SizedBox(width: 20),
 
         /// Botón que abre el selector de fecha
-        ElevatedButton(
-          onPressed: () async {
-            final picked = await showDatePicker(
-              context: context,
-              firstDate: widget.firstDate,
-              lastDate: widget.lastDate,
-              initialDate: widget.selectedDate,
-            );
-            if (picked != null) {
-              setState(() {
-                _selectedDate = picked;
-              });
-              widget.onDateSelected(_selectedDate);
-            }
-          },
-          style: ElevatedButton.styleFrom(backgroundColor: widget.buttonColor),
-          child: Text(
-            DateFormat("dd/MM/yyyy").format(_selectedDate),
-            style: widget.labelStyle,
+        Expanded(
+          child: ElevatedButton(
+            onPressed: () async {
+              final picked = await showDatePicker(
+                context: context,
+                firstDate: widget.firstDate,
+                lastDate: widget.lastDate,
+                initialDate: widget.selectedDate,
+              );
+              if (picked != null) {
+                setState(() {
+                  _selectedDate = picked;
+                });
+                widget.onDateSelected(_selectedDate);
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: widget.buttonColor),
+            child: Text(
+              DateFormat("dd/MM/yyyy").format(_selectedDate),
+              style: widget.labelStyle,
+            ),
           ),
         ),
       ],

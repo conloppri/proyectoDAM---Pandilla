@@ -9,10 +9,12 @@ import 'app_colors.dart';
 /// (tipografías, colores, bordes y estilos de formularios) evitando la
 /// repetición de estilos en los distintos widgets de la app.
 class AppStyles {
-
   //----------GENERAL STYLES-------------
   /// Estilo de texto en negro con negrita.
-  static const TextStyle blackBoldStyle = TextStyle(color: Colors.black, fontWeight: FontWeight.bold);
+  static const TextStyle blackBoldStyle = TextStyle(
+    color: Colors.black,
+    fontWeight: FontWeight.bold,
+  );
 
   /// Estilo de texto en negro sin formato adicional.
   static const TextStyle blackFont = TextStyle(color: Colors.black);
@@ -40,7 +42,15 @@ class AppStyles {
 
   /// Bordes redondeados reutilizables para campos de texto.
   static final OutlineInputBorder outlineInputBorderRounded =
-  OutlineInputBorder(borderRadius: BorderRadius.circular(12));
+      OutlineInputBorder(borderRadius: BorderRadius.circular(12));
+
+  ///Sombras para containers
+  static const BoxShadow boxShadow = BoxShadow(
+    color: Colors.black26,
+    spreadRadius: 1,
+    blurRadius: 5,
+    offset: Offset(2,2),
+  );
 
   //--------------SETTINGS STYLES-----------------------
   /// Estilo de título utilizado en la pantalla de ajustes.
@@ -55,15 +65,18 @@ class AppStyles {
   static const InputDecoration loginTextFields = InputDecoration(
     filled: true,
     fillColor: AppColors.secondary,
-    labelStyle: TextStyle(color: Colors.black87)
+    labelStyle: TextStyle(color: Colors.black87),
   );
 
   //----------------TUTORIAL STYLES-----------------------
   /// Decoración de contenedor principal en pantallas de tutorial.
   static final BoxDecoration mainScreenBox = BoxDecoration(
-      color: AppColors.secondary,
-      borderRadius: BorderRadius.circular(10),
-      border: Border.all(color: AppColors.primary)
+    color: AppColors.secondary,
+    borderRadius: BorderRadius.circular(10),
+    border: Border.all(color: AppColors.primary),
+    boxShadow: const [
+      boxShadow
+    ],
   );
 
   /// Estilo de texto usado en tutorial.
@@ -83,10 +96,14 @@ class AppStyles {
   static const TextStyle profileTitles = TextStyle(
     color: Colors.black,
     fontWeight: FontWeight.bold,
+    fontSize: 15,
   );
 
   /// Estilo de texto secundario en perfil.
-  static const TextStyle profileSub = TextStyle(color: Colors.white);
+  static const TextStyle profileSub = TextStyle(
+    color: Colors.white,
+    fontSize: 15,
+  );
 
   /// Estilo de campos de texto en perfil.
   static const InputDecoration profileTextFieldStyle = InputDecoration(
@@ -103,34 +120,41 @@ class AppStyles {
   );
 
   /// Estilo del texto "creado por" en notas.
-  static const TextStyle notesCreatedByStyle =TextStyle(
+  static const TextStyle notesCreatedByStyle = TextStyle(
     color: Colors.black,
-    fontSize: 15,
+    fontSize: 12,
   );
 
   /// Estilo del nombre del autor en notas.
-  static const TextStyle notesAuthorStyle =TextStyle(
+  static const TextStyle notesAuthorStyle = TextStyle(
     color: Colors.black,
     fontSize: 15,
     fontWeight: FontWeight.bold,
   );
 
   /// Decoración del editor de notas con borde personalizado.
-  static final OutlineInputBorder noteEditorOutlineInput =  OutlineInputBorder(
-      borderSide: const BorderSide(color: AppColors.notesPrimary),
-      borderRadius: BorderRadius.circular(12),
+  static final OutlineInputBorder noteEditorOutlineInput = OutlineInputBorder(
+    borderSide: const BorderSide(color: AppColors.notesPrimary),
+    borderRadius: BorderRadius.circular(12),
   );
 
   //--------------------INFO STYLES----------------------
   /// Estilo de texto utilizado en pantallas de información.
-  static const TextStyle infoTextFields = TextStyle(color: AppColors.infoPrimary);
+  static const TextStyle infoTextFields = TextStyle(
+    color: AppColors.infoPrimary,
+  );
 
   //--------------CALENDAR STYLES-------------------------
   /// Estilo de texto en campos del calendario.
-  static const TextStyle eventTextFields = TextStyle(color: AppColors.calendarPrimary);
+  static const TextStyle eventTextFields = TextStyle(
+    color: AppColors.calendarPrimary,
+  );
 
   /// Estilo de botones del calendario.
-  static const TextStyle eventButtonsStyle = TextStyle(color: AppColors.calendarPrimary, fontSize: 20);
+  static const TextStyle eventButtonsStyle = TextStyle(
+    color: AppColors.calendarPrimary,
+    fontSize: 20,
+  );
 
   /// Estilo de títulos en la pantalla del calendario.
   static const TextStyle calendarTitle = TextStyle(

@@ -3,10 +3,10 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:pandilla/components/group_selector.dart';
-import 'package:pandilla/components/item_component.dart';
-import 'package:pandilla/components/list_component.dart';
-import 'package:pandilla/components/note_component.dart';
+import 'package:pandilla/features/home/widget/group_selector.dart';
+import 'package:pandilla/features/lists/widget/item_component.dart';
+import 'package:pandilla/features/lists/widget/list_component.dart';
+import 'package:pandilla/features/notes/widget/note_component.dart';
 import 'package:pandilla/core/services/navigator_key.dart';
 import 'package:pandilla/core/services/notification_services.dart';
 import 'package:pandilla/l10n/app_localizations.dart';
@@ -38,11 +38,11 @@ newUser(String name, DateTime birthdate, String email) async {
     "email": email,
     "joinAt": Timestamp.now(),
     'avatar': "panda.png",
-    'fav_colors': "Vacío",
-    'fav_animal': "Vacío",
-    'job': "Vacío",
-    'hobbies': "Vacío",
-    'description': "Vacío",
+    'fav_colors': "",
+    'fav_animal': "",
+    'job': "",
+    'hobbies': "",
+    'description': "",
   });
 }
 
@@ -372,16 +372,18 @@ removeNote(String groupUID, String noteID) {
 ///
 /// - [groupUID] UID del grupo en el que quiere guardar la lista.
 /// - [title] título de la lista.
-Future<void> newList(String groupUID, String title) async {
+Future<String> newList(String groupUID, String title) async {
   String? userUID = FirebaseAuth.instance.currentUser?.uid; //Usuario actual
   String authorName = await getUserName(); //Nombre del usuario para autorName
-  db.collection("groups").doc(groupUID).collection("lists").doc().set({
+  DocumentReference docRef = db.collection("groups").doc(groupUID).collection("lists").doc();
+  docRef.set({
     "title": title,
     "authorUID": userUID,
     "authorName": authorName,
     "createAt": DateTime.now(),
     "last_update": DateTime.now(),
   });
+  return docRef.id;
 }
 
 ///Obtiene el listado de listas del grupo en un Stream
@@ -448,14 +450,8 @@ addItem(String groupUID, String listID, String item) {
 /// - [listID] ID de la lista a la que pertenece el item.
 /// - [itemID] ID del item a modificar.
 /// - [isCompleted] estado del item
-changeItemStatus(
-  String groupUID,
-  String listID,
-  String itemID,
-  bool isCompleted,
-) {
-  db
-      .collection("groups")
+changeItemStatus(String groupUID, String listID, String itemID, bool isCompleted,) {
+  db.collection("groups")
       .doc(groupUID)
       .collection("lists")
       .doc(listID)
@@ -538,20 +534,16 @@ removeItem(String groupUID, String listID, String itemID) {
 ///
 /// - [groupUID] UID del grupo al que pertenece la lista.
 /// - [listID] ID de la lista.
-removeList(String groupUID, String listID) {
-  db.collection("groups").doc(groupUID).collection("lists").get().then((
-    lists,
-  ) async {
-    for (var list in lists.docs) {
-      list.reference.collection("items").get().then((items) async {
-        for (var item in items.docs) {
-          //Debemos eleminar  los items
-          await item.reference.delete();
-        }
-      });
-      list.reference.delete(); //Por última, la lista
-    }
-  });
+removeList(String groupUID, String listID) async {
+
+  DocumentReference docRef = db.collection("groups").doc(groupUID).collection("lists").doc(listID);
+
+  QuerySnapshot items = await docRef.collection("items").get();
+
+  for(var item in items.docs){
+    await item.reference.delete();
+  }
+  await docRef.delete();
 }
 
 //------------------CALENDARIO----------------------
