@@ -116,6 +116,7 @@ class _InfoEditorState extends State<InfoEditor> {
     final AppLocalizations loc = AppLocalizations.of(context)!;
     return Stack(
       children: [
+        //Background de pantalla
         Positioned.fill(child: Image.asset("assets/images/app_background.png", fit: BoxFit.cover)),
         Scaffold(
           appBar: AppBar(
@@ -221,7 +222,7 @@ class _InfoEditorState extends State<InfoEditor> {
                                       style: AppStyles.infoTextFields,
                                     ),
 
-                                    /// Botón para regenerar el código
+                                    /// Botón para regenerar el código => Si no se guarda los cambios, el código regenerado tampoco se guarda
                                     TextButton(
                                       onPressed: () async {
                                         _code = await generateCode();
@@ -288,10 +289,10 @@ class _InfoEditorState extends State<InfoEditor> {
                                         //Actualiza el provider
                                         widget.groupUID,
                                         _nameController.text,
-                                        true,
+                                        true, //solo el admin puede actualizar, por lo tanto, aquí siempre será true
                                         _code,
                                       );
-                                    } catch (e) {
+                                    } catch (e) { //recogemos error
                                       debugPrint("Error al actualizar grupo: $e");
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(

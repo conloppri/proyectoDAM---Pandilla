@@ -56,7 +56,6 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
   /// Índice de la recurrencia seleccionada.
   int _recSelected = 0;
 
-
   ///Variable que controla si la información ha llegado antes de mostrarla
   bool loading = true;
 
@@ -67,6 +66,7 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
     try {
       final data =await getEventInfo(widget.groupUID, widget.eventID);
       setState(() {
+        ///Carga de datos en controladores
         _titleController.text = data["title"];
         _descController.text = data["description"];
         _locController.text = data["location"];
@@ -103,17 +103,19 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
     String? groupUID = context.watch<GroupProvider>().groupUID;
     String? groupName = context.watch<GroupProvider>().groupName;
 
+    ///Inicialización de servicio de localización
     final AppLocalizations loc = AppLocalizations.of(context)!;
 
     return Stack(
       children: [
+        //background de la pantalla
         Positioned.fill(child: Image.asset("assets/images/app_background.png", fit: BoxFit.cover)),
         Scaffold(
           appBar: AppBar(
             title: Text(groupName!),
             backgroundColor: AppColors.calendarPrimary,
           ),
-          body: loading?const Center(child: CircularProgressIndicator())
+          body: loading?const Center(child: CircularProgressIndicator()) //mientras carga datos
               :SingleChildScrollView(
                 child: Padding(
                         padding: const EdgeInsets.all(15),

@@ -56,6 +56,9 @@ class _EventCreatorScreenState extends State<EventCreatorScreen> {
   /// Índice de la recurrencia seleccionada.
   int _recSelected = 0;
 
+  ///Metodo de inicialización
+  ///
+  /// Carga la fecha seleccionada
   @override
   void initState() {
     _date = widget.initialDate;
@@ -84,6 +87,7 @@ class _EventCreatorScreenState extends State<EventCreatorScreen> {
     String? groupName = context.watch<GroupProvider>().groupName;
     return Stack(
       children: [
+        //backgrounnd para la pantalla
         Positioned.fill(child: Image.asset("assets/images/app_background.png", fit: BoxFit.cover)),
         Scaffold(
           appBar: AppBar(

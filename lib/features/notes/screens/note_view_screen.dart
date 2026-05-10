@@ -67,6 +67,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
     String? userUID = FirebaseAuth.instance.currentUser?.uid;
     return Stack(
       children: [
+        //background de pantalla
         Positioned.fill(child: Image.asset("assets/images/app_background.png", fit: BoxFit.cover)),
         Scaffold(
           appBar: AppBar(

@@ -141,8 +141,7 @@ class _NoteComponentState extends State<NoteComponent> {
           ///Fecha de última actualización
           Padding(
             padding: const EdgeInsets.all(8),
-            child: Text(
-              DateFormat("HH:mm dd/MM/yyyy").format(widget.lastUpdate),
+            child: Text("${AppLocalizations.of(context)!.last_update}: ${DateFormat("HH:mm dd/MM/yyyy").format(widget.lastUpdate)}",
               style: const TextStyle(color: Colors.blueGrey),
             ),
           ),

@@ -315,7 +315,6 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                                   ),
                                 ),
                               ),
-                              onLongPress: () {},
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(

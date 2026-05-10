@@ -55,6 +55,8 @@ class _LogScreenState extends State<LogScreen> {
               const SizedBox(height: 15),
         
               /// Texto inferior para cambiar entre formularios
+
+              ///Si está en login, mostrará hiperenlace a patanlla de registro.
               _activeAction == "login"
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -73,6 +75,7 @@ class _LogScreenState extends State<LogScreen> {
                         ),
                       ],
                     )
+                  ///Si esttá en reggistro, mostrará hiperenlace a pantatalla de inicio de sesión
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -120,7 +123,7 @@ class _LogInState extends State<LogIn> {
     final AppLocalizations loc = AppLocalizations.of(context)!;
     return Column(
       children: [
-        ///Titulo: INICIO SESION
+        ///Titulo: INICIO SESIÓN
         Text(
           loc.login,
           style: const TextStyle(fontSize: 30, color: Colors.white),
@@ -213,9 +216,9 @@ class _LogInState extends State<LogIn> {
         ElevatedButton(
           onPressed: () async {
               final navigator = Navigator.of(context); //Uso del context antes del metodo asíncrono
-              if (await authUser(_logEmail, _logPsw)) { //Intenta el inicio de sesión y en caso de positvo, envía al mainScreen
+              if (await authUser(_logEmail, _logPsw)) { //Intenta el inicio de sesión
                 String? uid = FirebaseAuth.instance.currentUser?.uid;
-                if (uid != null) {
+                if (uid != null) {//Si el inicio se sesión se ha realizado, el usuario actual no será nulo y se redirigirá al homeScreen
                   navigator.pushReplacementNamed("/home",);
                 }
               }
@@ -240,23 +243,27 @@ class _LogInState extends State<LogIn> {
   /// Lanza:
   /// - [FirebaseAuthException] en caso de credenciales incorrectos
   Future<bool> authUser(String logEmail, String logPsw) async {
+    ///Inicialización de servicios y herramientas que necesitan del context antes
+    ///de comenzar con los métodos asíncronos
     final messenger = ScaffoldMessenger.of(context);
     final loc = AppLocalizations.of(context)!;
+
+    ///Expresión RegExp para comprobación de formato de email.
     final RegExp emailRegex = RegExp( r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
-    try { //intenta iniciar sesión:
-      if(emailRegex.hasMatch(logEmail)) {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
+    try {
+      if(emailRegex.hasMatch(logEmail)) { //Comprobamos que el email tieme formato válido
+        await FirebaseAuth.instance.signInWithEmailAndPassword(//intenta iniciar sesión:
           email: logEmail,
           password: logPsw,
         );
-        return true;
-      }else{
+        return true; //Si lo consigue, devuelve true
+      }else{ //No cumple el formato del email
         messenger.showSnackBar(
           SnackBar(
             content: Text(loc.error_invalid_email),
           ),
         );
-        return false;
+        return false; //No se ha iniciado sesión => false
       }
     } on FirebaseAuthException catch (e) { //Capturamos error
       if (e.code == 'invalid-credential') { //Credencial incorrecta
@@ -329,6 +336,7 @@ class _SignInState extends State<SignIn> {
   /// Construye el formulario de registro.
   @override
   Widget build(BuildContext context) {
+    ///Inicialización de servicios de localización
     final AppLocalizations loc = AppLocalizations.of(context)!;
     return Column(
       spacing: 15,
@@ -387,7 +395,7 @@ class _SignInState extends State<SignIn> {
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             labelText: loc.password,
           ),
-          obscureText: true,
+          obscureText: true, //ocultamos el texto escrito
           onChanged: (value) {
             setState(() {
               _signPsw1 = value;
@@ -424,7 +432,7 @@ class _SignInState extends State<SignIn> {
         ElevatedButton(
           onPressed: () async {
             final navigator = Navigator.of(context);
-            if(_name.length<4){
+            if(_name.length<4){ //comprobamos que la longitud del nombre no sea demasiado corta
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_username_too_short)));
             }else {
               if (await registerUser(_signEmail, _signPsw1, _signPsw2)) { //Intentamos registrar. En caso positivo => Editar Perfil
@@ -467,8 +475,8 @@ class _SignInState extends State<SignIn> {
             password: signPsw1,
           );
           String? userUID = FirebaseAuth.instance.currentUser?.uid;
-          if (userUID != null) { //Y creamos el usuario en Firestore
-            newUser(_name, _birthDate, signEmail);
+          if (userUID != null) { //Si se h aregristrado corrrectamente y se ha llevado a cabo el inicio de sesión
+            newUser(_name, _birthDate, signEmail);//Y creamos el usuario en Firestore
           }
           return true;
         } on FirebaseAuthException catch (e) { //Capturamos errores
@@ -495,7 +503,7 @@ class _SignInState extends State<SignIn> {
             );
           }
         }
-      }else{
+      }else{ //Si la contraseña no pasa la validación, se lo hacemos saber al usuario
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(loc.error_week_psw),

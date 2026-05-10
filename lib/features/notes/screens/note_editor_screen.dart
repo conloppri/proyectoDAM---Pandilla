@@ -80,10 +80,13 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   /// - Actualiza el estado de la pantalla
   loadNote() async {
     try {
+      ///Toma de información desde BD
       noteInfo = await getNote(widget.groupUID, widget.noteID);
+      ///Carga de datos en controladores
       _titleController.text = noteInfo["title"];
       _bodyController.text = noteInfo["body"];
       _selectedColor = noteInfo["color"];
+      ///Control de carga de datos
       loading = false;
       setState(() {});
     } catch (e) {
@@ -109,11 +112,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   /// - Botón de guardado en la AppBar
   @override
   Widget build(BuildContext context) {
+    ///Inicialización de servicios de localización
     final AppLocalizations loc = AppLocalizations.of(context)!;
+
+    ///Carga de datos sobre el grupo desde provider
     String? groupUID = context.watch<GroupProvider>().groupUID;
     String? groupName = context.watch<GroupProvider>().groupName;
     return Stack(
       children: [
+        //Background de pantalla
         Positioned.fill(child: Image.asset("assets/images/app_background.png", fit: BoxFit.cover)),
         Scaffold(
           appBar: AppBar(
@@ -180,7 +187,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                       color: colors[_selectedColor],
                       child: Stack(
                         children: [
-                          /// Fondo estilo papel rayado
+                          /// Fondo de nota estilo papel rayado
                           Positioned.fill(
                             child: PaperBackground(
                               lineColor: Colors.black,

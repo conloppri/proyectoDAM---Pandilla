@@ -146,7 +146,7 @@ class _CalendarSubscreenState extends State<CalendarSubscreen> {
                           focusedDay.month + 1,
                           0,
                         ).day;
-                        //Comprobamos si el día existe en el siguiente mes (p.e. del 31 de enero a febrero ?> hasta 28 o 29 Febrero
+                        //Comprobamos si el día existe en el siguiente mes (p.e. del 31 de enero a febrero => hasta 28 o 29 Febrero
                         _focusedDay = DateTime(
                           focusedDay.year,
                           focusedDay.month,
@@ -230,8 +230,8 @@ class _CalendarSubscreenState extends State<CalendarSubscreen> {
                 Text(
                   /// Título según formato
                   _format == CalendarFormat.month
-                      ? DateFormat('dd/MM/yyyy').format(_focusedDay)
-                      : loc.week_events,
+                      ? DateFormat('dd/MM/yyyy').format(_focusedDay) //para el mes, indicará el día seleccionado
+                      : loc.week_events, //Para mes, el títutlo dirá "eventos de la semana"
                   style: AppStyles.calendarTitle,
                 ),
                 const SizedBox(width: 10),

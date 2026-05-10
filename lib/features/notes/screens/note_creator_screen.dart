@@ -69,6 +69,7 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
     final AppLocalizations loc = AppLocalizations.of(context)!;
     return Stack(
       children: [
+        //Background de la pantalla
         Positioned.fill(child: Image.asset("assets/images/app_background.png", fit: BoxFit.cover)),
         Scaffold(
           appBar: AppBar(
@@ -79,7 +80,7 @@ class _NoteCreatorScreenState extends State<NoteCreatorScreen> {
           body: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(12),
-              /// Layout vertical de los elementos
+              /// Columna de los elementos de la nota
               child: Column(
                 spacing: 15,
                 mainAxisAlignment: MainAxisAlignment.start,

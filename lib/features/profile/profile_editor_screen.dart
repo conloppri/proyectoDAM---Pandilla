@@ -44,17 +44,12 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   /// Información del usuario obtenida desde Firestore
   Map _userInfo = {};
 
-  String userName = "";
-
   /// Controladores de texto para edición de perfil
   final TextEditingController _jobController = TextEditingController();
   final TextEditingController _colorsController = TextEditingController();
   final TextEditingController _animalsController = TextEditingController();
   final TextEditingController _hobbiesController = TextEditingController();
   final TextEditingController _moreController = TextEditingController();
-
-  /// Fecha de nacimiento formateada para mostrar en UI
-  String birthdate = "";
 
   /// Avatar seleccionado actualmente (por defecto => panda.png)
   String _selectedAvatar = "panda.png";
@@ -98,15 +93,15 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   loadProfile() async {
     try {
       _userInfo = await getUser(userUID!);
+      ///Controladores de campos editables
       _jobController.text = _userInfo["job"];
       _colorsController.text = _userInfo["fav_colors"];
       _animalsController.text = _userInfo["fav_animal"];
       _hobbiesController.text = _userInfo["hobbies"];
       _moreController.text = _userInfo["description"];
-      DateTime date = _userInfo["bithdate"].toDate();
-      birthdate = DateFormat("dd/MM/yyyy", "es_ES").format(date);
+      ///Avatar del usuario
       _selectedAvatar = _userInfo["avatar"];
-      userName = _userInfo["name"];
+      ///Variable de control de carga de datos
       loading = false;
       setState(() {});
     } catch (e) {
@@ -131,6 +126,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
     final AppLocalizations loc = AppLocalizations.of(context)!;
     return Stack(
       children: [
+        //Background de pantalla
         Positioned.fill(child: Image.asset("assets/images/profile_background.png", fit: BoxFit.cover)),
         Scaffold(
           appBar: AppBar(
@@ -142,7 +138,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
             ],
           ),
           body: SafeArea(
-            child: loading
+            child: loading //Esperamos que carguen los datos
                 ? const Center(child: CircularProgressIndicator())
                 : Container(
                     padding: const EdgeInsets.all(8.0),
@@ -152,7 +148,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
                       children: [
                         /// Selector de avatar
                         AvatarPicker(
-                          selectedAvatar: _selectedAvatar,
+                          selectedAvatar: _selectedAvatar,//avatar seleccionado anteriormente
                           avatarList: _avatarList,
                           onSelectedAvatar: (avatar) {
                             setState(() {
@@ -299,7 +295,7 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
     bool saved = false;
     try {
       saved = await saveProfile(
-        userName,
+        _userInfo["name"],
         _colorsController.text,
         _jobController.text,
         _hobbiesController.text,
@@ -311,11 +307,11 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
       debugPrint("Error al actualizar perfil: $e");
       messenger.showSnackBar(SnackBar(content: Text(loc.error_try_again)));
     }
-    if (saved) {
+    if (saved) { //Si los cambios se han guardado correctamente
       //hacemos cambios en el UserProvider
       userProvider.setUser(
         userUID!,
-        userName,
+        _userInfo["name"],
         _selectedAvatar,
         _userInfo["email"],
       );

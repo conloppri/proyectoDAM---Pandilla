@@ -1,6 +1,7 @@
 //Básicos
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pandilla/features/home/widget/group_selector.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 //Componentes personalizados
 import 'package:pandilla/components/avatar_picker.dart';
@@ -27,20 +28,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 /// - Opciones para crear o unirse a grupos
 ///
 /// También gestiona la carga de datos del usuario y el tutorial inicial.
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
-/// Estado de la pantalla principal [MainScreen]
+/// Estado de la pantalla principal [HomeScreen]
 ///
 /// Gestiona:
 /// - Datos temporales para creación/unión de grupos
 /// - Carga del usuario
 /// - Programación de eventos
 /// - Tutorial interactivo
-class _MainScreenState extends State<MainScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   /// Nombre del grupo a crear.
   String _groupName = "";
 
@@ -80,7 +81,7 @@ class _MainScreenState extends State<MainScreen> {
   /// Referencia a la lista de grupos.
   GlobalKey groupList = GlobalKey();
 
-  //Variable para para comprobar si el usuario ya ha realizado la guía interactiva
+  ///Variable para para comprobar si el usuario ya ha realizado la guía interactiva
   bool? tutorialCompleted;
 
   /// Carga la información del usuario desde Firestore
@@ -127,6 +128,7 @@ class _MainScreenState extends State<MainScreen> {
     final AppLocalizations loc = AppLocalizations.of(context)!;
     return Stack(
       children: [
+        //background de pantalla
         Positioned.fill(child: Image.asset("assets/images/profile_background.png", fit: BoxFit.cover)),
         Scaffold(
           appBar: AppBar(
@@ -187,7 +189,7 @@ class _MainScreenState extends State<MainScreen> {
                                       DateTime dateEvent = events[index]["date"];
                                       return Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
+                                        children: [ //Fecha + título de evento
                                           Text("${dateFormat.format(dateEvent)}: ", style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary, fontSize:15),),
                                           Expanded(
                                             child: Text(events[index]["title"],
@@ -221,18 +223,21 @@ class _MainScreenState extends State<MainScreen> {
                       stream: getGroups(),
                       builder: (context, snapshot) {
                         //Control del Stream
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState == ConnectionState.waiting) { //Cargando...
                           return const Center(child: CircularProgressIndicator());
                         }
                         if (snapshot.hasError) {
-                          return Center(child: Text("Error: ${snapshot.error}"));
+                          return Center(child: Text("Error: ${snapshot.error}")); //Error
                         }
-                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) { //Sin datos
                           return Text(loc.no_groups);
                         }
+                        //Recogemos los datos y los ordenamos por orden alfabético por el nombre del grupo
+                        List<GroupSelector> groupsList = snapshot.data!;
+                        groupsList.sort(((a,b)=> a.groupName.compareTo(b.groupName)));
                         //Muestra la info en un grid de 2 columnas
                         return ListView(
-                          children: snapshot.data!,
+                          children: groupsList,
                         );
                       },
                     ),
@@ -363,7 +368,7 @@ class _MainScreenState extends State<MainScreen> {
                               builder: (context) {
                                 return AlertDialog(
                                   title: Text(loc.join_group),
-                                  content: TextField(
+                                  content: TextField( ///Campo para ingresar código de grupo
                                     maxLength: 6,
                                     decoration: InputDecoration(
                                       labelText: loc.code,

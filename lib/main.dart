@@ -17,7 +17,7 @@ import 'package:provider/provider.dart';
 import 'core/providers/theme_provider.dart';
 //Pantallas
 import 'package:pandilla/features/log_screen.dart';
-import 'package:pandilla/features/home/screens/main_screen.dart';
+import 'package:pandilla/features/home/screens/home_screen.dart';
 import 'package:pandilla/features/profile/profile_editor_screen.dart';
 import 'package:pandilla/features/settings/settings_screen.dart';
 import 'package:pandilla/features/splash_screen.dart';
@@ -41,7 +41,7 @@ Future<void> main() async {
   await NotificationServices.init();
 
   ///Inicializamos ThemeProvider
-  final ThemeProvider themeProvider = ThemeProvider();
+ final ThemeProvider themeProvider = ThemeProvider();
   await themeProvider.init();
 
   ///Cargamos la localización
@@ -56,13 +56,13 @@ Future<void> main() async {
   );
 
   runApp(
-    //Configuración de providers utilizados
+    ///Configuración de providers utilizados
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => GroupProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
-        ChangeNotifierProvider(create: (_) => LocaleProvider()),
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => localeProvider),
+        ChangeNotifierProvider(create: (_) => themeProvider),
       ],
       child:  const MyApp(),
     ),
@@ -125,7 +125,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/splash': (context) => const SplashScreen(),
         '/login': (context) => const LogScreen(),
-        '/home': (context) => const MainScreen(),
+        '/home': (context) => const HomeScreen(),
         '/profileEditor': (context) => const ProfileEditorScreen(),
         '/settings': (context) => const SettingsScreen(),
       },

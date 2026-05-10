@@ -157,6 +157,7 @@ class _GroupScreenState extends State<GroupScreen> {
 
     return Stack(
       children: [
+        //background de pantalla
         Positioned.fill(child: Image.asset("assets/images/app_background.png", fit: BoxFit.cover)),
         Scaffold(
           appBar: AppBar(
@@ -350,6 +351,8 @@ class _GroupScreenState extends State<GroupScreen> {
 
                         ///Título de la lista
                         content: TextField(
+                          maxLength: 20,
+                          maxLines: 1,
                           decoration: InputDecoration(
                             focusedBorder: const UnderlineInputBorder(
                               borderSide: BorderSide(

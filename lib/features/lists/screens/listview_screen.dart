@@ -48,6 +48,7 @@ class _ListviewScreenState extends State<ListviewScreen> {
     String? groupUID = context.read<GroupProvider>().groupUID;
     return Stack(
       children: [
+        //background de la pantalla
         Positioned.fill(child: Image.asset("assets/images/app_background.png", fit: BoxFit.cover)),
         Scaffold(
           appBar: AppBar(
@@ -59,7 +60,7 @@ class _ListviewScreenState extends State<ListviewScreen> {
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  /// Título de la list
+                  /// Título de la lista
                   Text(widget.title, style: AppStyles.title,),
                   Expanded(
                     /// Lista de elementos en tiempo real desde Firestore

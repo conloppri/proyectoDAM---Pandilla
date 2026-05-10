@@ -59,10 +59,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// Utiliza providers para gestionar idioma y tema dinámicamente.
   @override
   Widget build(BuildContext context) {
+    ///Inicialización de servicios  y provider para su uso general en la pantalla
     final LocaleProvider localeProvider = context.watch<LocaleProvider>();
     final AppLocalizations loc = AppLocalizations.of(context)!;
-
-
 
     /// Texto del idioma seleccionado actualmente o del sistema, en caso de nulo.
     String selectedLang = (localeProvider.locale?.languageCode ?? Localizations.localeOf(context).languageCode) == "en"
@@ -82,7 +81,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: ListView(
           padding: const EdgeInsetsGeometry.all(20),
           children: [
-            ///Selector de idiomas
+            ///Selector de idiomas medianteet lista en AlertDialog
             ListTile(
               title: Text(
                 loc.language,
@@ -149,9 +148,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               onChanged: (bool? value) {
                 setState(() {
-                  if(value!){
+                  if(value!){ //Si está activo, toma el tema del sistema
                     themeProvider.setTheme(ThemeMode.system);
-                  }else{
+                  }else{ //Si está desactivado, guardamos el tema en uso como el definido.
                     themeProvider.setTheme(Theme.of(context).brightness == Brightness.dark
                         ?ThemeMode.dark
                         :ThemeMode.light);

@@ -23,6 +23,7 @@ class NotificationServices {
     const AndroidInitializationSettings androidInit = AndroidInitializationSettings('icon');
     const InitializationSettings initSettings = InitializationSettings(android: androidInit);
 
+    ///Inicizalición del plugin
     await plugin.initialize(settings: initSettings);
 
     /// Solicitud de permisos en Android 13+
@@ -53,7 +54,7 @@ class NotificationServices {
   ///
   /// - [tz] Identificador de zona horaria original.
   ///
-  /// Returns un identificador de zona horaria válido para el paquete
+  /// Retorna un identificador de zona horaria válido para el paquete
   /// `timezone`.
   static String _normalizeTimezone(String tz){
     const tzAllowed = {

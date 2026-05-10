@@ -96,8 +96,10 @@ class _ListComponentState extends State<ListComponent> {
   /// - Eliminar la lista si el usuario es administrador o creador.
   @override
   Widget build(BuildContext context) {
+    //Servicios de localización
     final AppLocalizations loc = AppLocalizations.of(context)!;
 
+    //Carga de datos desde provider
     bool? isAdmin = context.read<GroupProvider>().isAdmin;
 
     String? userUID = FirebaseAuth.instance.currentUser?.uid;
@@ -175,7 +177,10 @@ class _ListComponentState extends State<ListComponent> {
                           ListviewScreen(title: widget.title, uid: widget.listID),
                     ),
                   );
-                  loadNumItems();
+                  setState(() {
+                    loadNumItems(); // Recargamos el num de items al regresar
+                  });
+
                 },
               ),
             ),

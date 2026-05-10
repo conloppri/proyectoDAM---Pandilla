@@ -44,6 +44,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   loadProfile() async {
     _userInfo = await getUser(widget.userProfileUID);
     String? ownerUID = FirebaseAuth.instance.currentUser?.uid;
+    //Comprobamos si el usuario activo es el dueño del perfil
     ownerUID==widget.userProfileUID?isOwner = true:isOwner=false;
     setState(() {});
   }
