@@ -1,6 +1,5 @@
 //Básicos
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 //Componentes personalizados
 import 'package:pandilla/components/avatar_picker.dart';
 //Estilos y colores
