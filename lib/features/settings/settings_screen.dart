@@ -198,6 +198,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               onChanged: (value) {
                 NotificationServices.setNotificationState(value);
+                setState(() {
+                  notif = value;
+                });
               },
             ),
             const Divider(),
