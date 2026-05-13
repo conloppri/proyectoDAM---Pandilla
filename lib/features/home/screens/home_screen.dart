@@ -34,6 +34,7 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
+
 /// Estado de la pantalla principal [HomeScreen]
 ///
 /// Gestiona:
@@ -65,7 +66,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// Avatar seleccionado actualmente (reading.png por defecto)
   String _selectedAvatar = "reading.png";
-
 
   //Global Keys para tutorial
 
@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {});
 
     //Comprobación previa tutorial
-    if(tutorialCompleted == null || !tutorialCompleted!) {
+    if (tutorialCompleted == null || !tutorialCompleted!) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showTutorial(); //Guía interactiva
       });
@@ -129,13 +129,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return Stack(
       children: [
         //background de pantalla
-        Positioned.fill(child: Image.asset("assets/images/profile_background.png", fit: BoxFit.cover)),
+        Positioned.fill(
+          child: Image.asset(
+            "assets/images/profile_background.png",
+            fit: BoxFit.cover,
+          ),
+        ),
         Scaffold(
           appBar: AppBar(
             title: const Text("Pandilla", style: AppStyles.appBarTitle),
             foregroundColor: Colors.white,
             backgroundColor: AppColors.primary,
           ),
+
           ///Drawer lateral personalizado
           drawer: const LeftDrawer(),
           body: SafeArea(
@@ -145,6 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   /// Sección de próximos eventos
                   Text(loc.next_events, style: AppStyles.title),
+
                   /// Contenedor de eventos próximos
                   SizedBox(
                     width: double.infinity,
@@ -152,7 +159,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Row(
                       key: nextEvents,
                       children: [
-                        Image.asset("assets/images/main.png", height: MediaQuery.of(context).size.height * 0.15 ),
+                        Image.asset(
+                          "assets/images/main.png",
+                          height: MediaQuery.of(context).size.height * 0.15,
+                        ),
+
                         /// Lista de eventos próximos
                         Container(
                           width: MediaQuery.of(context).size.width * 0.55,
@@ -167,36 +178,70 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: FutureBuilder(
                               future: getNextEvents(),
                               builder: (context, snapshot) {
-
                                 //Control del estado del Builder
-                                if (snapshot.connectionState == ConnectionState.waiting) { //Mientras carga los datos
-                                  return const Center(child: CircularProgressIndicator());
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  //Mientras carga los datos
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
                                 }
-                                if (snapshot.hasError) { //Si hay error
-                                  return Center(child: Text("Error: ${snapshot.error}"));
+                                if (snapshot.hasError) {
+                                  //Si hay error
+                                  return Center(
+                                    child: Text("Error: ${snapshot.error}"),
+                                  );
                                 }
-                                if (!snapshot.hasData || snapshot.data!.isEmpty) { //Si el future no devuelve datos
-                                  return Center(child: Text(loc.no_next_events, style: const TextStyle(color: AppColors.primary, fontSize: 15),));
+                                if (!snapshot.hasData ||
+                                    snapshot.data!.isEmpty) {
+                                  //Si el future no devuelve datos
+                                  return Center(
+                                    child: Text(
+                                      loc.no_next_events,
+                                      style: const TextStyle(
+                                        color: AppColors.primary,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  );
                                 }
                                 //Carga de datos
-                                List<Map<String, dynamic>> events = snapshot.data!;
+                                List<Map<String, dynamic>> events =
+                                    snapshot.data!;
                                 return Center(
                                   child: ListView.builder(
                                     shrinkWrap: true,
                                     itemCount: events.length,
                                     itemBuilder: (BuildContext context, int index) {
-                                      DateFormat dateFormat = DateFormat("dd-MMM", "es_ES");
-                                      DateTime dateEvent = events[index]["date"];
+                                      DateFormat dateFormat = DateFormat(
+                                        "dd-MMM",
+                                        "es_ES",
+                                      );
+                                      DateTime dateEvent =
+                                          events[index]["date"];
                                       return Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [ //Fecha + título de evento
-                                          Text("${dateFormat.format(dateEvent)}: ", style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary, fontSize:15),),
-                                          Expanded(
-                                            child: Text(events[index]["title"],
-                                              overflow: TextOverflow.ellipsis, //Si no cabe en el container, lo indicará con "..."
-                                              style: const TextStyle(fontSize: 15)
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          //Fecha + título de evento
+                                          Text(
+                                            "${dateFormat.format(dateEvent)}: ",
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: AppColors.primary,
+                                              fontSize: 15,
                                             ),
-                                          )
+                                          ),
+                                          Expanded(
+                                            child: Text(
+                                              events[index]["title"],
+                                              overflow: TextOverflow
+                                                  .ellipsis, //Si no cabe en el container, lo indicará con "..."
+                                              style: const TextStyle(
+                                                fontSize: 15,
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       );
                                     },
@@ -214,8 +259,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   /// Título de la sección de grupos
                   Text(
                     loc.my_groups,
-                    style: const TextStyle(color: AppColors.primary, fontSize: 25, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
+
                   /// Lista de grupos del usuario
                   Expanded(
                     child: StreamBuilder(
@@ -223,22 +273,29 @@ class _HomeScreenState extends State<HomeScreen> {
                       stream: getGroups(),
                       builder: (context, snapshot) {
                         //Control del Stream
-                        if (snapshot.connectionState == ConnectionState.waiting) { //Cargando...
-                          return const Center(child: CircularProgressIndicator());
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          //Cargando...
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         }
                         if (snapshot.hasError) {
-                          return Center(child: Text("Error: ${snapshot.error}")); //Error
+                          return Center(
+                            child: Text("Error: ${snapshot.error}"),
+                          ); //Error
                         }
-                        if (!snapshot.hasData || snapshot.data!.isEmpty) { //Sin datos
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          //Sin datos
                           return Text(loc.no_groups);
                         }
                         //Recogemos los datos y los ordenamos por orden alfabético por el nombre del grupo
                         List<GroupSelector> groupsList = snapshot.data!;
-                        groupsList.sort(((a,b)=> a.groupName.compareTo(b.groupName)));
-                        //Muestra la info en un grid de 2 columnas
-                        return ListView(
-                          children: groupsList,
+                        groupsList.sort(
+                          ((a, b) => a.groupName.compareTo(b.groupName)),
                         );
+                        //Muestra la info en un grid de 2 columnas
+                        return ListView(children: groupsList);
                       },
                     ),
                   ),
@@ -254,7 +311,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         /// Botón para crear grupo
                         ElevatedButton(
-                          key:createButton ,
+                          key: createButton,
                           onPressed: () {
                             showDialog(
                               context: context,
@@ -263,74 +320,98 @@ class _HomeScreenState extends State<HomeScreen> {
                                   builder: (context, setStateDialog) {
                                     return AlertDialog(
                                       title: Text(loc.new_group),
+
                                       /// Formulario de creación de grupo
-                                      content: ListView(
-                                        children: [
-                                          ///Widget para selección de avatar
-                                          AvatarPicker(
-                                            selectedAvatar: _selectedAvatar,
-                                            onSelectedAvatar: (avatar) {
-                                              setStateDialog((){
-                                                _selectedAvatar = avatar;
-                                              });
-                                            },
-                                            avatarList: _avatarList,
-                                          ),
-                                          /// Campo nombre
-                                          TextField(
-                                            maxLength: 20,
-                                            onChanged: (value) =>
-                                                _groupName = value,
-                                            decoration: InputDecoration(
-                                              labelText: loc.group_name,
+                                      content: SingleChildScrollView(
+                                        child: Column(
+                                          children: [
+                                            ///Widget para selección de avatar
+                                            AvatarPicker(
+                                              selectedAvatar: _selectedAvatar,
+                                              onSelectedAvatar: (avatar) {
+                                                setStateDialog(() {
+                                                  _selectedAvatar = avatar;
+                                                });
+                                              },
+                                              avatarList: _avatarList,
                                             ),
-                                          ),
-                                          /// Campo descripción
-                                          TextField(
-                                            minLines: 3,
-                                            maxLines: 5,
-                                            maxLength: 100,
-                                            onChanged: (value) =>
-                                                _groupDescription = value,
-                                            decoration: InputDecoration(
-                                              labelText: loc.description,
-                                              border: const OutlineInputBorder()
+
+                                            /// Campo nombre
+                                            TextField(
+                                              maxLength: 20,
+                                              onChanged: (value) =>
+                                                  _groupName = value,
+                                              decoration: InputDecoration(
+                                                labelText: loc.group_name,
+                                              ),
                                             ),
-                                          ),
-                                        ],
+
+                                            /// Campo descripción
+                                            TextField(
+                                              minLines: 3,
+                                              maxLines: 5,
+                                              maxLength: 100,
+                                              onChanged: (value) =>
+                                                  _groupDescription = value,
+                                              decoration: InputDecoration(
+                                                labelText: loc.description,
+                                                border:
+                                                    const OutlineInputBorder(),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                       actions: [
+                                        /// Cancelar
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(
+                                            context,
+                                          ), //Cierra el diálogo
+                                          child: Text(loc.cancel),
+                                        ),
                                         /// Confirmar creación
                                         TextButton(
                                           onPressed: () {
-                                            if(_groupName!= "") {
+                                            if (_groupName != "") {
                                               String? userName = context
                                                   .read<UserProvider>()
                                                   .name; //Tomamos el nombre para guardar autor
                                               try {
                                                 createGroup(
-                                                    _groupName,
-                                                    _groupDescription,
-                                                    _selectedAvatar,
-                                                    userName!
+                                                  _groupName,
+                                                  _groupDescription,
+                                                  _selectedAvatar,
+                                                  userName!,
                                                 );
-                                              }catch (e) {
-                                                debugPrint("Error al crear grupo: $e");
-                                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.error_try_again)));
+                                              } catch (e) {
+                                                debugPrint(
+                                                  "Error al crear grupo: $e",
+                                                );
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      loc.error_try_again,
+                                                    ),
+                                                  ),
+                                                );
                                               }
                                               Navigator.pop(context);
-                                            }else{
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(content: Text(loc.error_group_name))
+                                            } else {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    loc.error_group_name,
+                                                  ),
+                                                ),
                                               );
                                             }
                                           },
                                           child: Text(loc.create),
-                                        ),
-                                        /// Cancelar
-                                        TextButton(
-                                          onPressed: () => Navigator.pop(context), //Cierra el diálogo
-                                          child: Text(loc.cancel),
                                         ),
                                       ],
                                     );
@@ -341,13 +422,20 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
-                              minimumSize: Size(MediaQuery.of(context).size.width *0.4, MediaQuery.of(context).size.height *0.05)
+                            minimumSize: Size(
+                              MediaQuery.of(context).size.width * 0.4,
+                              MediaQuery.of(context).size.height * 0.05,
+                            ),
                           ),
                           child: Padding(
                             padding: const EdgeInsetsGeometry.all(10),
                             child: Row(
                               children: [
-                                const Icon(Icons.add, size: 25, color: Colors.white),
+                                const Icon(
+                                  Icons.add,
+                                  size: 25,
+                                  color: Colors.white,
+                                ),
                                 Text(
                                   loc.create,
                                   style: const TextStyle(
@@ -359,6 +447,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
+
                         /// Botón para unirse a grupo
                         ElevatedButton(
                           key: joinButton,
@@ -368,7 +457,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               builder: (context) {
                                 return AlertDialog(
                                   title: Text(loc.join_group),
-                                  content: TextField( ///Campo para ingresar código de grupo
+                                  content: TextField(
+                                    ///Campo para ingresar código de grupo
                                     maxLength: 6,
                                     decoration: InputDecoration(
                                       labelText: loc.code,
@@ -376,33 +466,52 @@ class _HomeScreenState extends State<HomeScreen> {
                                     onChanged: (value) => _code = value,
                                   ),
                                   actions: [
+                                    ///Botón cancelar
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text(loc.cancel),
+                                    ),
+                                    ///Botón unirse
                                     TextButton(
                                       onPressed: () async {
                                         //Elementos que necesitan context, los iniciamos antes del await para evitar problemas de sincronización
-                                        final messenger = ScaffoldMessenger.of(context);
+                                        final messenger = ScaffoldMessenger.of(
+                                          context,
+                                        );
                                         final navigator = Navigator.of(context);
                                         try {
-                                          bool joined = await joinGroup(_code.toUpperCase()); //Compruba código y trata de unirse
+                                          bool joined = await joinGroup(
+                                            _code.toUpperCase(),
+                                          ); //Compruba código y trata de unirse
 
                                           if (joined) {
                                             //si lo ha conseguido, cierra el diálogo y aparece el grupo en la lista
                                             setState(() {});
                                             navigator.pop();
-                                          } else { //Si no, le notifica al usuario
+                                          } else {
+                                            //Si no, le notifica al usuario
                                             messenger.showSnackBar(
-                                                SnackBar(content: Text(loc.error_invalid_code))
+                                              SnackBar(
+                                                content: Text(
+                                                  loc.error_invalid_code,
+                                                ),
+                                              ),
                                             );
                                           }
                                         } catch (e) {
-                                          debugPrint("Error al intentar unirse a grupo: $e");
-                                          messenger.showSnackBar(SnackBar(content: Text(loc.error_try_again)));
+                                          debugPrint(
+                                            "Error al intentar unirse a grupo: $e",
+                                          );
+                                          messenger.showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                loc.error_try_again,
+                                              ),
+                                            ),
+                                          );
                                         }
                                       },
                                       child: Text(loc.join),
-                                    ),
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: Text(loc.cancel),
                                     ),
                                   ],
                                 );
@@ -411,7 +520,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
-                            minimumSize: Size(MediaQuery.of(context).size.width *0.4, MediaQuery.of(context).size.height *0.05)
+                            minimumSize: Size(
+                              MediaQuery.of(context).size.width * 0.4,
+                              MediaQuery.of(context).size.height * 0.05,
+                            ),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -420,7 +532,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.link, size: 25, color: Colors.white),
+                                const Icon(
+                                  Icons.link,
+                                  size: 25,
+                                  color: Colors.white,
+                                ),
                                 Text(
                                   loc.join,
                                   style: const TextStyle(
@@ -450,95 +566,102 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> showTutorial() async {
     final AppLocalizations loc = AppLocalizations.of(context)!;
     TutorialCoachMark(
-        alignSkip: Alignment.topRight,
-        textSkip: loc.skip,
-        textStyleSkip: const TextStyle(color: AppColors.primary, fontSize: 20),
-        targets: [
-      /// Paso: eventos próximos
-      TargetFocus(
+      alignSkip: Alignment.topRight,
+      textSkip: loc.skip,
+      textStyleSkip: const TextStyle(color: AppColors.primary, fontSize: 20),
+      targets: [
+        /// Paso: eventos próximos
+        TargetFocus(
           identify: "nextEvents",
           keyTarget: nextEvents,
           contents: [
             TargetContent(
-                align: ContentAlign.custom,
-                customPosition: CustomTargetContentPosition(bottom: MediaQuery
-                    .of(context)
-                    .size
-                    .height * 0.35),
-                child: Container(
-                  padding: const EdgeInsetsGeometry.all(12),
-                  decoration: AppStyles.tutorialBox,
-                  child: Text(
-                      loc.tutorial_next_events,
-                      style: AppStyles.tutorialTextStyle),
-                )
-            )
-          ]
-      ),
-      /// Paso: crear grupo
-      TargetFocus(
+              align: ContentAlign.custom,
+              customPosition: CustomTargetContentPosition(
+                bottom: MediaQuery.of(context).size.height * 0.35,
+              ),
+              child: Container(
+                padding: const EdgeInsetsGeometry.all(12),
+                decoration: AppStyles.tutorialBox,
+                child: Text(
+                  loc.tutorial_next_events,
+                  style: AppStyles.tutorialTextStyle,
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        /// Paso: crear grupo
+        TargetFocus(
           identify: "createButton",
           keyTarget: createButton,
           contents: [
             TargetContent(
-                align: ContentAlign.top,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    padding: const EdgeInsetsGeometry.all(12),
-                    decoration: AppStyles.tutorialBox,
-                    child: Text(loc.tutorial_create,
-                        style: AppStyles.tutorialTextStyle),
+              align: ContentAlign.top,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  padding: const EdgeInsetsGeometry.all(12),
+                  decoration: AppStyles.tutorialBox,
+                  child: Text(
+                    loc.tutorial_create,
+                    style: AppStyles.tutorialTextStyle,
                   ),
-                )
-            )
-          ]
-      ),
-      /// Paso: unirse a grupo
-      TargetFocus(
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        /// Paso: unirse a grupo
+        TargetFocus(
           identify: "joinButton",
           keyTarget: joinButton,
           contents: [
             TargetContent(
-                align: ContentAlign.top,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    padding: const EdgeInsetsGeometry.all(12),
-                    decoration: AppStyles.tutorialBox,
-                    child: Text(loc.tutorial_join,
-                        style: AppStyles.tutorialTextStyle),
+              align: ContentAlign.top,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  padding: const EdgeInsetsGeometry.all(12),
+                  decoration: AppStyles.tutorialBox,
+                  child: Text(
+                    loc.tutorial_join,
+                    style: AppStyles.tutorialTextStyle,
                   ),
-                )
-            )
-          ]
-      ),
-      /// Paso: lista de grupos
-      TargetFocus(
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        /// Paso: lista de grupos
+        TargetFocus(
           identify: "groupList",
           keyTarget: groupList,
           contents: [
             TargetContent(
-                align: ContentAlign.top,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    padding: const EdgeInsetsGeometry.all(12),
-                    decoration: AppStyles.tutorialBox,
-                    child: Text(
-                        loc.tutorial_listGroups,
-                        style: AppStyles.tutorialTextStyle),
+              align: ContentAlign.top,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  padding: const EdgeInsetsGeometry.all(12),
+                  decoration: AppStyles.tutorialBox,
+                  child: Text(
+                    loc.tutorial_listGroups,
+                    style: AppStyles.tutorialTextStyle,
                   ),
-                )
-            )
-          ]
-      ),
-    ]
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     ).show(context: context);
 
     //Marca el tutorial como visto
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool("main_tutorial", true);
   }
-
 }

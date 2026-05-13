@@ -364,14 +364,14 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                                                   loc.make_admin_dialog,
                                                 ),
                                                 actions: [
-                                                  //cancelar
+                                                  ///cancelar
                                                   TextButton(
                                                     onPressed: () =>
                                                         Navigator.pop(context),
                                                     child: Text(loc.cancel),
                                                   ),
                                                   TextButton(
-                                                    //Aceptar
+                                                    ///Aceptar
                                                     onPressed: () async {
                                                       final navigator =
                                                           Navigator.of(context);
@@ -435,13 +435,13 @@ class _InfoSubscreenState extends State<InfoSubscreen> {
                                                 ),
                                                 actions: [
                                                   TextButton(
-                                                    //Cancelar
+                                                    ///Cancelar
                                                     onPressed: () =>
                                                         Navigator.pop(context),
                                                     child: Text(loc.cancel),
                                                   ),
                                                   TextButton(
-                                                    //Expulsar
+                                                    ///Expulsar
                                                     onPressed: () async {
                                                       final navigator =
                                                           Navigator.of(context);

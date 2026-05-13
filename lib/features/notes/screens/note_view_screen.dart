@@ -146,7 +146,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                                           icon: const Icon(Icons.edit, color: AppColors.notesPrimary, size: 30,),
                                         ),
                                       if (isAdmin || userUID == authorID)
-                                      /// Botón de edición (solo admin o autor)
+                                      /// Botón de eliminar (solo admin o autor)
                                         IconButton(
                                           onPressed: () async {
                                             final navigator = Navigator.of(context);//Warning de eliminación de nota."¿Estás seguro?"
@@ -165,6 +165,16 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                                                     )!.warning_delete_note,
                                                   ),
                                                   actions: [
+                                                    ///Cancelar eliminación
+                                                    TextButton( //No
+                                                      onPressed: () =>
+                                                          Navigator.pop(context, false),
+                                                      child: Text(
+                                                        AppLocalizations.of(
+                                                          context,
+                                                        )!.cancel,
+                                                      ),
+                                                    ),
                                                     /// Confirmar eliminación
                                                     TextButton( //Sí
                                                       onPressed: () {
@@ -178,16 +188,6 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                                                         AppLocalizations.of(
                                                           context,
                                                         )!.remove,
-                                                      ),
-                                                    ),
-                                                    /// Cancelar
-                                                    TextButton( //No
-                                                      onPressed: () =>
-                                                          Navigator.pop(context, false),
-                                                      child: Text(
-                                                        AppLocalizations.of(
-                                                          context,
-                                                        )!.cancel,
                                                       ),
                                                     ),
                                                   ],

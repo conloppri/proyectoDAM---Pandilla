@@ -392,6 +392,12 @@ class _CalendarSubscreenState extends State<CalendarSubscreen> {
                                         )!.warning_delete_event,
                                       ),
                                       actions: [
+                                        ///Cancelar
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context),
+                                          child: Text(loc.cancel),
+                                        ),
+                                        ///Eliminar
                                         TextButton(
                                           onPressed: () async {
                                             final messenger =
@@ -419,10 +425,6 @@ class _CalendarSubscreenState extends State<CalendarSubscreen> {
                                             navigator.pop();
                                           },
                                           child: Text(loc.remove),
-                                        ),
-                                        TextButton(
-                                          onPressed: () => Navigator.pop(context),
-                                          child: Text(loc.cancel),
                                         ),
                                       ],
                                     );
@@ -591,6 +593,11 @@ class _CalendarSubscreenState extends State<CalendarSubscreen> {
                               )!.warning_delete_event,
                             ),
                             actions: [
+                              ///Botón cancelar
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text(loc.cancel),
+                              ),
                               ///Botón Eliminar
                               TextButton(
                                 onPressed: () async {
@@ -611,12 +618,6 @@ class _CalendarSubscreenState extends State<CalendarSubscreen> {
                                   navigator.pop();
                                 },
                                 child: Text(loc.remove),
-                              ),
-
-                              ///Botón cancelar
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: Text(loc.cancel),
                               ),
                             ],
                           );

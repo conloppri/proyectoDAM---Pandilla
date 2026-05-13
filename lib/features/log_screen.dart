@@ -133,6 +133,7 @@ class _LogInState extends State<LogIn> {
 
         /// Campo email
         TextField(
+          keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
             fillColor: AppColors.profileLowerSecondary,
             labelStyle: const TextStyle(color: Colors.black),
@@ -366,7 +367,7 @@ class _SignInState extends State<SignIn> {
         DatePickerWidget(
           buttonColor: AppColors.primary,
           labelStyle: const TextStyle(fontSize: 16),
-          selectedDate: DateTime.now(),
+          selectedDate: _birthDate,
           label: '${loc.birthdate}: ',
           firstDate: DateTime(1900),
           lastDate: DateTime.now(),
@@ -374,6 +375,7 @@ class _SignInState extends State<SignIn> {
         ),
         ///Email
         TextField(
+          keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
             fillColor: AppColors.profileLowerSecondary,
             labelStyle: const TextStyle(color: Colors.black),

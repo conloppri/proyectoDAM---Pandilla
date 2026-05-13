@@ -74,7 +74,7 @@ class _ListviewScreenState extends State<ListviewScreen> {
                           return Center(child: Text("Error: ${snapshot.error}")); //Error
                         }
                         if (!snapshot.hasData || snapshot.data!.isEmpty) { //Sin datos
-                          return Text(loc.no_lists);
+                          return Text(loc.no_items);
                         }
                         //Carga de datos
                         List<ItemComponent> items = snapshot.data!;

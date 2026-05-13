@@ -1,17 +1,18 @@
+//Básicos
 import 'dart:math';
-
+//Firebase
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+//Componentes personalizados
 import 'package:pandilla/features/home/widget/group_selector.dart';
 import 'package:pandilla/features/lists/widget/item_component.dart';
 import 'package:pandilla/features/lists/widget/list_component.dart';
 import 'package:pandilla/features/notes/widget/note_component.dart';
+import '../event.dart';
+//Providers y servicios
 import 'package:pandilla/core/services/navigator_key.dart';
 import 'package:pandilla/core/services/notification_services.dart';
 import 'package:pandilla/l10n/app_localizations.dart';
-
-import '../event.dart';
 
 ///Instancia de Firestore utilizada para todas las operaciones de base de datos.
 FirebaseFirestore db = FirebaseFirestore.instance;

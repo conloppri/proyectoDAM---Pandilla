@@ -392,7 +392,12 @@ class _GroupScreenState extends State<GroupScreen> {
                                 try {
                                   String listID = await newList(widget.groupUID, _listTitle); //Si la crea, guardamos su id de referencia
                                   navigator.pop(); //Cerramos el dialogo
-                                  navigator.push(MaterialPageRoute(builder: (context)=>ListviewScreen(title: _listTitle, uid: listID))); //pasamos ala vista de la lista
+                                  final result = await navigator.push(MaterialPageRoute(builder: (context)=>ListviewScreen(title: _listTitle, uid: listID)));//pasamos ala vista de la lista
+                                  if(result == true){
+                                    setState(() {
+
+                                    });
+                                  }
                                 } catch (e) {
                                   debugPrint("Error al guardar la lista: $e");
                                   messenger.showSnackBar(SnackBar(content: Text(loc.error_try_again)));

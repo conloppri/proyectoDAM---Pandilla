@@ -136,7 +136,12 @@ class _ListComponentState extends State<ListComponent> {
                           loc.warning_delete_list,
                         ),
                         actions: [
-                          TextButton( //Eliminar
+                          TextButton( ///Cancelar
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(loc.cancel),
+                          ),
+                          ///Eliminar
+                          TextButton(
                             onPressed: () {
                               try {
                                 removeList(widget.groupUID, widget.listID);
@@ -146,10 +151,6 @@ class _ListComponentState extends State<ListComponent> {
                               }
                             },
                             child: Text(loc.remove),
-                          ),
-                          TextButton( //Cancelar
-                            onPressed: () => Navigator.pop(context),
-                            child: Text(loc.cancel),
                           ),
                         ],
                       );

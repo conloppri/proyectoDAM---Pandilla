@@ -105,6 +105,7 @@
     "add_list" : "Añadir lista",
     "new_list" : "Nueva lista",
     "no_lists" : "No hay listas para mostrar.",
+    "no_items" : "Aun no se ha añadido ningún elemento.",
     "new_item" : "Nuevo elemento",
     "delete_list" : "Eliminar lista",
 

@@ -292,7 +292,7 @@ class _EventCreatorScreenState extends State<EventCreatorScreen> {
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                             loc.discard,
-                            style: const TextStyle(color: AppColors.calendarSecondary, fontSize: 20),
+                            style: const TextStyle(color: AppColors.calendarPrimary, fontSize: 20),
                           ),
                         ),
                       ),
@@ -328,7 +328,7 @@ class _EventCreatorScreenState extends State<EventCreatorScreen> {
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                             loc.save,
-                            style: const TextStyle(color: AppColors.calendarSecondary, fontSize: 20),
+                            style: const TextStyle(color: AppColors.calendarPrimary, fontSize: 20),
                           ),
                         ),
                       ),
