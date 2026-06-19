@@ -26,7 +26,7 @@ La aplicación permite a los usuarios crear grupos y colaborar de forma dinámic
 
 ---
 
-## 📸 Capturas de Pantalla (Opcional pero muy recomendado)
+## 📸 Capturas de Pantalla
 
 
 
