@@ -29,10 +29,10 @@ La aplicación permite a los usuarios crear grupos y colaborar de forma dinámic
 ## 📸 Capturas de Pantalla
 
 *  **Pantalla principal:**
-<img width="1220" height="2454" alt="WhatsApp Image 2026-06-19 at 22 20 40" src="https://github.com/user-attachments/assets/d66ceca1-4e3c-40a9-bd16-2886c334c51f" />
+<img width="122" height="245" alt="WhatsApp Image 2026-06-19 at 22 20 40" src="https://github.com/user-attachments/assets/d66ceca1-4e3c-40a9-bd16-2886c334c51f" />
 
 *  **Perfil:**
-  <img width="956" height="2048" alt="WhatsApp Image 2026-06-19 at 22 20 40 (1)" src="https://github.com/user-attachments/assets/c8ae61ed-e601-499d-bd77-601117001820" />
+  <img width="122" height="245" alt="WhatsApp Image 2026-06-19 at 22 20 40 (1)" src="https://github.com/user-attachments/assets/c8ae61ed-e601-499d-bd77-601117001820" />
 
 *  **Calendario:**
   <img width="1220" height="2454" alt="WhatsApp Image 2026-06-19 at 22 20 40 (2)" src="https://github.com/user-attachments/assets/f286298e-085e-45fb-885f-607fabc35e2b" />
