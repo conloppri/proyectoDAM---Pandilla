@@ -26,7 +26,7 @@ La aplicación permite a los usuarios crear grupos y colaborar de forma dinámic
 
 ---
 
-## 📸 Capturas de Pantalla
+## 📸 Capturas de Pantalla (En modo oscuro)
 
 *  **Pantalla principal:**
 <img width="244" height="490" alt="WhatsApp Image 2026-06-19 at 22 20 40" src="https://github.com/user-attachments/assets/d66ceca1-4e3c-40a9-bd16-2886c334c51f" />
